@@ -1,0 +1,162 @@
+<template>
+	<view class="sign-box">
+		<view class="login-input">
+			<view class="sign-title sign-title-one">
+				<uni-icons type="phone-filled" class="locked-icon" size="30"></uni-icons>
+				<input type="number" number placeholder="请输入手机号" class=" sign-input" value="" v-model="tel" />
+			</view>
+			<view class="sign-title">
+				<uni-icons type="locked" class="locked-icon" size="30"></uni-icons>
+				<input type="text" password maxlength="12" placeholder="请输入密码" class=" sign-input" v-model="password" />
+			</view>
+			<view class="sign-title">
+				<uni-icons type="locked" class="locked-icon" size="30"></uni-icons>
+				<input type="text" password maxlength="12" placeholder="请确认密码" class=" sign-input" v-model="password2" />
+			</view>
+			<view class="sign-title">
+				<uni-icons type="compose" class="locked-icon" size="30"></uni-icons>
+				<input type="number" number maxlength="6" placeholder="输入验证码" class=" sign-input yanz-input" v-model="verifyNum" />
+				 <button type="primary" plain="true" class="yanz-btn" :disabled="verifyDisabled" @click="sendyanzheng()">{{sendVerify}}</button>
+			</view>
+			<view class="">
+				<button type=""  class="sign-btn" @click="getPassword()" :disabled="getAbled">确认</button>
+			</view>
+			<router-link to="{name:index}" class="login-btn" >去登录</router-link>
+			<!-- <navigator url="../index/index" class="login-btn" hover-class="none">去登录</navigator> -->
+			<uni-popup ref="popup"  type="center" class="popupstyle">{{popupMessage}}</uni-popup>
+		</view>
+		
+	</view>
+</template>
+
+<script>
+	export default{
+		data() {
+			return {
+				tel:'',
+				password:'',
+				password2:'',
+				verifyNum:'',
+				referrer:'',
+				sendVerify: '获取验证码',
+				verifyDisabled:false,
+				popupMessage:"",
+				getAbled:false
+			}
+		},
+		methods: {
+			sendyanzheng:function(){
+				this.sendVerify=60;
+				this.verifyDisabled=true;
+				let setyanzheng='';
+				 setyanzheng=setInterval(()=>{
+					if(this.sendVerify>0){
+						this.sendVerify--;
+					}else{
+						this.sendVerify="重新获取验证码"
+						clearInterval(setyanzheng)
+						this.verifyDisabled=false;
+					}
+				
+				},1000)
+					
+			},
+			isPoneAvailable: function (pone) {
+			    var myreg = /^[1][3,4,5,6,7,8,9][0-9]{9}$/;
+				if (pone==''){
+					this.popupMessage="请输入手机号"
+					 return false;
+				}else if (!myreg.test(pone)) {
+					this.popupMessage="手机号格式错误"
+			      return false;
+			    } 
+			      return true;
+			  },
+			getPassword:function(){
+				if(!this.isPoneAvailable(this.tel)){
+					this.$refs.popup.open()
+					return false
+				}else if(this.password==''){
+					this.popupMessage="请输入密码"
+					this.$refs.popup.open()
+					return false
+				}else if(this.password2==''){
+					this.popupMessage="请确认密码"
+					this.$refs.popup.open()
+					return false
+				}else if(this.password!==this.password2){
+					this.popupMessage="密码不一致请重新输入"
+					this.$refs.popup.open()
+					return false
+				}else if(this.verifyNum==''){
+					this.popupMessage="请输入验证码"
+					this.$refs.popup.open()
+					return false
+				}
+				
+			}
+		}
+	}
+	
+</script>
+
+<style>
+	.sign-box{
+		width: 100%;
+		padding-top: 60upx;
+	}
+	.sign-title{
+		/* margin-top: 60upx; */
+		text-align: center;
+	}
+	.sign-title-one{
+		margin-top: 200upx;
+	}
+	.sign-icon{
+		height: 60upx;
+		vertical-align: middle;
+	}
+	.sign-input{
+		display: inline-block;
+		width: 500upx;
+		line-height: 60upx;
+		height: 96upx;
+		vertical-align: middle;
+		border-bottom: #9fa0a0 2upx solid;
+		
+	}
+	.yanz-input{
+		width: 300upx;
+	}
+	.yanz-btn{
+		display: inline-block;
+		vertical-align: bottom;
+		width: 160upx;
+		margin-left: 40upx;
+		height: 76upx;
+		line-height: 76upx;
+		font-size: 28upx;
+		padding: 0 20upx;
+	}
+	.sign-btn{
+		height: 80upx;
+		width: 600upx;
+		text-align: center;
+		margin: 0 auto;
+		margin-top: 80upx;
+		line-height: 80upx;
+		border-radius: 80upx 80upx;
+		background-color: #d41c26;
+		color: #FFFFFF;
+	}
+	.popupstyle{
+		color: #FFFFFF;
+	}
+	.login-btn{
+		text-align: right;
+		font-size: 24upx;
+		color: #d41c26;
+		margin-top: 28upx;
+		margin-right: 80upx;
+	}
+</style>

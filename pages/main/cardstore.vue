@@ -1,0 +1,535 @@
+<template>
+	<view class="cardstore">
+		<view class="store-box" >
+		<view class="store-list1"  >
+			<view class="store-item" v-for="(item,index) in goodsList" v-if="!iflast(index)" >
+				<image class="good-pic" src="../../static/img/goods1.png" mode="aspectFit"></image>
+				<view class="goods-name">
+					{{item.goodsName}}
+				</view>
+				<view class="goods-prices">
+					<view class="goods-cj-pri">
+						成交价：{{item.goodscj}} 
+					</view>
+					<view class="goods-js-pri">
+						寄售价：{{item.goodsjs}}
+					</view>
+				</view>
+				<view class="input-box-wrap">
+						<view class="input-btn">
+							<uni-icons class="in-btn" size="24"  type="minus" color="#8a8a8a" @click="minus(index)"></uni-icons>
+							<input class="input-btn-box" type="number" min="0" v-model="item.goodsNum" maxlength="2" @input="outinput" />
+							<uni-icons class="in-btn" size="24"  type="plus" color="#fb2e03" @click="plus(index)"></uni-icons>
+						</view>
+				</view>
+			</view>
+		</view>
+		<view class="store-list2" >
+			<view class="store-item" v-for="(item,index) in goodsList"  v-if="iflast(index)">
+				<image class="good-pic" src="../../static/img/goods1.png" mode="aspectFit"></image>
+				<view class="goods-name">
+					{{item.goodsName}}
+				</view>
+				<view class="goods-prices">
+					<view class="goods-cj-pri">
+						成交价：{{item.goodscj}} 
+					</view>
+					<view class="goods-js-pri">
+						寄售价：{{item.goodsjs}}
+					</view>
+				</view>
+				<view class="input-box-wrap">
+						<view class="input-btn">
+							<uni-icons class="in-btn" size="24" type="minus" color="#8a8a8a" @click="minus(index)"></uni-icons>
+							<input class="input-btn-box" type="number" min="0" v-model="item.goodsNum" maxlength="2" @input="outinput" />
+							<uni-icons class="in-btn" size="24" type="plus" color="#fb2e03" @click="plus(index)"></uni-icons>
+						</view>
+				</view>
+			</view>
+		</view>
+		</view>
+		<view class="buy-car">
+			<view class="car-but" @click="arrowClick">
+				<uni-icons :type="arrow" ></uni-icons>
+				<uni-icons :type="arrow" class="arrowps"></uni-icons>
+			</view>
+			<view class="buy-car-product" :class="[arrow==='arrowup' ? 'buy-car-product-arrow':'']">
+				<view class="product-item" v-for="(item, index) in buycarList">
+					<uni-icons type="circle-filled"style="font-size: 30upx;
+					color: #D41C26" class="buy-filled-icon" @click="circleItemClick(index)" v-if="item.select"></uni-icons>
+					<uni-icons type="circle"style="font-size: 30upx" class="buy-filled-icon" v-else @click="circleItemClick(index)"></uni-icons>
+					<view class="product-item-name">
+						{{item.goodsName}}
+					</view>
+					<view class="product-pri">
+						<text class="product-cj">成交价:￥{{item.goodscj*item.goodsNum}} </text>
+						<text>挂牌价:￥{{item.goodsjs*item.goodsNum}}</text>
+					</view>
+				</view>
+			</view>
+			<view class="buy-car-statistic">
+				
+				<uni-icons type="circle-filled"style="font-size: 40upx;
+				color: #D41C26" class="circle-filled-icon" @click="circleClick" v-if="circleShow"></uni-icons>
+				<uni-icons type="circle"style="font-size: 40upx" class="circle-filled-icon" v-else @click="circleClick"></uni-icons>
+				<text>全选</text>
+				<view class="statistic-pri">
+					<text class="statistic-cj">成交价:￥{{allGoodscj}} </text>
+					<text> 挂牌价:￥{{allGoodsjs}}</text>
+				</view>
+				<view @click="nevTo()" class="buy-button">购买并寄售</view>
+				
+				
+			</view>
+		</view>
+		<uni-popup ref="popup" type="center">
+			<view class="popupCenter-box">
+				{{popupCenterMessage}}
+			</view>
+		</uni-popup>
+	</view>
+</template>
+
+<script>
+	export default{
+		components:{
+		},
+		data() {
+			return {
+			popupCenterMessage:'',
+			pageType:'',
+				goodsList:[
+					{
+						goodsName:'网易一卡通1',
+						goodsId:'',
+						goodsPic:'',
+						goodsjs:'100',
+						goodscj:'80',
+						goodsNum:0,
+					},{
+						goodsName:'网易一卡通2',
+						goodsId:'',
+						goodsPic:'',
+						goodsjs:'100',
+						goodscj:'80',
+						goodsNum:0,
+					},{
+						goodsName:'网易一卡通4',
+						goodsId:'',
+						goodsPic:'',
+						goodsjs:'100',
+						goodscj:'80',
+						goodsNum:0,
+					}
+				],
+				arrow:"arrowup",
+				circleShow:true,
+				buycarList:[
+				],
+				buyList:[],
+				allGoodsjs:0,
+				allGoodscj:0
+			}
+		},
+		onLoad() {
+			this.pageType=this.$Route.query.pageType;
+			console.log(this.pageType)
+		},
+		methods: {
+			// 输入框输入数字0~99
+			outinput:function(e){
+				if(e.detail.value>99){
+					e.detail.value=99
+				};
+				if(e.detail.value<0){
+					e.detail.value=0
+				}
+				console.log(e.detail.value)
+				this.addbuyCar();
+			},
+			// 减少
+			minus:function(n){
+				if(Math.floor(this.goodsList[n].goodsNum)>0){
+					this.goodsList[n].goodsNum=Math.floor(this.goodsList[n].goodsNum)-1;
+				}else{
+					this.goodsList[n].goodsNum=0;
+				}
+				console.log(this.goodsList[n].goodsNum);
+				this.addbuyCar();
+			},
+			// 增加
+			plus:function(n){
+				
+				if(Math.floor(this.goodsList[n].goodsNum)<99){
+					this.goodsList[n].goodsNum=Math.floor(this.goodsList[n].goodsNum)+1;
+				}else if(Math.floor(this.goodsList[n].goodsNum)>=99){
+					this.goodsList[n].goodsNum=99;
+				}
+				console.log(this.goodsList[n].goodsNum);
+				this.addbuyCar();
+			},
+			// 判断商品个数，设置列表布局
+			iflast:function(n){
+				if(n%2>0){
+						return true 
+				}else{
+					return false
+				}
+			},
+			// 以选购物品的上拉下拉
+			arrowClick:function(){
+				if(this.arrow==='arrowup'){
+					this.arrow="arrowdown"
+				}else{
+					this.arrow="arrowup"
+				}
+				                                                                                                                                                                                                                                
+			},
+			// 全选按钮
+			circleClick:function(){
+				this.circleShow = !this.circleShow;
+				if(this.circleShow){
+					for (var i=0;i<this.buycarList.length;i++){
+						this.buycarList[i].select=true;
+					}
+				}
+				this.allGoodsJs();
+				this.allGoodsCj();
+				
+			},
+			// 单个商品的选择
+			circleItemClick:function(n){
+				this.buycarList[n].select= !this.buycarList[n].select
+				this.buycarList[n]=Object.assign({}, this.buycarList[n])
+				this.allGoodsJs();
+				this.allGoodsCj();
+				this.ifAllSelect();
+			},
+			ifAllSelect:function(){
+			if(this.buycarList.every((item)=>{
+				return item.select
+			})){
+					this.circleShow=true
+				}else{
+					this.circleShow=false
+				}		
+			},
+			// 加入购物车
+			addbuyCar: function(){
+				this.buycarList=[];
+				var goods={};
+				for(var i=0;i<this.goodsList.length;i++){
+					if(this.goodsList[i].goodsNum>0){
+						goods=this.goodsList[i];
+						goods.select=true
+						this.buycarList.push(goods)
+					};
+				}
+				
+				this.allGoodsJs();
+				this.allGoodsCj();
+				this.ifAllSelect();
+			},
+			// 计算商品总成交额
+			allGoodsCj:function(){
+				var allcj=0;
+				for (var i=0;i<this.buycarList.length;i++){
+					if(this.buycarList[i].goodsNum>0){
+						if(this.buycarList[i].select){
+							allcj+=this.buycarList[i].goodscj*this.buycarList[i].goodsNum;
+							
+						}
+					}
+				}
+				this.allGoodscj= allcj;
+			},
+			// 设置选择商品的总寄售金额
+			allGoodsJs:function(){
+				var alljs=0;
+				for (var i=0;i<this.buycarList.length;i++){
+					if(this.buycarList[i].goodsNum>0){
+						if(this.buycarList[i].select){
+						alljs+=this.buycarList[i].goodsjs*this.buycarList[i].goodsNum
+						}
+					}
+				}
+				this.allGoodsjs= alljs;
+			},
+			nevTo:function(){
+				this.buyList=this.buycarList.filter((item)=>{
+					return item.select;
+				})
+				console.log(this.buyList)
+				if(this.buyList.length>0){
+					if(this.pageType==='1'){
+						this.$Router.push({path:'/pages/jishou/consume1',
+						query:{
+							buyList:JSON.stringify(this.buyList),
+							allGoodsjs:this.allGoodsjs,
+							allGoodscj:this.allGoodscj
+						}})
+					}else if(this.pageType==='3'){
+						this.$Router.push({path:'/pages/kuaijie/kaquankj1',
+						query:{
+							buyList:JSON.stringify(this.buyList),
+							allGoodsjs:this.allGoodsjs,
+							allGoodscj:this.allGoodscj
+						}})
+					}else if(this.pageType==='5'){
+						this.$Router.push({path:'/pages/kuaijie/kaquankj1',
+						query:{
+							buyList:JSON.stringify(this.buyList),
+							allGoodsjs:this.allGoodsjs,
+							allGoodscj:this.allGoodscj
+						}})
+					}
+					
+				}else {
+					this.popupCenterMessage='请选择商品'
+					this.$refs.popup.open()
+				}
+			
+			}
+		},
+		computed:{
+			
+			
+		}
+	};
+	
+</script>
+
+<style>
+	*{
+		box-sizing: border-box;
+	}
+	.popupCenter-box{
+		width: 400upx;
+		padding: 40upx ;
+		text-align: center;
+		border-radius: 20upx;
+	}
+	.cardstore{
+		height: 90vh;
+	}
+	.store-box{
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		justify-content: center;
+		box-sizing: border-box;
+		width: 750upx;
+		padding: 20upx;
+		/* text-align: left; */
+		text-align: center;
+		margin-bottom: 200upx;
+	}
+	.store-item{
+		border: solid 10upx #f4f8fb;
+	}
+	.good-box{
+		width: 330upx;
+		height: 376upx;
+		border-radius: 20upx;
+		background-color: #FFFFFF;
+		text-align: center;
+		padding: 20upx 20upx;
+		margin-bottom: 20upx;
+	}
+	.goodboxlastleft{
+		position: relative;
+		left: -176upx;
+	}
+	.good-pic{
+		width: 280upx;
+		height: 230upx;
+	}
+	
+
+	.good-value{
+		display: inline-block;
+		font-size: 20upx;
+		color: #fb2e03;
+	}
+	.trans-pri{
+		display: inline-block;
+		font-size: 24upx;
+		color: #fb2e03;
+	}
+	.trans-price-box{
+		text-align: left;
+	}
+	.input-btn{
+		display: inline-block;
+		position: relative;
+		left: 0upx;
+		text-align: center;
+		vertical-align: middle;
+		font-size: 30upx;
+	}
+	.input-btn-box{
+		display: inline-block;
+		width: 56upx;
+		line-height: 20upx;
+		vertical-align: middle;
+		font-size: 30upx;
+	}
+	.in-btn{
+		display: inline-block;
+		font-size: 30upx;
+		vertical-align: middle;
+		
+	}
+	.buy-car{
+		width: 100%;
+		/* height: 110upx; */
+		position: fixed;
+		bottom: 0;
+		background-color: #FFFFFF;
+	}
+	.car-but{
+		width: 48upx;
+		height: 40upx;
+		border-radius: 50%;
+		background-color: #FFFFFF;
+		margin: 0 auto;
+		text-align: center;
+		line-height: 20upx;
+		position: relative;
+		top: -0;
+	}
+	.arrowps{
+		display: block;
+		position: relative;
+		top: -10upx;
+		
+	}
+	.buy-car-statistic{
+		position: fixed;
+		bottom: 0upx;
+		width: 100%;
+		height: 104upx;
+		background-color: #FFFFFF;
+		border-top: 2upx solid #ececf4;
+	}
+	.circle-filled-icon{
+		margin-left:16upx;
+		margin-right: 10upx;
+		line-height: 104upx;
+		
+	}
+	.buy-car-product{
+		min-height: 80upx;
+		/* height: 200upx; */
+		
+		padding-bottom: 100upx;
+		}
+	.buy-car-product-arrow{
+		height: 80upx;
+	}
+	.statistic-pri{
+		display: inline-block;
+		width: 280upx;
+		font-size: 28upx;
+		margin-left: 60upx;
+		vertical-align: middle;
+		color: #333333;
+		line-height: 40upx;
+		
+	}
+	
+	.buy-button{
+		display: inline-block;
+		background-color: #FF3333;
+		color: #FFFFFF;
+		text-align: center;
+		line-height: 104upx;
+		width: 260upx;
+		position: absolute;
+		right: 0upx;
+	}
+	.product-item{
+		width: 100%;
+		height: 80upx;
+		/* line-height: 80upx; */
+	}
+	.buy-filled-icon{
+		margin-left:16upx;
+		margin-right: 10upx;
+		/* line-height: 80upx; */
+		
+	}
+	.product-item-name{
+		display: inline-block;
+		overflow: hidden;
+		width: 200upx;
+		/* max-width: 80upx; */
+		/* overflow: hidden; */
+		font-size: 32upx;
+		vertical-align: middle;
+		/* line-height: 80upx; */
+		word-break: break-all;  /* break-all(允许在单词内换行。) */
+		text-overflow: ellipsis;  /* 超出部分省略号 */
+		
+	}
+	.product-pri{
+		display: inline-block;
+		width: 480upx;
+		font-size: 24upx;
+		color: #D41C26;
+		/* line-height: 80upx; */
+	}
+	.product-cj{
+		display: inline-block;
+		font-size: 32upx;
+		width: 260upx;
+		/* line-height: 80upx; */
+	}
+	.statistic-cj{
+		display: block;
+		font-size: 32upx;
+	}
+	.store-list1{
+		display: inline-block;
+		width: 350upx;
+		/* border: solid 20upx #f4f8fb;*/
+	} 
+	.store-list2{
+		display: inline-block;
+		width: 350upx;
+		/* border: solid 20upx #f4f8fb; */
+	}
+	.goods-prices{
+		display: inline-block;
+		text-align: left;
+		padding-left: 20upx;
+		width: 166upx;
+	}
+	.goods-name{
+		text-align: left;
+		font-size: 28upx;
+		font-weight: 600;
+		width: 240upx;
+		padding-left: 20upx;
+	}
+	.goods-cj-pri{
+		display: inline-block;
+		text-align: left;
+		font-size: 22upx;
+		color: #D41C26;
+		/* padding-left: 20upx; */
+	}
+	.goods-js-pri{
+		display: inline-block;
+		text-align: left;
+		font-size: 22upx;
+		color: #D41C26;
+		/* padding-left: 20upx; */
+	}
+	.input-box-wrap{
+		display: inline-block;
+		width: 160upx;
+		text-align: left;
+		/* padding-left: 20upx; */
+	}
+</style>

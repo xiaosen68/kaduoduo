@@ -1,0 +1,343 @@
+<template>
+	<view class="mycenter-box" >
+		<view class="share-btn-box">
+			<view class="make-haibao" @click="draw">
+				制作海报
+			</view>
+			<view class="share-btn" @click="open">
+				去分享
+			</view>
+		</view>
+		<view class="share-info">
+			移动二维码到合适位置，点击制作海报，然后去分享吧。
+		</view>
+		<canvas class="firstCanvas" :class="{'firstCanvas22':canvashow}" canvas-id="firstCanvas"></canvas>
+		 <movable-area class="share-box" :style="style">
+		    <movable-view :x="x" :y="y" class="mova-view" direction="all" @change="onChange"> 
+			<tki-qrcode class="code-pic" ref="qrcode" :size="size" :unit="unit" 
+			@result="resultqr" :show="show" :loadMake="loadMake" 
+			:val="codeVal">
+			</tki-qrcode>
+			</movable-view>
+		</movable-area>
+		<!-- <view class="share-box">
+			<view class="share-list">
+				<image class="share-pic" src="../../static/img/share1.jpg" mode="" @click="open"></image>
+			</view>
+			<navigator url="../share1">deadsdasda</navigator>
+		</view> -->
+		<view class="bj-box">
+			<view class="bj-list" :style="{width:bjListWidth}">
+				<image v-for="(item, index) in imgList" @click="selectImg(item)" :src="item" class="bj-item" mode=""></image>
+			</view>
+		</view>
+		
+		
+		<uni-popup ref="popup" type="share">
+			 <uni-popup-share title="分享到" @select="select"></uni-popup-share>
+		</uni-popup>
+		<uni-popup ref="popupcenter" type="center">
+			<view class="popupCenter-box">
+					{{popupCenterMessage}}
+			</view>
+		</uni-popup>
+	</view>
+</template>
+
+<script>
+	import uniPopup from '@/components/uni-popup/uni-popup.vue'
+	import uniPopupShare from '@/components/uni-popup/uni-popup-share'
+	import tkiQrcode from "@/components/tki-qrcode/tki-qrcode.vue"
+	export default{
+		components:{
+			  uniPopup,
+			  uniPopupShare,
+			  tkiQrcode
+		},
+		data() {
+			return {
+				code:'',//二维码
+				bj:'../../static/img/share1.jpg',//海报背景
+				codeVal:'asdasd',//生成二维码内容
+				size:120,//二维码大小
+				unit:'upx',//二维码大小单位
+				show:true,//
+				loadMake:true,//加载成功后自动生成二维码
+			    x: 0,
+				y: 0,
+				old: {
+					x: 0,
+					y: 0
+				},
+				style:{
+					backgroundImage:'url(../../static/img/share1.jpg)',
+					backgroundSize:'540upx 810upx',
+					backgroundRepeat: 'no-repeat',
+				},//海报背景
+				bjj:'',
+				canvashow:false,//设置canvas的z-index，
+				popupCenterMessage:'',//弹框信息
+				bjListWidth:'',
+				imgList:['../../static/img/share1.jpg','../../static/img/share2.jpg','../../static/img/share3.jpg',
+				'../../static/img/share4.jpg','../../static/img/share1.jpg','../../static/img/share3.jpg']
+			}
+		},
+		onLoad(){
+			this.bjListWidth=this.imgList*220+'upx'
+			
+		},
+		methods: {
+			// 移动二维码，获取信息
+			onChange: function(e) {
+					this.old.x = e.detail.x
+					this.old.y = e.detail.y
+			},
+			// // 生成二维码
+			// getQr:function(){
+			// 	this.$refs.qrcode._makeCode()
+			// },
+			// 获取二维码
+			resultqr:function(e){
+				this.code=e
+			},
+			// 制作分享海报
+			draw:function(){
+				let _this=this;
+				let canStatus={};//背景信息
+				let codeStatus={};//二维码信息
+				var context = uni.createCanvasContext('firstCanvas');//获取canvas
+				let can=uni.createSelectorQuery().select('.firstCanvas');//获取canvas节点信息
+				let codeicon=uni.createSelectorQuery().select('.code-pic');//获取二维码节点信息
+				codeicon.boundingClientRect(data =>{
+					codeStatus=data;
+					// console.log(codeStatus)
+				}).exec();
+				can.boundingClientRect(data =>{
+					canStatus=data;
+					// console.log(canStatus)
+				}).exec();
+				// 获取背景图
+			  uni.getImageInfo({
+				src: _this.bj ,
+				success: function (image) {
+					// console.log(image);
+					setTimeout(function(){
+						// 画背景图
+						context.drawImage(image.path,0,0,image.width,image.height,0,0,canStatus.width,canStatus.height)
+						// 画二维码
+						context.drawImage(_this.code,_this.old.x,_this.old.y,_this.size/2,_this.size/2)
+						context.draw()
+					},10)
+					
+					// 延迟保存canvas
+					setTimeout(function(){
+						uni.canvasToTempFilePath({
+							canvasId:'firstCanvas',
+							fileType:'jpg',
+							success:function(res){
+								// console.log(res.tempFilePath)
+								_this.canvashow=true;
+								// 判断h5时长按保存
+								if(process.env.NODE_ENV === 'development'){
+									
+									_this.popupCenterMessage='长按保存并分享'
+									_this.opencenter();
+								}else {
+									// 非h5时保存图片
+									uni.saveImageToPhotosAlbum({
+										filePath:res.tempFilePath,
+										success:function(e){
+											_this.popupCenterMessage='已保存相册前去分享'	
+											_this.opencenter();
+											}
+									})
+								}
+								_this.bjj=res.tempFilePath
+							}
+						})
+					},100)
+							
+				}
+			});
+			},
+			open:function (){
+				this.$refs.popup.open()
+			},
+			opencenter:function (){
+				this.$refs.popupcenter.open()
+			},
+			select:function(e){
+				if(process.env.NODE_ENV === 'development'){
+					this.popupCenterMessage='请长按图片，保存相册后分享';
+					this.opencenter();
+				}else{
+					if(e.item.name==='wx'){
+						uni.share({
+							provider:'weixin',//weixin|qq|sinaweibo
+							type:0,
+							title:'诚邀您来一起使用哦',//标题
+							scene:'WXSceneSession',//聊天，WXSenceTimeline，朋友圈
+							summary:'我正在使用它，很好用哦，快快加入吧',//内容摘要
+							href:this.shareUrl,
+							imageUrl:this.imgDownLoadUrl,
+							success:function(){
+								this.popupCenterMessage='已分享成功';
+								this.opencenter();
+							},
+							fail:function(){
+								// this.popupCenterMessage='保存相册失败，请重试，或长按保存'
+								this.savexc('分享失败，已保存至相册，快去分享吧');
+							}	
+						})
+					}else if(e.item.name==='py'){
+						uni.share({
+							provider:'weixin',//weixin|qq|sinaweibo
+							type:0,
+							title:'诚邀您来一起使用哦',//标题
+							scene:'WXSenceTimeline',//朋友圈
+							summary:'我正在使用它，很好用哦，快快加入吧',//内容摘要
+							href:this.shareUrl,
+							imageUrl:this.imgDownLoadUrl,
+							success:function(){
+								this.popupCenterMessage='已分享成功';
+								this.opencenter();
+							},
+							fail:function(){
+								// this.popupCenterMessage='保存相册失败，请重试，或长按保存'
+								this.savexc('分享失败，已保存至相册，快去分享吧');
+							}	
+						})
+					}else if(e.item.name==='qq'){
+						uni.share({
+							provider:'qq',//weixin|qq|sinaweibo
+							type:2,
+							title:'诚邀您来一起使用哦',//标题
+							scene:'WXSenceTimeline',//朋友圈
+							summary:'我正在使用它，很好用哦，快快加入吧',//内容摘要
+							href:this.shareUrl,
+							imageUrl:this.imgDownLoadUrl,
+							success:function(){
+								this.popupCenterMessage='已分享成功';
+								this.opencenter();
+							},
+							fail:function(){
+								// this.popupCenterMessage='保存相册失败，请重试，或长按保存'
+								this.savexc('分享失败，已保存至相册，快去分享吧');
+							}	
+						})
+					}else if(e.item.name==='xc'){
+						// 保存到相册
+						this.savexc('已保存至相册，快去分享吧')
+					}
+				}
+			} ,
+			//保存相册
+			savexc:function(mess){
+				uni.downloadFile({
+					url:this.imgDownLoadUrl,
+					success:function(e){
+						uni.saveImageToPhotosAlbum({
+							filePath:e.tempFilePath,
+							success:function(){
+								this.popupCenterMessage=mess
+								this.opencenter();
+							},
+							fail:function(){
+								this.popupCenterMessage='保存相册失败，请重试，或长按保存'
+								this.opencenter();
+							}
+						})
+					},
+					fali:function(){
+						
+					},
+					
+				})
+			},
+			selectImg:function(item){
+				console.log(item)
+				this.canvashow=false;
+				this.style={
+					backgroundImage:'url('+item+')',
+					backgroundSize:'540upx 810upx',
+					backgroundRepeat: 'no-repeat',
+				};
+				this.bj=item;
+			}
+		}
+	}
+	
+</script>
+
+<style scoped>
+.mycenter-box{
+		position: relative;
+	}
+.share-box{
+	width: 540upx;
+	margin: 0 auto;
+	/* margin-top: 40upx; */
+	height: 810upx;
+	background: url(../../static/img/share3.jpg);
+}
+.firstCanvas{
+	width: 540upx;
+	height: 810upx;
+	position: absolute;
+	left:50%;
+	transform:translateX(-50%);
+	
+}
+.firstCanvas22{
+	z-index: 20;
+}
+.mova-view{
+	display: block;
+	width: 120upx;
+	height: 120upx;
+	/* background-color: #2C405A; */
+	}
+	.share-btn-box{
+		display: flex;
+		justify-content: space-around;
+		padding: 30upx 20upx 10upx 20upx;
+		
+	}
+	.make-haibao,.share-btn{
+		width: 200upx;
+		background-color: #d91829;
+		text-align: center;
+		color: #FFFFFF;
+		font-size: 26upx;
+		line-height: 2em;
+		height: 52upx;
+		border-radius:52upx ;
+	}
+	.popupCenter-box{
+		width: 400upx;
+		padding: 40upx ;
+		text-align: center;
+		border-radius: 20upx;
+	}
+	.bj-box{
+		/* width: 100%;*/
+		padding: 20upx 40upx;
+		height: 200upx;
+		overflow-x: auto;
+	}
+	.bj-list{
+		width: 1400upx;
+	}
+	.bj-item{
+		width: 200upx;
+		float: left;
+		height: 300upx;
+		margin: 0 10upx;
+	}
+	.share-info{
+	font-size: 20upx;
+		color: #d91829;
+		text-align: center;
+		margin: 10upx 0 ;
+	}
+</style>
