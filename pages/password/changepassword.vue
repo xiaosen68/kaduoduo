@@ -3,11 +3,11 @@
 		<view class="login-input">
 			<view class="sign-title">
 				<uni-icons type="locked" class="locked-icon" size="30"></uni-icons>
-				<input type="text" password maxlength="12" placeholder="请输入新密码" class=" sign-input" v-model="password" />
+				<input type="text" password maxlength="12" placeholder="请输入新密码" class=" sign-input" v-model="inputPwd" />
 			</view>
 			<view class="sign-title">
 				<uni-icons type="locked" class="locked-icon" size="30"></uni-icons>
-				<input type="text" password maxlength="12" placeholder="请确认新密码" class=" sign-input" v-model="password2" />
+				<input type="text" password maxlength="12" placeholder="请确认新密码" class=" sign-input" v-model="confirmPwd" />
 			</view>
 			<view class="sign-title">
 				<uni-icons type="compose" class="locked-icon" size="30"></uni-icons>
@@ -15,9 +15,9 @@
 				 <button type="primary" plain="true" class="yanz-btn" :disabled="verifyDisabled" @click="sendyanzheng()">{{sendVerify}}</button>
 			</view>
 			<view class="">
-				<button type=""  class="sign-btn" @click="getPassword()" :disabled="getAbled">确认修改</button>
+				<button type=""  class="sign-btn" @click="getPassword()" >确认修改</button>
 			</view>
-			<uni-popup ref="popup"  type="center" class="popupstyle">{{popupMessage}}</uni-popup>
+			<uni-popup ref="popup"  type="center" class="popupstyle"><view class="popupCenter-box">{{popupMessage}}</view></uni-popup>
 		</view>
 		
 	</view>
@@ -27,15 +27,19 @@
 	export default{
 		data() {
 			return {
-				password:'',
-				password2:'',
+				inputPwd:'',
+				confirmPwd:'',
+				type:'',
+				urlStatu:'',
 				popupMessage:"",
 				verifyNum:'',
 				referrer:'',
 				sendVerify: '获取验证码',
-				verifyDisabled:false,
-				getAbled:false
+				verifyDisabled:false
 			}
+		},
+		onLoad() {
+				this.type=this.$Route.query.type;
 		},
 		methods: {
 			sendyanzheng:function(){
@@ -55,24 +59,61 @@
 					
 			},
 			getPassword:function(){
-				if(this.password==''){
+				if(this.inputPwd==''){
 					this.popupMessage="请输入新密码"
 					this.$refs.popup.open()
 					return false
-				}else if(this.password2==''){
+				}else if(this.confirmPwd==''){
 					this.popupMessage="请确认密码"
 					this.$refs.popup.open()
 					return false
-				}else if(this.password!==this.password2){
+				}else if(this.inputPwd!==this.confirmPwd){
 					this.popupMessage="密码不一致请重新输入"
 					this.$refs.popup.open()
 					return false
-				}else if(this.verifyNum==''){
-					this.popupMessage="请输入验证码"
-					this.$refs.popup.open()
-					return false
 				}
+				// else if(this.verifyNum==''){
+				// 	this.popupMessage="请输入验证码"
+				// 	this.$refs.popup.open()
+				// 	return false
+				// }
 				
+				if(this.type==1){
+					this.urlStatu='/api/v1/pri/my/resetPwd'
+				}else{
+					this.urlStatu='/api/v1/pri/my/withdrawalPwd'
+				}
+				console.log(this.type)
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+this.urlStatu, 
+				    data: {
+						inputPwd:this.inputPwd,
+						confirmPwd:this.confirmPwd
+				    },
+				    header: {
+						'token':this.$store.state.token,
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res.data)
+						let _this =this;
+						if(res.data.code==0){
+							this.popupMessage=res.data.data
+							this.$refs.popup.open()
+							// setTimeout(function(){
+							// 	 _this.$Router.pushTab('/pages/index/index')
+							// },2000)
+							// console.log(res.data)
+							// this.$store.commit("setToken",res.data.data);
+									// this.$Router.pushTab('/pages/index/index')
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+							this.$refs.popup.open();
+						}
+				       
+				    }
+				});
 			}
 		}
 	}
@@ -133,7 +174,14 @@
 		padding-top: 60upx;
 	}
 	.popupstyle{
-		color: #FFFFFF;
+		background-color: #FFFFFF;
+		padding: 20upx 20upx;
+	}
+	.popupCenter-box{
+		width: 400upx;
+		padding: 40upx ;
+		text-align: center;
+		border-radius: 20upx;
 	}
 	.login-btn{
 		text-align: right;

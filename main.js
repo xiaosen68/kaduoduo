@@ -10,25 +10,8 @@ Vue.use(Router)
 Vue.component('router-link',routerLink)
 Vue.prototype.$store = store
 Vue.config.productionTip = false
-// 数据请求
-Vue.prototype.$goaxios=function(method,url,data){
-	return new Promise((resolve,reject)=>{
-		uni.request({
-			url: url,
-			method:method,
-			data:data,
-			header:{
-				'Content-Type':'application/x-www-form-urlencoded'
-			},
-			success:(res)=>{
-				resolve(res.data)
-			},
-			fail:(err)=>{
-				reject(err)
-			}
-		})
-	})
-}
+Vue.prototype.$baseUrl="/prefix"  //线下接口
+
 
 App.mpType = 'app'
 

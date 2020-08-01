@@ -12,13 +12,13 @@
 			</view>
 			<view class="fenrun-num-box">
 				<view class="yesterday-fenrun">
-					<text class="fenrun-money">0.00</text>
+					<text class="fenrun-money">{{revenueAmount.theDayBeforeRevenueAmount}}</text>
 					<view class="">
 						昨日收益(元)
 					</view>
 				</view>
 				<view class="today-fenrun">
-					<text class="fenrun-money">0.00</text>
+					<text class="fenrun-money">{{revenueAmount.sameDayRevenueAmount}}</text>
 					<view class="">
 						今日收益(元)
 					</view>
@@ -27,7 +27,7 @@
 		</view>
 		<view class="kzfenrun-box">
 			<text>当前可转出收益(元)</text>
-			<view class="kzfr-num">1.33</view>
+			<view class="kzfr-num">{{revenueAmount.revenue}}</view>
 			<router-link to="{name:'rollout'}" class="roll-out-btn">转出	</router-link>
 			<!-- 	<navigator url="./rollout"  class="roll-out-btn">
 				转出	
@@ -37,7 +37,7 @@
 			</view>
 		</view>
 		<view class="all-fenrun-box">
-			<text class="all-fenrun-num">62.12</text>
+			<text class="all-fenrun-num">{{revenueAmount.totalRevenue}}</text>
 			<view class="">
 				共累计收益(元)
 			</view>
@@ -51,13 +51,35 @@ export default {
   },
 	data (){
 		return{
-			cardtype:true, 
-			list: [], // 数据集
-			currPage: 1, // 当前页码
-			totalPage: 1 ,// 总页数
-			addcredit:true,
-			changeCardUrl:''
+			cardtype:true,
+			 revenueAmount:{},
 		}
+	},
+	onLoad() {
+	// 用户分润初始化
+	uni.request({
+		method:'GET',
+	    url: this.$baseUrl+'/api/v1/pri/my/myRevenueAmount', 
+	    data: {
+	    },
+	    header: {
+			'token': this.$store.state.token,
+			'Content-Type':'application/json' //自定义请求头信息
+	    },
+	    success: (res) => {
+			console.log(res)
+			if(res.data.code==0){
+				this.revenueAmount=res.data.data;
+				console.log(this.revenueAmount)
+			}else if(res.data.code==-1){
+				this.popupMessage=res.data.msg;
+				// this.$refs.popup.open();
+			}else{
+				console.log(res)
+			}
+	       
+	    }
+	});	
 	},
 	methods:{
 		backFn(){

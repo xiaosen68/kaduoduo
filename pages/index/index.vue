@@ -7,10 +7,10 @@
 			<text class="company-name">牛贝商城</text>
 		</view>
 		<view class="login-input">
-			<input type="number" maxlength="11" placeholder="请输入手机号" class="input-num uniinput" value="" />
+			<input type="number" v-model="phone" maxlength="11" placeholder="请输入手机号" class="input-num uniinput" value="" />
 		</view>
 		<view class="login-input">
-			<input type="text" password maxlength="12" placeholder="请输入密码" class="uniinput" value="" />
+			<input type="text" password v-model="password" maxlength="12" placeholder="请输入密码" class="uniinput" value="" />
 		</view>
 		<view class="btn-grop-box ">
 			<view class=" btn-grop">
@@ -33,25 +33,89 @@
 	export default {
 		data() {
 			return {
-				popupMessage:'sdasd'
+				popupMessage:'',
+				password:'',
+				phone:''
 			}
 		},
-		methods: {
-			login:function(){
-			uni.setStorage({
-			    key: 'userKey',
-			    data: 'hello',
-			    success: function () {
-					uni.switchTab({
-						url:'/pages/main/homepage'
-					})
-			      // this.$Router.pushTab('/pages/main/homepage')
-			    },
-				fail: function(){
-					this.popupMessage="登录失败，请重试";
-					this.$refs.popup.open()
+		onReady(){
+			uni.getStorage({
+				key:"phone",
+				success:function(res) {
+					this.phone=res.data
 				}
-			});
+			})
+			uni.getStorage({
+				key:"password",
+				success:function(res) {
+					this.password=res.data
+				}
+			})
+		},
+		methods: {
+		isPoneAvailable: function (pone) {
+		    var myreg = /^[1][3,4,5,6,7,8,9][0-9]{9}$/;
+			if (pone==''){
+				this.popupMessage="请输入手机号"
+				 return false;
+			}else if (!myreg.test(pone)) {
+				this.popupMessage="手机号格式错误"
+		      return false;
+		    } 
+		      return true;
+		  },
+			login:function(){
+				
+					// this.$Router.pushTab('/pages/main/homepage')
+				if(!this.isPoneAvailable(this.phone)){
+					this.$refs.popup.open()
+					return false
+				}else if(this.password==''){
+					this.popupMessage="请输入密码"
+					this.$refs.popup.open()
+					return false
+				};
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+'/api/v1/pri/login/login', 
+				    data: {
+				        phone: this.phone,
+						password:this.password
+				    },
+				    header: {
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						if(res.data.code==0){
+							this.$store.commit("setToken",res.data.data);
+							console.log(this.$store.state.token)
+									this.$Router.pushTab('/pages/main/homepage')
+									
+									uni.setStorage({
+									    key: 'phone',
+									    data: this.phone,
+									    success: function () {
+									    },
+										fail: function(){
+										}
+									});
+									uni.setStorage({
+									    key: 'password',
+									    data: this.password,
+									    success: function () {
+									    },
+										fail: function(){
+										}
+									});
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+							this.$refs.popup.open();
+						}
+				       
+				    }
+				});
+				
+		
 			}
 		}
 	}

@@ -6,14 +6,14 @@
 			</view>
 			<view class="input-box">
 				<text>银行卡号:</text>
-				<input type="number" class="input-num" maxlength="19" value=""placeholder="请输入信用卡卡号" />
+				<input type="number" class="input-num" v-model="cardNo" @blur="getcard" maxlength="19" placeholder="请输入储蓄卡卡号" />
 			</view><view class="input-box">
 				<text>预留手机:</text>
-				<input type="number" class="input-num" maxlength="11" value=""placeholder="请输入预留手机号" />
+				<input type="number" class="input-num"  maxlength="11" value=""placeholder="请输入预留手机号" />
 			</view>
 			<view class="input-box">
 				<text>开户行省市:</text>
-				<input type="text" v-model="bankaddress" @click="btnClick" class="input-num city-input" value=""placeholder="选择省市" />
+				<input type="text" v-model="accountOpeningProvince" @click="btnClick" class="input-num city-input" value=""placeholder="选择省市" />
 			</view>
 		</view>
 		<view class="btn-box">
@@ -30,20 +30,87 @@ export default {
 	components: {selectAddress},
 	data (){
 		return{
-			bankaddress:""
+			accountOpeningProvince:"",
+			cardNo:'',
+			cardholder:'',
+			reservePhone:'',
 		}
 	},
 	methods:{
+		getcard(){
+			if(this.cardNo==''){
+				return false
+			}
+			console.log(this.cardNo)
+				uni.request({
+					method:'GET',
+				    url: 'https://bankaddress.shumaidata.com/bankaddress', 
+				    data: {
+						bankcard:this.cardNo
+				    },
+				    header: {
+						'Authorization': 'APPCODE fa541816acdc4234b18dff3ae5f98a26',
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						
+						if(res.statusCode==200){
+							this.accountOpeningProvince=res.data.data.province+res.data.data.city
+							// this.bank=res.data.data.bank;
+							// console.log(this.bank)
+							// console.log(this.accountBalance)
+						}else{
+							// this.popupMessage='错误码：'+res.code+'信息：'+res.msg;
+							// this.$refs.popup.open();
+						}
+				       
+				    }
+				});	
+		},
+		// 三级联动
 		  btnClick() {
 		        this.$refs.selectAddress.show()
 		    },
 		    successSelectAddress(address){ //选择成功回调
-		   this.bankaddress=address
+		   this.accountOpeningProvince=address
 		        },  
+				
+				// 添加储蓄卡
 		addcredit(){
-			uni.navigateBack({
-				delta:1
-			})
+			if(this.accountOpeningProvince==''||this.cardNo==''||this.cardholder==''||this.reservePhone==""){
+				return false
+				}
+			uni.request({
+				method:'POST',
+			    url: this.$baseUrl+'/api/v1/pri/my/addUserSavingsCard', 
+			    data: {
+						cardType:"SAVINGS_CARD",
+						cardholder:this.cardholder,
+						bank:this.bank,
+						cardNo:this.cardNo,
+						reservePhone:this.reservePhone,
+						accountOpeningProvince:this.accountOpeningProvince,
+
+			    },
+			    header: {
+					'token': this.$store.state.token,
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					if(res.data.code==0){
+						this.accountBalance=res.data.data;
+						console.log(this.accountBalance)
+					}else if(res.data.code==-1){
+						this.popupMessage=res.data.msg;
+						// this.$refs.popup.open();
+					}else{
+						console.log(res)
+					}
+			       
+			    }
+			});	
 		}
 	}
 }

@@ -2,7 +2,7 @@
 import modules from './modules'
 import Vue from 'vue'
 import Router, {RouterMount} from '../js_sdk/hhyang-uni-simple-router/index.js'
-
+import store from '../store'
 Vue.use(Router)
 //初始化
 const router = new Router({
@@ -12,25 +12,20 @@ const router = new Router({
 
 //全局路由前置守卫
 router.beforeEach((to, from, next) => {
-	if(to.name==='index'||to.name==='sign'){
+	if(to.name==='index'||to.name==='sign'||to.name==='forgetpassword'){
 		next()
 	}else{
-		uni.getStorage({
-		    key: 'userKey',
-		    success: function (res) {
-		      if(res.data==='hello'){
-				  next()
-			  }else{
-				  next({
-					  name:'index',
-					  params:{
-						  msg:'未登录'
-					  },
-					  NAVTYPE: 'push'
-				  })
-			  }
-		    }
-		});
+		if(store.state.token!==''){
+			next()
+		}else{
+			next({
+						  name:'index',
+						  params:{
+							  msg:'未登录'
+						  },
+						  NAVTYPE: 'push'
+					  })
+			}
 	}
 })
 // 全局路由后置守卫

@@ -300,11 +300,17 @@
 		"style": {
 			"navigationBarTitleText": "寄售订单详情"
 		}
-	},{
+	},
+	{
 		"path": "pages/main/message",
 		"style": {
-			"navigationBarTitleText": "信息中心"
+			"navigationStyle": "custom",
+			"app-plus":{
+				"titleNView":false
+				
+			}
 		}
+		
 	},{
 		"path": "pages/main/mycenter",
 		"style": {

@@ -4,9 +4,9 @@
 			<router-link to="{name:'myinfo'}"  class="my-info1-box">
 				<image src="../../static/img/NO.png" class="my-head" mode=""></image>
 				<view class="my-name-box">
-					<text>王是</text>
+					<text>{{infodata.userName}}</text>
 					<view class="my-phone">
-						12301323213
+						{{infodata.phone}}
 					</view>
 				</view>
 			
@@ -36,25 +36,25 @@
 					<view class="">
 						昨日收益
 					</view>
-					<text>0.00</text>
+					<text>{{infodata.theDayBeforeRevenueAmount}}</text>
 				</view>
 				<view class="today">
 					<view class="">
 						今日收益
 					</view>
-					<text>0.00</text>
+					<text>{{infodata.sameDayRevenueAmount}}</text>
 				</view>
 				<view class="all">
 					<view class="">
 						所有收益
 					</view>
-					<text>0.00</text>
+					<text>{{infodata.totalRevenue}}</text>
 				</view>
 				<view class="jifen">
 					<view class="">
 						积分
 					</view>
-					<text>213</text>
+					<text>{{infodata.score}}</text>
 				</view>
 			</view>
 		</view>
@@ -130,8 +130,8 @@
 
 <script>
 	
-		import uniPopup from '@/components/uni-popup/uni-popup.vue'
-		import uniPopupService from '@/components/uni-popup/uni-popup-service.vue'
+	import uniPopup from '@/components/uni-popup/uni-popup.vue'
+	import uniPopupService from '@/components/uni-popup/uni-popup-service.vue'
 	import uniLink from "@/components/uni-link/uni-link.vue"
 	export default{
 		components:{
@@ -143,8 +143,39 @@
 			return {
 				popupCenterMessage:'',
 				popuppic:'',
-				shimingIf:false
+				shimingIf:false,
+				infodata:{},
+				revenueAmount:{}
 			}
+		},
+		onLoad(object){
+			let _this=this;
+			// 获取我的信息
+			uni.request({
+				method:'GET',
+			    url: this.$baseUrl+'/api/v1/pri/my/myInit', 
+			    data: {
+			    },
+			    header: {
+					'token': this.$store.state.token,
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					if(res.data.code==0){
+						this.infodata=res.data.data;
+						console.log(this.infodata)
+					}else if(res.data.code==-1){
+						this.popupMessage=res.data.msg;
+						// this.$refs.popup.open();
+					}else{
+						console.log(res)
+					}
+			       
+			    }
+			});
+		
+			
 		},
 		methods: {
 			opens:function(){

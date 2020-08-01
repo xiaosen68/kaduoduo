@@ -3,7 +3,7 @@
 		<view class="login-input">
 			<view class="sign-title sign-title-one">
 				<uni-icons type="phone-filled" class="locked-icon" size="30"></uni-icons>
-				<input type="number" maxlength="11" placeholder="请输入手机号" class=" sign-input" value="" v-model="tel" />
+				<input type="number" maxlength="11" placeholder="请输入手机号" class=" sign-input" value="" v-model="phone" />
 			</view>
 			<view class="sign-title">
 				<uni-icons type="locked" class="locked-icon" size="30"></uni-icons>
@@ -16,7 +16,7 @@
 			</view>
 			<view class="sign-title">
 				<uni-icons type="phone-filled" class="locked-icon" size="30"></uni-icons>
-				<input type="number" number maxlength="11" placeholder="请输入推荐人手机号" class=" sign-input" v-model="referrer" />
+				<input type="number" number maxlength="11" placeholder="请输入推荐人手机号" class=" sign-input" v-model="superiorUserPhone" />
 			</view>
 			<view class="">
 				<button type="" class="sign-btn" @click="verifySign">注册</button>
@@ -35,13 +35,13 @@
 	export default{
 		data() {
 			return {
-				tel:'',
+				phone:'',
 				password:'',
+				superiorUserPhone:'',
 				verifyNum:'',
-				referrer:'',
 				sendVerify: '获取验证码',
 				verifyDisabled:false,
-				popupMessage:"dddd"
+				popupMessage:""
 			}
 		},
 		methods: {
@@ -74,7 +74,7 @@
 			  },
 			verifySign:function(){
 				console.log(this.popupMessage)
-				if(!this.isPoneAvailable(this.tel)){
+				if(!this.isPoneAvailable(this.phone)){
 					console.log(this.popupMessage)
 					// this.popupMessage="手机号错误"
 					this.$refs.popup.open()
@@ -83,17 +83,43 @@
 					this.popupMessage="请输入密码"
 					this.$refs.popup.open()
 					return false
-				}else if(this.verifyNum==''){
-					this.popupMessage="请输入验证码"
-					this.$refs.popup.open()
-					return false
-				}else if(!this.isPoneAvailable(this.referrer)){
-					this.popupMessage="请输入推荐人手机号"
-					this.$refs.popup.open()
-					return false
 				}
+				// else if(this.verifyNum==''){
+				// 	this.popupMessage="请输入验证码"
+				// 	this.$refs.popup.open()
+				// 	return false
+				// }
+				// else if(!this.isPoneAvailable(this.superiorUserPhone)){
+				// 	this.popupMessage="请输入推荐人手机号"
+				// 	this.$refs.popup.open()
+				// 	return false
+				// }
 				
-				this.$Router.push({name:'index'})
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+'/api/v1/pri/login/register', 
+				    data: {
+				        phone: this.phone,
+						password:this.password,
+						superiorUserPhone:this.superiorUserPhone
+				    },
+				    header: {
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						if(res.data.code==0){
+							// this.$store.commit("setToken",res.data.data);
+									this.$Router.pushTab('/pages/index/index')
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+							this.$refs.popup.open();
+						}
+				       
+				    }
+				});
+				
+				
+				// this.$Router.push({name:'index'})
 			}
 		}
 	}

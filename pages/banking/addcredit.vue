@@ -3,39 +3,46 @@
 		<view class="card-message">
 			<view class="input-box">
 				<text>持卡人:</text>
-				<text>{{name}}</text>
+				<text>{{cardholder}}</text>
 			</view>
 			<view class="input-box">
 				<text>信用卡号:</text>
-				<input type="number" class="input-num" maxlength="16" v-model="credit" value=""placeholder="请输入信用卡卡号" />
+				<input type="number" class="input-num" maxlength="16" @blur="getBank" v-model="cardNo" value=""placeholder="请输入信用卡卡号" />
 			</view><view class="input-box">
 				<text>预留手机:</text>
-				<input type="number" class="input-num"  maxlength="11" v-model="tel" value=""placeholder="请输入预留手机号" />
+				<input type="number" class="input-num"  maxlength="11" @blur="iftel" v-model="reservePhone" value=""placeholder="请输入预留手机号" />
+			</view>
+			<view class="input-box">
+				<text>发卡行:</text>
+				<text>{{bank}}</text>
 			</view>
 			<view class="input-box">
 				<text>安全码:</text>
-				<input type="number" class="input-num" maxlength="3" length="3" v-model="c2v2" :disabled="cvdisabled" value=""placeholder="信用卡CVN2后三位" />
+				<input type="number" class="input-num" maxlength="3" length="3" @blur="ifc2v2" v-model="safetyCode" :disabled="cvdisabled" value=""placeholder="信用卡CVN2后三位" />
 			</view><view class="input-box">
 				<text>有效期:</text>
-				<input type="text" class="input-num" maxlength="5" v-model="ydate" @input="ifydate" value=""placeholder="信用卡有效期,如:09/22" />
+				<input type="text" class="input-num" maxlength="5" v-model="termOfValidity" @input="ifydate" value=""placeholder="信用卡有效期,如:09/22" />
 			</view>
 			<view class="input-box">
 				<text>账单日:</text>
-				<input type="number" maxlength="2" class="input-num" v-model="zdate" value=""placeholder="信用卡账单日,如:(23)"  />
+				<input type="number" maxlength="2" class="input-num" v-model="billingDate" @input="ifzdate" @blur="zdate" value=""placeholder="信用卡账单日,如:(23)"  />
 	
 			</view>
 			<view class="input-box">
 				<text>还款日:</text>
-				<input type="number"  maxlength="2" class="input-num" v-model="hdate" value=""placeholder="信用卡还款日,如:(23)" />
+				<input type="number"  maxlength="2" class="input-num" v-model="repaymentDate" @input="ifhdate" @blur="hdate" value=""placeholder="信用卡还款日,如:(23)" />
 			</view>
 			<view class="input-box">
 				<text>额度:</text>
-				<input type="number" class="input-num" maxlength="7" v-model="ednumber" value=""placeholder="请输入信用卡额度" />
+				<input type="number" class="input-num" maxlength="7" v-model="quota" value=""placeholder="请输入信用卡额度" />
 			</view>
 		</view>
 		<view class="btn-box">
-			<view type="" class="next-btn" @click="ifcredits">确认添加</view>
+			<view type="" class="next-btn" @click="addcredit">确认添加</view>
 		</view>
+		<uni-popup ref="popup"  type="center" class="popupstyle">
+			<view class="popupCenter-box">{{popupMessage}}</view>
+		</uni-popup>
 	</view>
 </template>
 
@@ -46,69 +53,159 @@
 	  },
 	data (){
 		return{
-			name:'',
-			credit:'',
-			tel:'',
-			c2v2:'',
-			ydate:'',
-			zdate:'',
-			hdate:'',
-			ednumber:'',
-			cvdisabled:false
+			cardType:"CREDIT_CARD",
+			cardholder:"",
+			bank:"",
+			cardNo:"6217002430009199648",
+			reservePhone:"",
+			safetyCode:"",
+			termOfValidity:"",
+			billingDate:"",
+			repaymentDate:"",
+			quota:'',
+			cvdisabled:false,
+			popupMessage:''
 		}
 	},
+	onLoad() {
+		
+	},
 	methods:{
+		// 填写卡号后，获取发卡行
+		getBank(){
+			if(this.cardNo==''){
+				return false
+			}
+			uni.request({
+				method:'GET',
+			    url: 'https://bankaddress.shumaidata.com/bankaddress', 
+			    data: {
+					bankcard:this.cardNo
+			    },
+			    header: {
+					'Authorization': 'APPCODE fa541816acdc4234b18dff3ae5f98a26',
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					
+					if(res.statusCode==200){
+						this.bank=res.data.data.bank;
+						console.log(this.bank)
+						// console.log(this.accountBalance)
+					}else{
+						// this.popupMessage='错误码：'+res.code+'信息：'+res.msg;
+						// this.$refs.popup.open();
+					}
+			       
+			    }
+			});	
+		},
+		// 添加卡片
 		addcredit(){
-			// uni.navigateBack({
-			// 	delta:1
-			// })
-			this.$Route.back(1)
+		
+		uni.request({
+			method:'POST',
+		    url: this.$baseUrl+'/api/v1/pri/my/updateUserCreditCard', 
+		    data: {
+					cardType:"CREDIT_CARD",
+					cardholder:this.cardholder,
+					bank:this.bank,
+					cardNo:this.cardNo,
+					reservePhone:this.reservePhone,
+					safetyCode:this.safetyCode,
+					termOfValidity:this.termOfValidity,
+					billingDate:this.billingDate,
+					repaymentDate:this.repaymentDate,
+					quota:this.quota
+		
+		    },
+		    header: {
+				'token': this.$store.state.token,
+				'Content-Type':'application/json' //自定义请求头信息
+		    },
+		    success: (res) => {
+				console.log(res)
+				if(res.data.code==0){
+					this.accountBalance=res.data.data;
+					console.log(this.accountBalance)
+				}else if(res.data.code==-1){
+					this.popupMessage=res.data.msg;
+					// this.$refs.popup.open();
+				}else{
+					console.log(res)
+				}
+		       
+		    }
+		});	
 		},
 		ifcredit (n){
 			let p =/^\d{16}$/;
 			return p.test(n)
 		},
-		iftel(n){
+		iftel(){
 			let t =/^[1][3,4,5,6,7,8,9][0-9]{9}$/;
-			return t.test(n)
+			if(!t.test(this.reservePhone)){
+				this.popupMessage='请输入正确手机号';
+				this.$refs.popup.open()
+			}
 		},
-		ifc2v2(n){
+		ifc2v2(){
 			let c=/^\d{3}$/;
-			return c.test(n)
+			if(!c.test(this.safetyCode)){
+				this.popupMessage='请正确输入安全码';
+				this.$refs.popup.open()
+			}
 		},
-		ifdate(n){
-			if(Number(n)>31||Number(n)<=0){
-				return false
+		ifzdate(e){
+			if(Number(e.detail.value)>31){
+				this.billingDate=31
+			}
+		},
+		
+		ifhdate(e){
+			if(Number(e.detail.value)>31){
+				this.repaymentDate=31
+			}
+		},
+		zdate(){
+			if(Number(this.billingDate)<10&&Number(this.billingDate)>0){
+				this.billingDate='0'+Number(this.billingDate)
+			}
+		},
+		hdate(){
+			if(Number(this.repaymentDate)<10&&Number(this.repaymentDate)>0){
+				this.repaymentDate='0'+Number(this.repaymentDate)
 			}
 		},
 		ifydate(e){
 			if(e.detail.value.length==1){
 				if(Number(e.detail.value)>1){
-					this.ydate=1
+					this.termOfValidity=1
 				}
 			}else if(e.detail.value.length==2){
-				this.ydate=this.ydate+'/'
+				if(Number(e.detail.value)>12){
+					this.termOfValidity=12
+				}
+				this.termOfValidity=this.termOfValidity+'/'
 			}else if(e.detail.value.length==4){
 				if(Number(e.detail.value.charAt(3))>3){
-					console.log(this.ydate)
-					this.ydate=this.ydate.substr (0,3);
-					this.ydate=this.ydate+'3';
+					console.log(this.termOfValidity)
+					this.termOfValidity=this.termOfValidity.substr (0,3);
+					this.termOfValidity=this.termOfValidity+'3';
 				}
 			}else if(e.detail.value.length==5){
 				if(Number(e.detail.value.charAt(3))==3){
 					if(Number(e.detail.value.charAt(4))>1){
-						this.ydate=this.ydate.substr (0,4);
-						this.ydate=this.ydate+'1';
+						this.termOfValidity=this.termOfValidity.substr (0,4);
+						this.termOfValidity=this.termOfValidity+'1';
 					}
 				}
 			}else if(e.detail.value.length>5){
-				this.ydate=this.ydate.substr (0,5);
+				this.termOfValidity=this.termOfValidity.substr (0,5);
 			}
 			
 		},
-		ifcredits:function(){
-			
-		}
 		
 	},
 	computed: {
@@ -155,5 +252,15 @@
 			}
 	.btn-box{
 		margin-top: 90upx;
+	}
+	.popupstyle{
+		background-color: #FFFFFF;
+		padding: 20upx 20upx;
+	}
+	.popupCenter-box{
+		width: 400upx;
+		padding: 40upx ;
+		text-align: center;
+		border-radius: 20upx;
 	}
 </style>

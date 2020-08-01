@@ -3,7 +3,7 @@
 		<view class="yue-box">
 			<view class="kzfenrun-box">
 				<text>当前可提现余额(元)</text>
-				<view class="kzfr-num">60.33</view>
+				<view class="kzfr-num">{{accountBalance.withdrawableAmount}}</view>
 					<router-link to="{name:'rolloutmoney'}"  class="roll-out-btn">
 					我要结算
 					</router-link>
@@ -14,7 +14,7 @@
 			
 			</view>
 			<view class="all-fenrun-box">
-				<text class="all-fenrun-num">62.12</text>
+				<text class="all-fenrun-num">{{accountBalance.totalRevenue}}</text>
 				<view class="">
 					共累计收益(元)
 				</view>
@@ -33,12 +33,33 @@ export default {
 	data (){
 		return{
 			cardtype:true, 
-			list: [], // 数据集
-			currPage: 1, // 当前页码
-			totalPage: 1 ,// 总页数
-			addcredit:true,
-			changeCardUrl:''
+			accountBalance:{},
 		}
+	},
+	onLoad() {
+			uni.request({
+				method:'GET',
+			    url: this.$baseUrl+'/api/v1/pri/my/myAccountBalance', 
+			    data: {
+			    },
+			    header: {
+					'token': this.$store.state.token,
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					if(res.data.code==0){
+						this.accountBalance=res.data.data;
+						console.log(this.accountBalance)
+					}else if(res.data.code==-1){
+						this.popupMessage=res.data.msg;
+						// this.$refs.popup.open();
+					}else{
+						console.log(res)
+					}
+			       
+			    }
+			});	
 	},
 	methods:{
 		backFn(){

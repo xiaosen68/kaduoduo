@@ -98,30 +98,7 @@
 			return {
 			popupCenterMessage:'',
 			pageType:'',
-				goodsList:[
-					{
-						goodsName:'网易一卡通1',
-						goodsId:'',
-						goodsPic:'',
-						goodsjs:'100',
-						goodscj:'80',
-						goodsNum:0,
-					},{
-						goodsName:'网易一卡通2',
-						goodsId:'',
-						goodsPic:'',
-						goodsjs:'100',
-						goodscj:'80',
-						goodsNum:0,
-					},{
-						goodsName:'网易一卡通4',
-						goodsId:'',
-						goodsPic:'',
-						goodsjs:'100',
-						goodscj:'80',
-						goodsNum:0,
-					}
-				],
+				goodsList:[],
 				arrow:"arrowup",
 				circleShow:true,
 				buycarList:[
@@ -132,8 +109,35 @@
 			}
 		},
 		onLoad() {
+			console.log(this.$store.state.token)
 			this.pageType=this.$Route.query.pageType;
 			console.log(this.pageType)
+			uni.request({
+				method:'POST',
+			    url: this.$baseUrl+'/api/v1/pri/shop/mailingProduct', 
+			    data: {
+					page:1,
+					size:5
+			    },
+			    header: {
+					'token': this.$store.state.token,
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					// console.log(res)
+					if(res.data.code==0){
+						this.goodsList=res.data.data;
+						console.log(this.goodsList)
+					}else if(res.data.code==-1){
+						this.popupMessage=res.data.msg;
+						// this.$refs.popup.open();
+					}else{
+						// console.log(res)
+					}
+			       
+			    }
+			});	
+			
 		},
 		methods: {
 			// 输入框输入数字0~99
@@ -171,7 +175,7 @@
 			// 判断商品个数，设置列表布局
 			iflast:function(n){
 				if(n%2>0){
-						return true 
+					return true 
 				}else{
 					return false
 				}

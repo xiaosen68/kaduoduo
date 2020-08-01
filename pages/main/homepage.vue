@@ -12,7 +12,7 @@
 				</view>
 			</view>
 			<view class="home-main-box">
-				<uni-notice-bar scrollable="true" class="home-notice-bar" showIcon="true" color="#ffffff" backgroundColor="#dd4c53" single="true" @click="gomessage" text="[单行] 这是 NoticeBar 通告栏，这是 NoticeBar 通告栏，这是 NoticeBar 通告栏"></uni-notice-bar>
+				<uni-notice-bar scrollable="true" class="home-notice-bar" showIcon="true" color="#ffffff" backgroundColor="#dd4c53" single="true" @click="gomessage" :text="naticeText"></uni-notice-bar>
 				<view class="home-main-wrap" >
 						<view class=" home-main-item" v-for="(item, index) in main" @click="goweb(item)"  >
 							<image class="main-item-icon" :src="item.icon" mode="widthFix"></image>
@@ -61,6 +61,7 @@
 			return {
 				message:'',
 				ifScan:true,
+				naticeText:'',
 				main :[
 					{
 						name:'会员PLus',
@@ -143,6 +144,31 @@
 					bottom:10
 				},
 			}
+		},
+		onLoad() {
+			// 获取最近一条信息
+			uni.request({
+				method:'GET',
+			    url: this.$baseUrl+'/api/v1/pri/meassage/findByNewMeassage', 
+			    data: {
+			    },
+			    header: {
+					'token':this.$store.state.token,
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					if(res.data.code==0){
+						// this.$store.commit("setToken",res.data.data);
+						console.log(this.$store.state.token)
+						this.naticeText=res.data.data.content;
+						console.log(res.data)
+					}else if(res.data.code==-1){
+						// this.popupMessage=res.data.msg;
+						// this.$refs.popup.open();
+					}
+			       
+			    }
+			});
 		},
 		methods: {
 			change(e) {

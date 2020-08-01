@@ -60,12 +60,33 @@ export default {
 	data (){
 		return{
 			cardtype:true, 
-			list: [], // 数据集
-			currPage: 1, // 当前页码
-			totalPage: 1 ,// 总页数
-			addcredit:true,
-			changeCardUrl:''
+			cardlist: [], // 数据集
 		}
+	},
+	onLoad() {
+		// 获取信用卡
+		uni.request({
+			method:'GET',
+		    url: this.$baseUrl+'/api/v1/pri/my/getUserCreditCard', 
+		    data: {
+		    },
+		    header: {
+				'token': this.$store.state.token,
+				'Content-Type':'application/json' //自定义请求头信息
+		    },
+		    success: (res) => {
+				console.log(res)
+				if(res.data.code==0){
+					this.cardlist=res.data.data
+				}else if(res.data.code==-1){
+					this.popupMessage=res.data.msg;
+					// this.$refs.popup.open();
+				}else{
+					console.log(res)
+				}
+		       
+		    }
+		});	
 	},
 	methods:{
 		typeclick(n){

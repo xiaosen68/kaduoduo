@@ -1,18 +1,18 @@
 <template>
 	<view class="password-box">
 		<view class="password-item">
-			<navigator url="./changepassword?type=1">
+			<view @click="gopwd1">
 				<image src="../../static/img/bank/zhanghusafe.png" class="my-app-item-pic" mode=""></image>
 				<text>重置登录密码</text>
 				<uni-icons type="arrowright" class="my-app-item-arrow"></uni-icons>
-			</navigator>
+			</view>
 		</view>
 		<view class="password-item">
-			<navigator url="./changepassword?type=2">
+			<view @click="gopwd2">
 				<image src="../../static/img/bank/zhanghusafe.png" class="my-app-item-pic" mode=""></image>
 				<text>重置交易密码</text>
 				<uni-icons type="arrowright" class="my-app-item-arrow"></uni-icons>
-			</navigator>
+			</view>
 		</view>
 		
 	</view>
@@ -30,8 +30,21 @@
 			}
 		},
 		methods: {
-			change(e) {
-				this.current = e.detail.current;
+			gopwd1:function(){
+				this.$Router.push({
+					name:'changepassword',
+					params:{
+						type:'1'
+					}
+				})
+			},
+			gopwd2:function(){
+				this.$Router.push({
+					name:'changepassword',
+					params:{
+						type:'1'
+					}
+				})
 			}
 		}
 	}

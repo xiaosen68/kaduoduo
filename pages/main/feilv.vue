@@ -26,28 +26,18 @@
 				</view>
 			</view>
 			<view class="dengji-status-list">
-				<view class="dengji-status-item">
+				<view class="dengji-status-item" v-for="item in myRate ">
 					<view class="dengji-status-one">
-					大额代还TFTD0	
+					{{item.passageWayName}}
 					</view>
 					<view class="">
-						0.58%
+						{{item.myRate| rate}}
 					</view>
 					<view class="">
-						10-5000
+						{{item.singleLimit}}
 					</view>
 				</view>
-				<view class="dengji-status-item">
-					<view class="">
-					大额代还TFTD0	
-					</view>
-					<view class="">
-						0.58%
-					</view>
-					<view class="">
-						10-5000
-					</view>
-				</view>
+				
 			</view>
 
 		</view>
@@ -67,12 +57,42 @@ export default {
 			},
 	data (){
 		return{
-		
+		myRate:[],
 		}
+	},
+	onLoad() {
+			uni.request({
+				method:'GET',
+			    url: this.$baseUrl+'/api/v1/pri/my/myRate', 
+			    data: {
+			    },
+			    header: {
+					'token': this.$store.state.token,
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					// console.log(res)
+					if(res.data.code==0){
+						this.myRate=res.data.data;
+						// console.log(this.myRate)
+					}else if(res.data.code==-1){
+						this.popupMessage=res.data.msg;
+						// this.$refs.popup.open();
+					}else{
+						// console.log(res)
+					}
+			       
+			    }
+			});	
 	},
 	methods:{
 		open (){
 			this.$refs.popup.open()
+		}
+	},
+	filters:{
+		rate:function(rate){
+			return Math.floor(rate*10000)/100+'%'
 		}
 	}
 }
