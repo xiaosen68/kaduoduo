@@ -42,6 +42,13 @@ const banking = [
 	    },
 	},
 	{
+	    path: '/pages/banking/changecredit',
+	    name: 'changecredit',
+	    meta: {
+	        title: '修改信用卡',
+	    },
+	},
+	{
 	    path: '/pages/banking/yue',
 	    name: 'yue',
 	    meta: {

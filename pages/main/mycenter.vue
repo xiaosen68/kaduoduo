@@ -164,6 +164,7 @@
 					console.log(res)
 					if(res.data.code==0){
 						this.infodata=res.data.data;
+						this.$store.commit('setUserInfo',{userName:res.data.data.userName,userPhone:res.data.data.phone})
 						console.log(this.infodata)
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;

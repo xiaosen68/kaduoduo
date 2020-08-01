@@ -15,26 +15,29 @@
 			  :backgroundCover="'#F3F5F5'"
 			  :pageNo="currPage"
 			  :totalPageNo="totalPage" 
-			  @loadMore="loadMore" 
+			 
 			  @refresh="refresh" class="">
 			  <view slot="content-list">
 			    <!-- 数据列表 -->
-				<view class="card-item">
+				<view class="card-item" v-for="item in cardList">
 					<view class="card-item-box1">
 						<view class="card-item-img-box">
 							<image class="card-item-img"  src="../../static/img/bank/gongshang.png" mode=""></image>
 						</view>
-						<text>中国银行 *森</text>
-						<uni-icons type="trash" class="trash-icon" color="#ffffff"></uni-icons>
+						<text>{{item.bank}} {{item.cardholder|nameFilters}}</text>
+						<view class="defaule-btn" v-if="item.cardType=='SAVINGS_CARD'" @click="setDefault(item.id,item.defaultCard)">
+							{{item.defaultCard |cardDefault}}
+						</view>
 					</view>
 					<view class="card-item-box2">
-						213612368271368712638
+						{{item.cardNo}}
+						<uni-icons type="trash" class="trash-icon" color="#ffffff"></uni-icons>
 					</view>
-					<view class="card-box-change">
-						<text>信用卡</text>
-						<router-link to="{name:'addcredit'}" class="card-change">
+					<view class="card-item-box3">
+						<text>{{item.cardType|cardTypeFilters}}</text>
+						<view @click="changecard(item.id,item.cardType)" class="card-change">
 							修改信息
-						</router-link>
+						</view>
 					</view>
 				</view>
 			  </view>
@@ -48,6 +51,9 @@
 			<uni-icons type="plus" color="#a3a3a3" size="24"></uni-icons>
 			<text >添加储蓄卡</text>
 		</router-link>
+		<uni-popup ref="popup"  type="center" class="popupstyle">
+			<view class="popupCenter-box">{{popupMessage}}</view>
+		</uni-popup>
 	</view>
 </template>
 
@@ -60,44 +66,133 @@ export default {
 	data (){
 		return{
 			cardtype:true, 
-			cardlist: [], // 数据集
+			addcredit:true,
+			currPage:1,
+			totalPage:1,
+			// cardlist: [], // 数据集
+			creditlist:[],//信用卡
+			depositlist:[],//储蓄卡
+			popupMessage:'',
 		}
 	},
 	onLoad() {
-		// 获取信用卡
-		uni.request({
-			method:'GET',
-		    url: this.$baseUrl+'/api/v1/pri/my/getUserCreditCard', 
-		    data: {
-		    },
-		    header: {
-				'token': this.$store.state.token,
-				'Content-Type':'application/json' //自定义请求头信息
-		    },
-		    success: (res) => {
-				console.log(res)
-				if(res.data.code==0){
-					this.cardlist=res.data.data
-				}else if(res.data.code==-1){
-					this.popupMessage=res.data.msg;
-					// this.$refs.popup.open();
-				}else{
-					console.log(res)
-				}
-		       
-		    }
-		});	
+		// 刷新
+		this.refresh()
+	},
+	computed:{
+		cardList:function(){
+			if(this.cardtype){
+				return this.creditlist
+			}else{
+				return this.depositlist
+			}
+		}
 	},
 	methods:{
+		// 获取信用卡
+		getcredit(){
+			uni.request({
+				method:'GET',
+			    url: this.$baseUrl+'/api/v1/pri/my/getUserCreditCard', 
+			    data: {
+			    },
+			    header: {
+					'token': this.$store.state.token,
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					if(res.data.code==0){
+						this.creditlist=res.data.data
+					}else if(res.data.code==-1){
+						this.popupMessage=res.data.msg;
+						// this.$refs.popup.open();
+					}else{
+						console.log(res)
+					}
+			       
+			    }
+			});	
+		},
+		// 获取储蓄卡
+		getdeposit(){
+			uni.request({
+				method:'GET',
+			    url: this.$baseUrl+'/api/v1/pri/my/getUserSavingsCard', 
+			    data: {
+			    },
+			    header: {
+					'token': this.$store.state.token,
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					if(res.data.code==0){
+						// 默认卡排序
+						this.depositlist=res.data.data.sort(function(a,b){return b.defaultCard-a.defaultCard})
+					}else if(res.data.code==-1){
+						this.popupMessage=res.data.msg;
+						// this.$refs.popup.open();
+					}else{
+						console.log(res)
+					}
+			       
+			    }
+			});	
+		},
+		// 设置默认储蓄卡
+		setDefault(id,ifDefault){
+			if(ifDefault==0){
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+'/api/v1/pri/my/replaceDefaultCard', 
+				    data: {
+						"id":id,
+						"defaultCard":1
+
+				    },
+				    header: {
+						'token': this.$store.state.token,
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+							
+							this.popupMessage=res.data.data;
+							this.$refs.popup.open();
+							this.refresh()
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+							this.$refs.popup.open();
+						}else{
+							console.log(res)
+						}
+				       
+				    }
+				});	
+			}
+		},
+		// 修改卡
+		changecard(id,type){
+			if(type=="SAVINGS_CARD"){
+				this.$Router.push({ name: 'changedeposit', params: { id: id }})
+			}else{
+				this.$Router.push({ name: 'changecredit', params: { id: id }})
+			}
+		},
 		typeclick(n){
 			if(n===1){
 				this.cardtype=true;
 				this.addcredit=true;
-				
+				// this.cardlist=this.creditlist;
+				// this.refresh();
 			}else if(n===2){
 				this.cardtype=false;
 				this.addcredit=false;
+				// this.cardlist=this.depositlist;
 			}
+			this.refresh();
 		},
 		loadMore() {
         console.log('loadMore')
@@ -108,7 +203,33 @@ export default {
       // 下拉刷新数据列表
       refresh() {
         console.log('refresh')
+		if(this.cardtype){
+			// 刷新信用卡
+			this.getcredit();
+		}else {
+			// 刷新储蓄卡
+			this.getdeposit();
+		}
       }
+	},
+	filters:{
+		nameFilters(name){
+			return '*'+name.substring(1)
+		},
+		cardTypeFilters(cardType){
+			if(cardType=='SAVINGS_CARD'){
+				return '储蓄卡'
+			}else{
+				return '信用卡'
+			}
+		},
+		cardDefault(cardDefault){
+			if(cardDefault==1){
+				return "默认卡"
+			}else{
+				return "设置为默认卡"
+			}
+		}
 	}
 }
 </script>
@@ -144,9 +265,9 @@ export default {
 		padding-top: 100upx;
 	}
 	.card-item{
-		width: 640upx;
-		height: 220upx;
-		padding: 30upx;
+		width: 700upx;
+		/* height: 220upx; */
+		/* padding: 30upx; */
 		border-radius: 20upx;
 		background-color: #09BB07;
 		margin: 20upx auto;
@@ -167,28 +288,30 @@ export default {
 		border-radius: 50%;
 	}
 	.card-item-box1{
-		
+	
+		padding: 40upx 40upx 0 40upx;
+	}
+	.defaule-btn{
+		font-size: 20upx;
+		float: right;
+		padding: 2upx 10upx;
+		border-radius: 8upx;
+		background-color: rgba(255,255,255,0.4);
 	}
 	.trash-icon{
-		position: absolute;
-		right: 50upx;
-		top:60upx;
+		float: right;
 	}
 	.card-item-box2{
-		
-		padding: 20upx;
+		padding: 20upx 40upx 0 40upx;
 	}
-	.card-box-change{
-		padding: 0 20upx;
+	.card-item-box3{
+		padding: 20upx 40upx 40upx 40upx;
 		position: relative;
 	}
 	.card-change{
-		display: inline-block;
-		position: absolute;
-		right: 0upx;
-		top: 20upx;
+		float: right;
+		margin-top: 20upx;
 		background-color: #FFFFFF;
-		/* width: 200upx; */
 		line-height: 28upx;
 		border-radius: 40upx;
 		color: #3B4144;
@@ -205,5 +328,21 @@ export default {
 		background-color: #FFFFFF;
 		z-index: 12;
 		color: #a3a3a3;
+	}
+	.card-type-box{
+		position: relative;
+		font-size: 30upx;
+		background-color: rgba(255,255,255,0.4);
+		padding: 20upx 40upx;
+	}
+	.popupstyle{
+		background-color: #FFFFFF;
+		padding: 20upx 20upx;
+	}
+	.popupCenter-box{
+		width: 400upx;
+		padding: 40upx ;
+		text-align: center;
+		border-radius: 20upx;
 	}
 </style>

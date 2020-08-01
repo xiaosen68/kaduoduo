@@ -3,13 +3,19 @@
 		<view class="card-message">
 			<view class="input-box">
 				<text>持卡人:</text>
+				<text class="card-text">{{cardholder}}</text>
 			</view>
 			<view class="input-box">
 				<text>银行卡号:</text>
 				<input type="number" class="input-num" v-model="cardNo" @blur="getcard" maxlength="19" placeholder="请输入储蓄卡卡号" />
-			</view><view class="input-box">
+			</view>
+			<view class="input-box">
+				<text>发卡行:</text>
+				<input type="text" class="input-num" v-model="bank" @blur="getcard" maxlength="19" placeholder="请输入发卡行" />
+			</view>
+			<view class="input-box">
 				<text>预留手机:</text>
-				<input type="number" class="input-num"  maxlength="11" value=""placeholder="请输入预留手机号" />
+				<input type="number" class="input-num" v-model="reservePhone" maxlength="11" value=""placeholder="请输入预留手机号" />
 			</view>
 			<view class="input-box">
 				<text>开户行省市:</text>
@@ -17,9 +23,12 @@
 			</view>
 		</view>
 		<view class="btn-box">
-			<view type="" class="next-btn" @click="addcredit">确认添加</view>
+			<view type="" class="next-btn" @click="adddeposit">确认添加</view>
 		</view>
 		<selectAddress ref='selectAddress' @selectAddress="successSelectAddress"></selectAddress>
+		<uni-popup ref="popup"  type="center" class="popupstyle">
+			<view class="popupCenter-box">{{popupMessage}}</view>
+		</uni-popup>
 	</view>
 </template>
 
@@ -32,9 +41,18 @@ export default {
 		return{
 			accountOpeningProvince:"",
 			cardNo:'',
+			bank:'',
 			cardholder:'',
 			reservePhone:'',
+			popupMessage:'',
 		}
+	},
+	onLoad() {
+	
+	},
+	onShow() {
+		this.cardholder=this.$store.state.userName;
+		// console.log(this.cardholder)
 	},
 	methods:{
 		getcard(){
@@ -57,7 +75,7 @@ export default {
 						
 						if(res.statusCode==200){
 							this.accountOpeningProvince=res.data.data.province+res.data.data.city
-							// this.bank=res.data.data.bank;
+							this.bank=res.data.data.bank;
 							// console.log(this.bank)
 							// console.log(this.accountBalance)
 						}else{
@@ -77,7 +95,9 @@ export default {
 		        },  
 				
 				// 添加储蓄卡
-		addcredit(){
+		adddeposit(){
+			console.log(this.accountOpeningProvince+this.cardNo+this.cardholder+this.reservePhone)
+			
 			if(this.accountOpeningProvince==''||this.cardNo==''||this.cardholder==''||this.reservePhone==""){
 				return false
 				}
@@ -100,11 +120,13 @@ export default {
 			    success: (res) => {
 					console.log(res)
 					if(res.data.code==0){
-						this.accountBalance=res.data.data;
+						this.popupMessage=res.data.data;
+						this.$refs.popup.open()
 						console.log(this.accountBalance)
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
-						// this.$refs.popup.open();
+						// this.popupMessage=res.data.data;
+						this.$refs.popup.open()
 					}else{
 						console.log(res)
 					}
@@ -157,5 +179,18 @@ export default {
 			}
 	.btn-box{
 		margin-top: 90upx;
+	}
+	.card-text{
+		padding-left: 20upx;
+	}
+	.popupstyle{
+		background-color: #FFFFFF;
+		padding: 20upx 20upx;
+	}
+	.popupCenter-box{
+		width: 400upx;
+		padding: 40upx ;
+		text-align: center;
+		border-radius: 20upx;
 	}
 </style>

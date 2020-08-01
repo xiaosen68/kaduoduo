@@ -90,7 +90,7 @@
 							this.$store.commit("setToken",res.data.data);
 							console.log(this.$store.state.token)
 									this.$Router.pushTab('/pages/main/homepage')
-									
+									// 登录成功后记住账号密码
 									uni.setStorage({
 									    key: 'phone',
 									    data: this.phone,
@@ -114,8 +114,6 @@
 				       
 				    }
 				});
-				
-		
 			}
 		}
 	}

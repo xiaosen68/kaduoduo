@@ -218,6 +218,12 @@
 		}
 	},
 	{
+		"path": "pages/banking/changecredit",
+		"style": {
+			"navigationBarTitleText": "修改信用卡"
+		}
+	},
+	{
 		"path": "pages/banking/yue",
 		"style": {
 			"navigationBarTitleText": "账户余额"

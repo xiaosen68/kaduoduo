@@ -3,7 +3,7 @@
 		<view class="card-message">
 			<view class="input-box">
 				<text>持卡人:</text>
-				<text>{{cardholder}}</text>
+				<text class="card-text">{{cardholder}}</text>
 			</view>
 			<view class="input-box">
 				<text>信用卡号:</text>
@@ -14,7 +14,7 @@
 			</view>
 			<view class="input-box">
 				<text>发卡行:</text>
-				<text>{{bank}}</text>
+				<text class="card-text">{{bank}}</text>
 			</view>
 			<view class="input-box">
 				<text>安全码:</text>
@@ -54,7 +54,7 @@
 	data (){
 		return{
 			cardType:"CREDIT_CARD",
-			cardholder:"",
+			cardholder:'',
 			bank:"",
 			cardNo:"6217002430009199648",
 			reservePhone:"",
@@ -67,8 +67,12 @@
 			popupMessage:''
 		}
 	},
-	onLoad() {
-		
+	onLoad(option) {
+		console.log(option)
+	},
+	onShow() {
+		this.cardholder=this.$store.state.userName;
+		// console.log(this.cardholder)
 	},
 	methods:{
 		// 填写卡号后，获取发卡行
@@ -106,7 +110,7 @@
 		
 		uni.request({
 			method:'POST',
-		    url: this.$baseUrl+'/api/v1/pri/my/updateUserCreditCard', 
+		    url: this.$baseUrl+'/api/v1/pri/my/addUserCreditCard', 
 		    data: {
 					cardType:"CREDIT_CARD",
 					cardholder:this.cardholder,
@@ -127,11 +131,12 @@
 		    success: (res) => {
 				console.log(res)
 				if(res.data.code==0){
-					this.accountBalance=res.data.data;
-					console.log(this.accountBalance)
+					this.popupMessage=res.data.data;
+					this.$refs.popup.open();
+					this.$Router.back(1)
 				}else if(res.data.code==-1){
 					this.popupMessage=res.data.msg;
-					// this.$refs.popup.open();
+					this.$refs.popup.open();
 				}else{
 					console.log(res)
 				}
@@ -262,5 +267,8 @@
 		padding: 40upx ;
 		text-align: center;
 		border-radius: 20upx;
+	}
+	.card-text{
+		padding-left: 20upx;
 	}
 </style>
