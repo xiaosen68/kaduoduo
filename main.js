@@ -13,11 +13,12 @@ Vue.config.productionTip = false
 Vue.prototype.$baseUrl="/prefix"  //线下接口
 
 
+
 App.mpType = 'app'
 
 const app = new Vue({
 	...App,
-	store
+	store,
 })
 // #ifdef H5
 	RouterMount(app,'#app');
