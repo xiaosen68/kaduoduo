@@ -157,18 +157,17 @@
 			    data: {
 			    },
 			    header: {
-					'token': this.$store.state.token,
+					'token': uni.getStorageSync('token'),
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
 					console.log(res)
 					if(res.data.code==0){
 						this.infodata=res.data.data;
-						this.$store.commit('setUserInfo',{userName:res.data.data.userName,userPhone:res.data.data.phone})
-						console.log(this.infodata)
+						uni.setStorageSync('userName', res.data.data.userName);
+						uni.setStorageSync('userPhone', res.data.data.userPhone);
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
-						// this.$refs.popup.open();
 					}else{
 						console.log(res)
 					}

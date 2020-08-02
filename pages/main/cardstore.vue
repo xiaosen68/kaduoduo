@@ -109,7 +109,7 @@
 			}
 		},
 		onLoad() {
-			console.log(this.$store.state.token)
+			console.log(uni.getStorageSync('token'))
 			this.pageType=this.$Route.query.pageType;
 			console.log(this.pageType)
 			uni.request({
@@ -120,7 +120,7 @@
 					size:5
 			    },
 			    header: {
-					'token': this.$store.state.token,
+					'token':uni.getStorageSync('token'),
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {

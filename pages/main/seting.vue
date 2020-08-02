@@ -50,10 +50,9 @@
 				// #endif
 			},
 			logOut:function(){
-				uni.setStorage({
-					key:'userKey',
-					data:'hell'
-				});
+				uni.removeStorageSync('token');
+				uni.removeStorageSync('userName');
+				uni.removeStorageSync('userPhone');
 				this.$Router.push({name:'index'})
 			},
 			clear:function(){	

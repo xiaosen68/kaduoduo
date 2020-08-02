@@ -153,13 +153,13 @@
 			    data: {
 			    },
 			    header: {
-					'token':this.$store.state.token,
+					'token':uni.getStorageSync('token'),
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
 					if(res.data.code==0){
 						// this.$store.commit("setToken",res.data.data);
-						console.log(this.$store.state.token)
+						console.log(uni.getStorageSync('token'))
 						this.naticeText=res.data.data.content;
 						console.log(res.data)
 					}else if(res.data.code==-1){

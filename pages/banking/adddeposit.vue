@@ -51,7 +51,7 @@ export default {
 	
 	},
 	onShow() {
-		this.cardholder=this.$store.state.userName;
+		this.cardholder=uni.getStorageSync('userName');
 		// console.log(this.cardholder)
 	},
 	methods:{
@@ -114,7 +114,7 @@ export default {
 
 			    },
 			    header: {
-					'token': this.$store.state.token,
+					'token': uni.getStorageSync('token'),
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {

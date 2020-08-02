@@ -56,7 +56,7 @@
 			cardType:"CREDIT_CARD",
 			cardholder:'',
 			bank:"",
-			cardNo:"6217002430009199648",
+			cardNo:"",
 			reservePhone:"",
 			safetyCode:"",
 			termOfValidity:"",
@@ -67,12 +67,8 @@
 			popupMessage:''
 		}
 	},
-	onLoad(option) {
-		console.log(option)
-	},
 	onShow() {
-		this.cardholder=this.$store.state.userName;
-		// console.log(this.cardholder)
+		this.cardholder=uni.getStorageSync('userName');
 	},
 	methods:{
 		// 填写卡号后，获取发卡行
@@ -125,7 +121,7 @@
 		
 		    },
 		    header: {
-				'token': this.$store.state.token,
+				'token': uni.getStorageSync('token'),
 				'Content-Type':'application/json' //自定义请求头信息
 		    },
 		    success: (res) => {

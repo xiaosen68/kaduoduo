@@ -43,7 +43,7 @@ export default {
 			    data: {
 			    },
 			    header: {
-					'token': this.$store.state.token,
+					'token': uni.getStorageSync('token'),
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
