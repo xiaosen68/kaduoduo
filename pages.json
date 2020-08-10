@@ -222,12 +222,6 @@
 		"style": {
 			"navigationBarTitleText": "修改信用卡"
 		}
-	},
-	{
-		"path": "pages/banking/yue",
-		"style": {
-			"navigationBarTitleText": "账户余额"
-		}
 	},{
 		"path": "pages/banking/fenrunlist",
 		"style": {
@@ -308,6 +302,12 @@
 		}
 	},
 	{
+		"path": "pages/banking/rolloutlist",
+		"style": {
+			"navigationBarTitleText": "提现列表"
+		}
+	},
+	{
 		"path": "pages/main/message",
 		"style": {
 			"navigationStyle": "custom",
@@ -328,6 +328,17 @@
 			}
 		}
 	},{
+		"path": "pages/banking/yue",
+		"style": {
+			"navigationStyle": "custom",
+			"enablePullDownRefresh":true,
+			"app-plus":{
+				"titleNView":false
+				
+			}
+		}
+	},
+	{
 		"path": "pages/banking/fenrun",
 		"style": {
 			"navigationStyle": "custom",

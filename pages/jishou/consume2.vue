@@ -124,10 +124,6 @@
 			this.buyList=JSON.parse(this.$Route.query.buyList)
 			this.allGoodsjs=this.$Route.query.allGoodsjs
 			this.allGoodscj=this.$Route.query.allGoodscj
-			// this.buyList =this.$Route.query.buyList;
-			// this.buyList = JSON.parse(decodeURIComponent(option.buyList));
-			// this.allGoodsjs=JSON.parse(decodeURIComponent(option.allGoodsjs));
-			// this.allGoodscj=JSON.parse(decodeURIComponent(option.allGoodscj));
 		},
 		methods: {
 			 open1:function(){

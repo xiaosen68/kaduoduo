@@ -15,7 +15,7 @@
 				<view class="bank-select">
 					<image class="bank-head-img" src="../../static/img/bank/gongshang.png"></image>
 					<view class="con-bank-static">
-						<text class="con-bank-name">工商银行(9999)</text>
+						<text class="con-bank-name">{{creditCardList[0].bank}}({{creditCardList[0].card_no|showbankCard}})</text>
 						<text class="con-bank-type">信用卡</text>
 					</view>
 					<view class="loop-btn" @click="open1">
@@ -50,12 +50,12 @@
 		 				选择信用卡
 		 			<text class="add-card"@click="addcredit">添加</text>
 		 		</view>
-		 		<view class="bank-card-item">
+		 		<view class="bank-card-item" v-for="item in creditCardList">
 		 			<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
 		 			<view class="bank-card-name">
-		 				<text>广发银行</text>
+		 				<text>{{item.bank}}</text>
 		 				<text>\n</text>
-		 				<text>62**** **** **** 78</text>
+		 				<text>{{item.card_no|showCard}}</text>
 		 			</view>
 		 		</view>
 		 		</view>
@@ -70,14 +70,39 @@
 				buyList:[],
 				allGoodsjs:0,
 				allGoodscj:0,
-				coverif:false
+				coverif:false,
+				creditCardList:[]
 			}
 		},
 		onLoad: function (option) {
 			this.buyList=JSON.parse(this.$Route.query.buyList)
 			this.allGoodsjs=this.$Route.query.allGoodsjs
 			this.allGoodscj=this.$Route.query.allGoodscj
-			console.log(this.buyList)
+			uni.request({
+				method:'POST',
+			    url: this.$baseUrl+'/api/v1/pri/shop/initMemberPlus', 
+			    data: {
+					orderType:"MEMBER_PLUS",
+					totalTransactionPrice:this.allGoodscj,
+					totalMailingPrice:this.allGoodsjs,
+					productList:this.buyList
+			    },
+			    header: {
+					'token':uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					if(res.data.code==0){
+						this.creditCardList=res.data.data.userCreditCardlist;
+						
+					}else if(res.data.code==-1){
+						this.popupMessage=res.data.msg;
+					}else{
+					}
+			       
+			    }
+			});	
+			
 		},
 		methods: {
 			 open1:function(){
@@ -109,6 +134,14 @@
 		computed:{
 			
 			
+		},
+		filters:{
+			showCard(val){
+				return val.slice(0,4)+'**********'+val.slice(-4)
+			},
+			showbankCard(val){
+				return val.slice(-4)
+			}
 		}
 	};
 	

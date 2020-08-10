@@ -51,8 +51,8 @@
 			},
 			logOut:function(){
 				uni.removeStorageSync('token');
-				uni.removeStorageSync('userName');
-				uni.removeStorageSync('userPhone');
+				// uni.removeStorageSync('userName');
+				// uni.removeStorageSync('userPhone');
 				this.$Router.push({name:'index'})
 			},
 			clear:function(){	

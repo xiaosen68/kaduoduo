@@ -4,10 +4,10 @@
 			<image class="deposit-icon" src="../../static/img/bank/gongshang.png" mode=""></image>
 			<view class="deposit-sttus">
 				<view class="deposit-name">
-					建设银行
+					{{defaultCard.bank}}
 				</view>
 				<view class="deposit-num">
-					尾号9087
+					尾号{{defaultCard.cardNo|bankCardFilter}}
 				</view>
 			</view>
 			<uni-icons class="forward-icon" type="forward" size="30"></uni-icons>
@@ -38,12 +38,12 @@
 						选择储蓄卡
 					<text class="add-card" @click="adddeposit">添加</text>
 				</view>
-				<view class="bank-card-item">
+				<view class="bank-card-item" v-for="item in cardList" @click="changeCard(item)">
 					<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
 					<view class="bank-card-name">
-						<text>广发银行</text>
+						<text>{{item.bank}}</text>
 						<text>\n</text>
-						<text>62**** **** **** 78</text>
+						<text>{{item.cardNo|cardFilter}}</text>
 					</view>
 				</view>
 				</view>
@@ -60,7 +60,40 @@ export default {
 			kzmoney:12.00,//可转出金额,
 			zcmoney:'',//转出金额
 			popupCenterMessage:'',//弹框信息
+			defaultCard:'',
+			cardList:[]
 		}
+	},
+	onLoad() {
+		this.kzmoney=this.$Route.query.amount;
+		uni.request({
+			method:'GET',
+		    url: this.$baseUrl+'/api/v1/pri/my/getUserSavingsCard', 
+		    data: {
+		    },
+		    header: {
+				'token': uni.getStorageSync('token'),
+				'Content-Type':'application/json' //自定义请求头信息
+		    },
+		    success: (res) => {
+				console.log(res)
+				if(res.data.code==0){
+					this.cardList=res.data.data;
+					this.defaultCard=res.data.data.filter((item)=>{
+						if(item.defaultCard==1){
+							return item
+						}
+					})[0];
+					console.log(this.defaultCard)
+				}else if(res.data.code==-1){
+					// this.popupMessage=res.data.msg;
+					// this.$refs.popup.open();
+				}else{
+					console.log(res)
+				}
+		       
+		    }
+		});	
 	},
 	methods:{
 		rolloutMoney:function(){
@@ -71,7 +104,43 @@ export default {
 				this.popupCenterMessage='转出金额大于可转出金额'
 					this.$refs.popupcenter.open();
 					this.zcmoney=this.kzmoney;
+			}else if(this.zcmoney==''||this.zcmoney<=0){
+				this.popupCenterMessage='请正确填写金额'
+					this.$refs.popupcenter.open();
+			}else{
+				console.log(this.zcmoney)
+				console.log(this.defaultCard.id)
+				uni.request({
+					method:'GET',
+				    url: this.$baseUrl+'/api/v1/pri/my/withdrawalAmount', 
+				    data: {
+						amount:this.zcmoney,
+						cashOutBankId:this.defaultCard.id,
+				    },
+				    header: {
+						'token': uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+							this.revenueAmount=res.data.data;
+							console.log(this.revenueAmount)
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+							// this.$refs.popup.open();
+						}else{
+							console.log(res)
+						}
+				       
+				    }
+				});	
+				
 			}
+		},
+		changeCard:function(item){
+			this.defaultCard =item;
+			this.$refs.popup1.close();
 		},
 		adddeposit:function(){
 			this.$refs.popup1.close();
@@ -85,6 +154,14 @@ export default {
 			}, closedia1:function(done){
 				  this.$refs.popup1.close()
 			},
+	},
+	filters:{
+		bankCardFilter:function(str){
+			return str.slice(-4)
+		},
+		cardFilter:function(str){
+			return str.slice(0,4)+'******'+str.slice(-4)
+		}
 	}
 }
 </script>

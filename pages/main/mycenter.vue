@@ -172,7 +172,10 @@
 						console.log(res)
 					}
 			       
-			    }
+			    },
+				complete: (data) => {
+					console.log(data)
+				}
 			});
 		
 			

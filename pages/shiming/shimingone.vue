@@ -78,7 +78,7 @@ export default {
 		}
 	},
 	onLoad:function(){
-		console.log(this.$store.state.baseUrl)
+		// console.log(this.$store.state.baseUrl)
 	},
 	methods:{
 		uploadPic: function(n){

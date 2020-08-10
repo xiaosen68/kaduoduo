@@ -2,7 +2,7 @@
 import modules from './modules'
 import Vue from 'vue'
 import Router, {RouterMount} from '../js_sdk/hhyang-uni-simple-router/index.js'
-import store from '../store'
+// import store from '../store'
 Vue.use(Router)
 //初始化
 const router = new Router({
@@ -15,7 +15,8 @@ router.beforeEach((to, from, next) => {
 	if(to.name==='index'||to.name==='sign'||to.name==='forgetpassword'){
 		next()
 	}else{
-		if(store.state.token!==''){
+		if(uni.getStorageSync('token')!==''){
+			console.log(uni.getStorageSync('token'))
 			next()
 		}else{
 			next({

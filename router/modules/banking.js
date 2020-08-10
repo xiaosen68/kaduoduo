@@ -49,6 +49,13 @@ const banking = [
 	    },
 	},
 	{
+	    path: '/pages/banking/rolloutlist',
+	    name: 'rolloutlist',
+	    meta: {
+	        title: '提现列表',
+	    },
+	},
+	{
 	    path: '/pages/banking/yue',
 	    name: 'yue',
 	    meta: {

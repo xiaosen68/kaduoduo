@@ -14,7 +14,7 @@
 					电话
 				</view>
 				<view class="alter-input">
-					<input type="text" value="" v-model="tel"/>
+					<input type="text" value="" v-model="phone"/>
 				</view>
 			</view>
 			<view class="alter-item">
@@ -43,10 +43,15 @@
 			</view>
 		</view>
 		<view class="buy-button-box">
-			<view class="buy-btn">
-				添加地址
+			<view class="buy-btn" @click="addlocation">
+				{{changeType|changTypeFilter}}
 			</view>
 		</view>
+		<uni-popup ref="popup" type="center">
+			<view class="popupCenter-box">
+				{{popupMessage}}
+			</view>		
+		</uni-popup>
 		<selectAddress ref='selectAddress' @selectAddress="successSelectAddress" :jiji='3'></selectAddress>
 	</view>
 </template>
@@ -58,10 +63,55 @@ export default {
 	data (){
 		return{
 			selectDefault:true,
+			isDefault:1,
 			address:"",
 			name:'',
-			tel:'',
+			phone:'',
+			id:'',
 			addressStatus:'',
+			popupMessage:'',
+			changeType:true,
+		}
+	},
+	onLoad() {
+		
+		if(this.$Route.query.id){
+			this.id=this.$Route.query.id
+			this.changeType=true;
+			uni.request({
+				method:'POST',
+			    url: this.$baseUrl+'/api/v1/pri/my/getUserAddressById', 
+			    data: {
+					"id":this.id
+			    },
+			    header: {
+					'token': uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					if(res.data.code==0){
+							if(res.data.data.is_default==1){
+								this.selectDefault=true;
+							}else{
+								this.selectDefault=false;
+							}
+						this.isDefault=res.data.data.is_default;
+						this.address=res.data.data.region;
+						this.name=res.data.data.customer_name;
+						this.phone=res.data.data.customer_phone;
+						this.addressStatus=res.data.data.address_details;
+					}else{
+						console.log(res)
+					}
+			       
+			    }
+			});	
+		}else{
+			this.changeType=false;
+		this.name=uni.getStorageSync('userName');
+		this.phone=uni.getStorageSync('phone');
+			
 		}
 	},
 	methods:{
@@ -74,8 +124,82 @@ export default {
 		   switch1Change:function(e){
 			   console.log(e.target.value)
 			   console.log(this.ch)
+		   },
+		   addlocation(){
+			   if(this.selectDefault){
+				    this.isDefault=1;
+			   }else{
+				   this.isDefault=0;
+			   }
+			   // 是否为修改地址
+			if(this.changeType){
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+'/api/v1/pri/my/updateUserAddress', 
+				    data: {
+						"id":this.id,
+						"customerName":this.name,
+						"customerPhone":this.phone,
+						"region":this.address,
+						"addressDetails":this.addressStatus,
+						"isDefault":this.isDefault
+				
+				    },
+				    header: {
+						'token': uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+						this.popupMessage=res.data.data;
+						this.$refs.popup.open();
+						}else{
+							console.log(res)
+						}
+				       
+				    }
+				});	
+			}else{
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+'/api/v1/pri/my/saveUserAddress', 
+				    data: {
+									   	"customerName":this.name,
+									   	"customerPhone":this.phone,
+									   	"region":this.address,
+									   	"addressDetails":this.addressStatus,
+									   	"isDefault":this.isDefault
+				
+				    },
+				    header: {
+						'token': uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+						this.popupMessage=res.data.data;
+						this.$refs.popup.open();
+						}else{
+							console.log(res)
+						}
+				       
+				    }
+				});	
+			}
+			  
 		   }
 	},
+	filters:{
+		changTypeFilter:function(val){
+			if(val){
+				return '修改地址'
+			}else{
+				return '添加地址'
+			}
+		}
+	}
 }
 </script>
 
@@ -141,6 +265,12 @@ export default {
 		background-color: #FF0000;
 		text-align: center;
 		line-height: 3em;
+		border-radius: 20upx;
+	}
+	.popupCenter-box{
+		width: 400upx;
+		padding: 40upx ;
+		text-align: center;
 		border-radius: 20upx;
 	}
 </style>

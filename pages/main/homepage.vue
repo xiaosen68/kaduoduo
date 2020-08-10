@@ -44,7 +44,7 @@
 					温馨提示
 				</view>
 				<view class="popup-content">
-					撒动画山东矿机按时
+					{{alertNaticeText}}
 				</view>
 			</view>
 		</uni-popup>
@@ -62,6 +62,7 @@
 				message:'',
 				ifScan:true,
 				naticeText:'',
+				alertNaticeText:'',
 				main :[
 					{
 						name:'会员PLus',
@@ -144,6 +145,34 @@
 					bottom:10
 				},
 			}
+		},onReady() {
+			// 获取平台推送
+			// 获取最近一条信息
+			uni.request({
+				method:'GET',
+			    url: this.$baseUrl+'/api/v1/pri/meassage/findByPlatformMessage', 
+			    data: {
+			    },
+			    header: {
+					'token':uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					if(res.data.code==0){
+						this.alertNaticeText=res.data.data[0].content;
+						let _this=this
+						if(this.alertNaticeText){
+							this.$refs.popupcenter.open();
+							setTimeout(function(){
+								_this.$refs.popupcenter.close()
+							},3000);
+						}
+					}
+			    },
+				complete(res) {
+					// console.log(res)
+				}
+			});
 		},
 		onLoad() {
 			// 获取最近一条信息
@@ -157,17 +186,18 @@
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
+					console.log(res)
 					if(res.data.code==0){
-						// this.$store.commit("setToken",res.data.data);
 						console.log(uni.getStorageSync('token'))
 						this.naticeText=res.data.data.content;
 						console.log(res.data)
 					}else if(res.data.code==-1){
-						// this.popupMessage=res.data.msg;
-						// this.$refs.popup.open();
 					}
 			       
-			    }
+			    },
+				complete(res) {
+					console.log(res)
+				}
 			});
 		},
 		methods: {
@@ -238,11 +268,8 @@
 			}
 		},
 		mounted:function(){
-			let _this=this
-			this.$refs.popupcenter.open();
-			setTimeout(function(){
-				_this.$refs.popupcenter.close()
-			},3000);
+			
+			
 			if(process.env.NODE_ENV === 'development')　{
 				_this.ifScan=false;
 			}

@@ -5,20 +5,20 @@
 			<view class="store-item" v-for="(item,index) in goodsList" v-if="!iflast(index)" >
 				<image class="good-pic" src="../../static/img/goods1.png" mode="aspectFit"></image>
 				<view class="goods-name">
-					{{item.goodsName}}
+					{{item.productName}}
 				</view>
 				<view class="goods-prices">
 					<view class="goods-cj-pri">
-						成交价：{{item.goodscj}} 
+						成交价：{{item.transactionPrice}} 
 					</view>
 					<view class="goods-js-pri">
-						寄售价：{{item.goodsjs}}
+						寄售价：{{item.mailingPrice}}
 					</view>
 				</view>
 				<view class="input-box-wrap">
 						<view class="input-btn">
 							<uni-icons class="in-btn" size="24"  type="minus" color="#8a8a8a" @click="minus(index)"></uni-icons>
-							<input class="input-btn-box" type="number" min="0" v-model="item.goodsNum" maxlength="2" @input="outinput" />
+							<input class="input-btn-box" type="number" min="0" v-model="item.amount" maxlength="2" @input="outinput" />
 							<uni-icons class="in-btn" size="24"  type="plus" color="#fb2e03" @click="plus(index)"></uni-icons>
 						</view>
 				</view>
@@ -28,20 +28,20 @@
 			<view class="store-item" v-for="(item,index) in goodsList"  v-if="iflast(index)">
 				<image class="good-pic" src="../../static/img/goods1.png" mode="aspectFit"></image>
 				<view class="goods-name">
-					{{item.goodsName}}
+					{{item.productName}}
 				</view>
 				<view class="goods-prices">
 					<view class="goods-cj-pri">
-						成交价：{{item.goodscj}} 
+						成交价：{{item.transactionPrice}} 
 					</view>
 					<view class="goods-js-pri">
-						寄售价：{{item.goodsjs}}
+						寄售价：{{item.mailingPrice}}
 					</view>
 				</view>
 				<view class="input-box-wrap">
 						<view class="input-btn">
 							<uni-icons class="in-btn" size="24" type="minus" color="#8a8a8a" @click="minus(index)"></uni-icons>
-							<input class="input-btn-box" type="number" min="0" v-model="item.goodsNum" maxlength="2" @input="outinput" />
+							<input class="input-btn-box" type="number" min="0" v-model="item.amount" maxlength="2" @input="outinput" />
 							<uni-icons class="in-btn" size="24" type="plus" color="#fb2e03" @click="plus(index)"></uni-icons>
 						</view>
 				</view>
@@ -59,11 +59,11 @@
 					color: #D41C26" class="buy-filled-icon" @click="circleItemClick(index)" v-if="item.select"></uni-icons>
 					<uni-icons type="circle"style="font-size: 30upx" class="buy-filled-icon" v-else @click="circleItemClick(index)"></uni-icons>
 					<view class="product-item-name">
-						{{item.goodsName}}
+						{{item.productName}}
 					</view>
 					<view class="product-pri">
-						<text class="product-cj">成交价:￥{{item.goodscj*item.goodsNum}} </text>
-						<text>挂牌价:￥{{item.goodsjs*item.goodsNum}}</text>
+						<text class="product-cj">成交价:￥{{item.transactionPrice*item.amount}} </text>
+						<text>挂牌价:￥{{item.mailingPrice*item.amount}}</text>
 					</view>
 				</view>
 			</view>
@@ -97,7 +97,6 @@
 		data() {
 			return {
 			popupCenterMessage:'',
-			pageType:'',
 				goodsList:[],
 				arrow:"arrowup",
 				circleShow:true,
@@ -110,8 +109,7 @@
 		},
 		onLoad() {
 			console.log(uni.getStorageSync('token'))
-			this.pageType=this.$Route.query.pageType;
-			console.log(this.pageType)
+			uni.setStorageSync('pageType',this.$Route.query.pageType)//从哪里跳转来的。
 			uni.request({
 				method:'POST',
 			    url: this.$baseUrl+'/api/v1/pri/shop/mailingProduct', 
@@ -124,15 +122,18 @@
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					// console.log(res)
+					console.log(res)
 					if(res.data.code==0){
-						this.goodsList=res.data.data;
+						this.goodsList=res.data.data.list;
+						this.goodsList.map((item)=>{
+							item.amount=0
+							return item
+						})
 						console.log(this.goodsList)
+						
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
-						// this.$refs.popup.open();
 					}else{
-						// console.log(res)
 					}
 			       
 			    }
@@ -153,23 +154,25 @@
 			},
 			// 减少
 			minus:function(n){
-				if(Math.floor(this.goodsList[n].goodsNum)>0){
-					this.goodsList[n].goodsNum=Math.floor(this.goodsList[n].goodsNum)-1;
+				if(Math.floor(this.goodsList[n].amount)>0){
+					this.goodsList[n].amount=Math.floor(this.goodsList[n].amount)-1;
 				}else{
-					this.goodsList[n].goodsNum=0;
+					this.goodsList[n].amount=0;
 				}
-				console.log(this.goodsList[n].goodsNum);
+				console.log(this.goodsList[n].amount);
 				this.addbuyCar();
 			},
 			// 增加
 			plus:function(n){
-				
-				if(Math.floor(this.goodsList[n].goodsNum)<99){
-					this.goodsList[n].goodsNum=Math.floor(this.goodsList[n].goodsNum)+1;
-				}else if(Math.floor(this.goodsList[n].goodsNum)>=99){
-					this.goodsList[n].goodsNum=99;
+				if(Math.floor(this.goodsList[n].amount)==0){
+					this.goodsList[n].amount=0;
 				}
-				console.log(this.goodsList[n].goodsNum);
+				if(Math.floor(this.goodsList[n].amount)<99){
+					this.goodsList[n].amount=Math.floor(this.goodsList[n].amount)+1;
+				}else if(Math.floor(this.goodsList[n].amount)>=99){
+					this.goodsList[n].amount=99;
+				}
+				console.log(this.goodsList[n].amount);
 				this.addbuyCar();
 			},
 			// 判断商品个数，设置列表布局
@@ -223,7 +226,7 @@
 				this.buycarList=[];
 				var goods={};
 				for(var i=0;i<this.goodsList.length;i++){
-					if(this.goodsList[i].goodsNum>0){
+					if(this.goodsList[i].amount>0){
 						goods=this.goodsList[i];
 						goods.select=true
 						this.buycarList.push(goods)
@@ -238,9 +241,9 @@
 			allGoodsCj:function(){
 				var allcj=0;
 				for (var i=0;i<this.buycarList.length;i++){
-					if(this.buycarList[i].goodsNum>0){
+					if(this.buycarList[i].amount>0){
 						if(this.buycarList[i].select){
-							allcj+=this.buycarList[i].goodscj*this.buycarList[i].goodsNum;
+							allcj+=this.buycarList[i].transactionPrice*this.buycarList[i].amount;
 							
 						}
 					}
@@ -251,9 +254,9 @@
 			allGoodsJs:function(){
 				var alljs=0;
 				for (var i=0;i<this.buycarList.length;i++){
-					if(this.buycarList[i].goodsNum>0){
+					if(this.buycarList[i].amount>0){
 						if(this.buycarList[i].select){
-						alljs+=this.buycarList[i].goodsjs*this.buycarList[i].goodsNum
+						alljs+=this.buycarList[i].mailingPrice*this.buycarList[i].amount
 						}
 					}
 				}
@@ -265,14 +268,14 @@
 				})
 				console.log(this.buyList)
 				if(this.buyList.length>0){
-					if(this.pageType==='1'){
+					if(uni.getStorageSync('pageType')==='1'){
 						this.$Router.push({path:'/pages/jishou/consume1',
 						query:{
 							buyList:JSON.stringify(this.buyList),
 							allGoodsjs:this.allGoodsjs,
 							allGoodscj:this.allGoodscj
 						}})
-					}else if(this.pageType==='3'){
+					}else if(uni.getStorageSync('pageType')==='3'){
 						this.$Router.push({path:'/pages/kuaijie/kaquankj1',
 						query:{
 							buyList:JSON.stringify(this.buyList),

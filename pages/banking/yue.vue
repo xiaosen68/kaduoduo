@@ -1,12 +1,21 @@
 <template>
 	<view class="">
+		<view  class="home-nav">
+			<uni-icons type="back" class="home-nav-item home-nav-item1" @click="backFn" color="#ffffff" size="24"></uni-icons>
+			<view >
+				余额
+			</view>
+			<view class=" home-nav-item"  @click="looktixianList">
+				提现明细
+			</view>
+		</view>
 		<view class="yue-box">
 			<view class="kzfenrun-box">
 				<text>当前可提现余额(元)</text>
 				<view class="kzfr-num">{{accountBalance.withdrawableAmount}}</view>
-					<router-link to="{name:'rolloutmoney'}"  class="roll-out-btn">
+					<view @click="gorollout" class="roll-out-btn">
 					我要结算
-					</router-link>
+					</view>
 				<view class="circle">
 					
 				</view>
@@ -67,13 +76,37 @@ export default {
 			// 	delta:1
 			// })
 			this.$Router.back(1)
-		}
+		},
+		gorollout(){
+			this.$Router.push({name:'rolloutmoney',params: { amount:this.accountBalance.withdrawableAmount }})
+		},
+		looktixianList(){
+			this.$Router.push({name:'rolloutlist'})
+		}	
 
 	}
 }
 </script>
 
 <style>
+	.home-nav{
+			border: none;
+			/* padding-top: var(--status-bar-height); */
+			padding: 40upx 20upx 20upx 20upx ;
+			font-size: 32upx;
+			color:#ffffff;
+			background-color:#d41c26;
+			display: flex;
+			justify-content: space-between;
+	}
+	.home-nav-item{
+		width: 140upx;
+		text-align: center;
+		font-size: 24upx;
+	}
+	.home-nav-item1{
+		text-align: left;
+	}
 .kzfenrun-box{
 	background-color: #d91829;
 	color: #FFFFFF;
@@ -104,7 +137,7 @@ export default {
 }
 .circle{
 	width: 100%;
-	height: 160upx;
+	height: 164upx;
 	margin-top: 100upx;
 	border-radius: 50% 50% 0 0;
 	background-color: #FFFFFF;

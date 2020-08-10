@@ -1,19 +1,28 @@
 <template>
 	<view class="shop-center-box">
-		<!-- <router-link class="shop-center" to="{name:'shop'}">商城首页</router-link> -->
-		<view class="location-item">
+		<view class="location-item add-location" @click="addLocation">
+			添加新地址
+		</view>
+		<view class="location-item" v-for="item in locationList">
 			<view class="user-name">
-				<text>收货人：哈哈哈</text>
-				<text class="user-tel">13071031213</text>
-				<view color="#a3a3a3">国贸创意楼阿斯达所大所</view>
+				<text>收货人：{{item.customer_name}}</text>
+				<text class="user-tel">{{item.customer_phone}}</text>
+				<view color="#a3a3a3">{{item.region+item.address_details}}</view>
 			</view>
 			<view class="location-status">
-				<label>
-					<checkbox value="" :checked="selectDefault" class="select-box" color="#FFCC33"  style="transform:scale(0.6)" /><text>设置默认地址</text>
-				</label>
-				<text  class="alter-btn" @click="alterlocationFn"> <uni-icons type="compose" color="#a3a3a3" ></uni-icons>修改</text>
+				<view class=" seting-default">
+					设为默认地址
+					 <switch @change="changeDefault(item.id)" style="transform:scale(0.7)" :checked="item.is_default==1?true:false"/>
+				</view>
+				
+				<view  class="alter-btn"  @click="changeLocation(item.id)"> <uni-icons type="compose" color="#a3a3a3" ></uni-icons>修改</view>
 			</view>
 		</view>
+		<uni-popup ref="popup" type="center">
+			<view class="popupCenter-box">
+				{{popupMessage}}
+			</view>		
+		</uni-popup>
 	</view>
 </template>
 
@@ -21,14 +30,75 @@
 	export default {
 	data (){
 		return{
-			selectDefault:true
+			selectDefault:true,
+			locationList:'',
+			popupMessage:'',
 		}
+	},
+	onLoad() {
+		this.locationrefresh();
 	},
 	methods:{
 		alterlocationFn:function(){
 			this.$Router.push({
 				name:'alterlocation'
 			})
+		},
+		addLocation:function(){
+			this.$Router.push({
+				name:'alterlocation'
+			})
+		},
+		changeDefault:function(id){
+			uni.request({
+				method:'POST',
+			    url: this.$baseUrl+'/api/v1/pri/my/isDefaultUserAddress', 
+			    data: {
+					id:id
+			    },
+			    header: {
+					'token': uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					if(res.data.code==0){
+						this.popupMessage=res.data.data;
+						this.$refs.popup.open();
+						uni.redirectTo({
+						    url: 'selectlocation'
+						});
+					}else{
+						// console.log(res)
+					}
+			       
+			    }
+			});	
+		},
+		locationrefresh(){
+			uni.request({
+				method:'POST',
+			    url: this.$baseUrl+'/api/v1/pri/my/getUserAddress', 
+			    data: {
+			    },
+			    header: {
+					'token': uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					// console.log(res)
+					if(res.data.code==0){
+						this.locationList=res.data.data.list;
+						// console.log(this.locationList)
+					}else{
+						console.log(res)
+					}
+			       
+			    }
+			});	
+		},
+		changeLocation:function(id){
+			this.$Router.push({ name: 'alterlocation', params: { id: id }})
 		}
 	},
 }
@@ -42,6 +112,9 @@
 		font-size: 24upx;
 		/* width: 40upx; */
 	}
+	.add-location{
+		text-align: center;
+	}
 	.location-item{
 		width: 660upx;
 		/* height: 200upx; */
@@ -54,9 +127,7 @@
 		margin-top: 20upx;
 	}
 	.alter-btn{
-		
-		position: absolute;
-		right: 20upx;
+		float: right;
 		color: #A3A3A3;
 	}
 	.user-name{
@@ -72,4 +143,14 @@
 	margin-top: 10upx;
 	line-height: 2em;
 }
+.popupCenter-box{
+		width: 400upx;
+		padding: 40upx ;
+		text-align: center;
+		border-radius: 20upx;
+	}
+	.seting-default{
+		display: inline-block;
+		width: 400upx;
+	}
 </style>

@@ -30,7 +30,7 @@
 			return {
 			name:'哈哈',
 			code:'',//二维码
-			codeVal:'asdasd',//生成二维码内容
+			codeVal:'',//生成二维码内容
 			size:400,//二维码大小
 			unit:'upx',//二维码大小单位
 			show:true,//
@@ -39,6 +39,11 @@
 			y: 0,
 			paystatus:''
 			}
+		},
+		created() {
+			this.codeVal=uni.getStorageSync('phone')
+			// this.codeVal='https://www.baidu.com/?tn=02003390_5_hao_pg'
+			this.name=uni.getStorageSync('userName');
 		},
 		methods: {
 			resultqr:function(e){
