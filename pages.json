@@ -302,9 +302,15 @@
 		}
 	},
 	{
-		"path": "pages/banking/rolloutlist",
+		"path": "pages/banking/rolloutmoneylist",
 		"style": {
 			"navigationBarTitleText": "提现列表"
+		}
+	},
+	{
+		"path": "pages/banking/rolloutmoneystatus",
+		"style": {
+			"navigationBarTitleText": "提现详情"
 		}
 	},
 	{
