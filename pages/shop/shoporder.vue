@@ -1,18 +1,18 @@
 <template>
 	<view class="shop-center-box">
-		<router-link to="{name:'selectlocation'}" class="location-status-box">
-			河南省***创意楼***孟**130***123**123
+		<router-link :to="{name:'selectlocation',params: {beforePage:'shoporder'}}" class="location-status-box">
+			{{locationStatus.region}}{{locationStatus.address_details}}{{locationStatus.customer_name}}{{locationStatus.customer_phone}}
 		</router-link>
 		<view class="shop-goods">
 			<view class="shop-goods-pic">
 				<image class="goods-pic" mode="widthFix" src="../../static/img/goods1.png" ></image>
 				<view class="shop-goods-status">
 					<view class="shop-name">
-						高档卡片
+						{{goodsStatus.productName}}
 					</view>
 					<view class="shop-money">
-						<text> {{goodsCj*zhekou | floorMoney}}元</text>
-						<text class="shop-yuan-money"> {{goodsCj}}元</text>
+						<text> {{goodsStatus.transactionPrice*goodsStatus.discount | price}}元</text>
+						<text class="shop-yuan-money"> {{goodsStatus.transactionPrice}}元</text>
 					</view>
 					<view class="input-box-wrap">
 							<view class="input-btn">
@@ -52,12 +52,80 @@
 
 				current: 0,
 				mode: 'default',
-				goodsName:'哈哈哈',
-				goodsCj:23123,
-				zhekou:0.7,
-				goodsNum:3,
+				goodsNum:1,
+				goodsId:'',
+				goodsStatus:'',
+				locationId:'',
+				locationStatus:'',
+				
 				
 		}
+	},
+	onLoad() {
+		this.goodsId=uni.getStorageSync('goodsId');
+		this.locationId=uni.getStorageSync('locationId');
+		// 获取产品信息
+		uni.request({
+			method:'POST',
+		    url: this.$baseUrl+'/api/v1/pri/shop/generalProductById', 
+		    data: {
+				id:this.goodsId,
+		
+		    },
+		    header: {
+				'token': uni.getStorageSync('token'),
+				'Content-Type':'application/json' //自定义请求头信息
+		    },
+		    success: (res) => {
+				console.log(res)
+				if(res.data.code==0){
+				this.goodsStatus=res.data.data;	
+				}
+		       
+		    }
+		});
+		// 获取地址信息
+		if(this.locationId){
+			uni.request({
+				method:'POST',
+			    url: this.$baseUrl+'/api/v1/pri/my/getUserAddressById', 
+			    data: {
+					id:this.locationId,
+			
+			    },
+			    header: {
+					'token': uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					if(res.data.code==0){
+					this.locationStatus=res.data.data;	
+					}
+			       
+			    }
+			});
+			
+		}else{
+			uni.request({
+				method:'POST',
+			    url: this.$baseUrl+'/api/v1/pri/my/getUserAddress', 
+			    data: {
+			    },
+			    header: {
+					'token': uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					if(res.data.code==0){
+					this.locationStatus=res.data.data.list[0];	
+					}
+			       
+			    }
+			});
+		}
+		console.log(this.locationStatus)
 	},
 	methods:{
 		// 减少
@@ -101,12 +169,12 @@
 	},
 	computed:{
 		allMoney:function(){
-			return Math.floor(this.goodsCj*this.zhekou)*this.goodsNum
+			return ((this.goodsStatus.transactionPrice*this.goodsStatus.discount).toFixed(2)*this.goodsNum).toFixed(2)
 		}	
 	},
 	filters:{
-		floorMoney:function(value){
-			return Math.floor(value)
+		price:function(value){
+			return value.toFixed(2)
 		}
 	}
 }

@@ -81,7 +81,7 @@ export default {
 			this.$Router.push({name:'rolloutmoney',params: { amount:this.accountBalance.withdrawableAmount }})
 		},
 		looktixianList(){
-			this.$Router.push({name:'rolloutlist'})
+			this.$Router.push({name:'rolloutmoneylist'})
 		}	
 
 	}

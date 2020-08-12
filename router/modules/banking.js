@@ -49,10 +49,17 @@ const banking = [
 	    },
 	},
 	{
-	    path: '/pages/banking/rolloutlist',
-	    name: 'rolloutlist',
+	    path: '/pages/banking/rolloutmoneylist',
+	    name: 'rolloutmoneylist',
 	    meta: {
 	        title: '提现列表',
+	    },
+	},
+	{
+	    path: '/pages/banking/rolloutmoneystatus',
+	    name: 'rolloutmoneystatus',
+	    meta: {
+	        title: '提现详情',
 	    },
 	},
 	{

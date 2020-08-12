@@ -28,10 +28,35 @@ export default {
   },
 	data (){
 		return{
-			kzmoney:12.00,//可转出金额,
+			kzmoney:'',//可转出金额,
 			zcmoney:'',//转出金额
 			popupCenterMessage:'',//弹框信息
 		}
+	},
+	onLoad() {
+	// 用户分润初始化
+	uni.request({
+		method:'GET',
+	    url: this.$baseUrl+'/api/v1/pri/my/myRevenueAmount', 
+	    data: {
+	    },
+	    header: {
+			'token': uni.getStorageSync('token'),
+			'Content-Type':'application/json' //自定义请求头信息
+	    },
+	    success: (res) => {
+			console.log(res)
+			if(res.data.code==0){
+				this.kzmoney=res.data.data.revenue;
+			}else if(res.data.code==-1){
+				this.popupMessage=res.data.msg;
+				// this.$refs.popup.open();
+			}else{
+				console.log(res)
+			}
+	       
+	    }
+	});	
 	},
 	methods:{
 		rolloutMoney:function(){
@@ -42,6 +67,11 @@ export default {
 				this.popupCenterMessage='转出金额大于可转出金额'
 					this.$refs.popupcenter.open();
 					this.zcmoney=this.kzmoney;
+			}else if(this.kzmoney<=0){
+				this.popupCenterMessage='转出金额太少，请重新填写'
+					this.$refs.popupcenter.open();
+			}else{
+				
 			}
 		}
 	}

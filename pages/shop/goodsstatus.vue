@@ -11,12 +11,13 @@
 		    </swiper>
 		</uni-swiper-dot>
 		<view class="goods-status-box">
-			<view class="goods-name">
-				{{goodsName}}
+			<view class="goods-name-box">
+				<text  class="goods-name">{{goodsStatus.productName}}</text>
+				<text class="goods-num">数量：{{goodsStatus.amount}}</text>
 			</view>
 			<view class="goods-price">
-				<text class="goods-price-zk">{{goodsCj*zhekou | price}} 元</text>
-				<text class="goods-price-cj">市场价：{{goodsCj}}元</text>
+				<text class="goods-price-zk">{{goodsStatus.transactionPrice*goodsStatus.discount | price}} 元</text>
+				<text class="goods-price-cj">市场价：{{goodsStatus.transactionPrice}}元</text>
 			</view>
 			<view class="goods-picture-box">
 				<image src="../../static/img/goods1.png" mode="widthFix"></image>
@@ -54,8 +55,34 @@
 				goodsCj:23123,
 				zhekou:0.7,
 				goodsNum:123,
+				goodsId:'',
+				goodsStatus:'',
 		
 		}
+	},
+	onLoad() {
+			uni.setStorageSync('goodsId',this.$Route.query.id);
+			this.goodsId=uni.getStorageSync('goodsId');
+			uni.request({
+				method:'POST',
+			    url: this.$baseUrl+'/api/v1/pri/shop/generalProductById', 
+			    data: {
+					id:this.goodsId,
+			
+			    },
+			    header: {
+					'token': uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					if(res.data.code==0){
+					this.goodsStatus=res.data.data;	
+					}
+			       
+			    }
+			});
+			console.log(this.goodsId)
 	},
 	methods:{
 		change:function(e) {
@@ -63,13 +90,14 @@
 		     },
 		goNextFn:function(){
 			this.$Router.push({
-				name:'shoporder'
+				name:'shoporder',
+				params: { id:this.goodsId }
 			})
 		}
 	},
 	filters:{
 		price:function(value){
-			return Math.floor(value)
+			return value.toFixed(2)
 		}
 	}
 }
@@ -99,7 +127,7 @@
 		border-radius: 40upx 0 0 40upx;
 		z-index: 99;
 	}
-	.goods-name{
+	.goods-name-box{
 		font-size: 28upx;
 		line-height: 3em;
 		padding: 0 40upx;
@@ -110,6 +138,15 @@
 		padding-bottom: 10upx;
 		border-bottom: 1upx solid #cacaca;
 		
+	}
+	.goods-name{
+		/* font-size: 28upx; */
+		display: inline-block;
+		width: 400upx;
+	}
+	.goods-num{
+		font-size: 20upx;
+		color: #A3A3A3;
 	}
 .goods-price-zk{
 	font-size: 28upx;

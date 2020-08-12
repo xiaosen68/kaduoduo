@@ -3,7 +3,7 @@
 		<view class="location-item add-location" @click="addLocation">
 			添加新地址
 		</view>
-		<view class="location-item" v-for="item in locationList">
+		<view class="location-item" v-for="item in locationList" @click="selectLocation(item)">
 			<view class="user-name">
 				<text>收货人：{{item.customer_name}}</text>
 				<text class="user-tel">{{item.customer_phone}}</text>
@@ -33,12 +33,23 @@
 			selectDefault:true,
 			locationList:'',
 			popupMessage:'',
+			beforePage:'',
 		}
 	},
 	onLoad() {
 		this.locationrefresh();
+		this.beforePage=this.$Route.query.beforePage;
 	},
 	methods:{
+		// 选择地址，跳转到消费订单
+		selectLocation:function(item){
+			if(this.beforePage=='shoporder'){
+				uni.setStorageSync('locationId',item.id)
+				this.$Router.push({
+					name:'shoporder'
+				})
+			}
+		},
 		alterlocationFn:function(){
 			this.$Router.push({
 				name:'alterlocation'

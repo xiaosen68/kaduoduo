@@ -17,30 +17,39 @@
 			</view>
 			<view class="store-box" >
 				<view class="shop-list">
-					<router-link to="{name:'goodsstatus'}" class="store-item" v-for="(item,index) in goodsList"  v-if="!iflast(index)">
+					<router-link :to="{name:'goodsstatus',params: {id: item.id}}" class="store-item" v-for="(item,index) in goodsList"  v-if="!iflast(index)">
 						<image class="good-pic" src="../../static/img/goods1.png" mode="aspectFit"></image>
 						<view class="goods-name">
-							{{item.goodsName}}
+							{{item.productName}}
 						</view>
 						<view class="goods-prices">
 							<view class="goods-cj-pri">
-								成交价：{{item.goodscj}} 
+								市场价：{{item.transactionPrice}} 
+							</view>
+						</view>
+						<view class="goods-prices">
+							<view class="goods-cj-pri">
+								折扣价：{{item.transactionPrice*item.discount |numberFilters}} 
 							</view>
 						</view>
 					</router-link>
 				</view>
 				<view class="shop-list2" >
-					<router-link to="{name:'goodsstatus'}" class="store-item" v-for="(item,index) in goodsList"  v-if="iflast(index)">
+					<router-link :to="{name:'goodsstatus',params: {id: item.id}}" class="store-item" v-for="(item,index) in goodsList"  v-if="iflast(index)">
 						<image class="good-pic" src="../../static/img/goods1.png" mode="aspectFit"></image>
 						<view class="goods-name">
-							{{item.goodsName}}
+							{{item.productName}}
 						</view>
 						<view class="goods-prices">
 							<view class="goods-cj-pri">
-								成交价：{{item.goodscj}} 
+								市场价：{{item.transactionPrice}} 
 							</view>
 						</view>
-					
+						<view class="goods-prices">
+							<view class="goods-cj-pri">
+								折扣价：{{item.transactionPrice*item.discount |numberFilters}} 
+							</view>
+						</view>
 					</router-link>
 				</view>
 			</view>
@@ -96,6 +105,29 @@ export default {
 			],
 		}
 	},
+	onLoad() {
+		uni.request({
+			method:'POST',
+		    url: this.$baseUrl+'/api/v1/pri/shop/generalProduct', 
+		    data: {
+				"page":1,
+				"size":20
+
+		    },
+		    header: {
+				'token': uni.getStorageSync('token'),
+				'Content-Type':'application/json' //自定义请求头信息
+		    },
+		    success: (res) => {
+				console.log(res)
+				if(res.data.code==0){
+					this.goodsList=res.data.data.list;
+					// this.rollStatus=res.data.data;
+				}
+		       
+		    }
+		});
+	},
 	methods:{
 		   change:function(e) {
 		            this.current = e.detail.current;
@@ -111,6 +143,11 @@ export default {
 				return false
 			}
 		},
+	},
+	filters:{
+		numberFilters:function(val){
+			return val.toFixed(2)
+		}
 	}
 }
 </script>
