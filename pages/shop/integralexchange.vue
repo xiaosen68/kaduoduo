@@ -2,7 +2,7 @@
 	<view class="integralexchange-box">
 		<view class="integral-usable-box">
 			<view class="integral-usable">
-				<text class="integral">989789</text>
+				<text class="integral">{{score}}</text>
 				<text>可用积分</text>
 			</view>
 			<view class="integral-unusable">
@@ -25,8 +25,11 @@
 export default {
 	data (){
 		return{
-			
+			score:0,
 		}
+	},
+	onLoad() {
+	this.score=uni.getStorageSync('score');
 	},
 	methods:{
 		

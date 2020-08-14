@@ -95,7 +95,7 @@
 			</view>
 			<view class="my-app-item">
 					<image src="../../static/img/bank/jiaocheng.png" class="my-app-item-pic" mode=""></image>
-					<uni-link href="http://a.eqxiu.com/s/hkWWZ7Ca" text="操作教程" showUnderLine="none" fontSize="20" color="#000000"></uni-link>
+					<uni-link href="http://a.eqxiu.com/s/hkWWZ7Ca" text="操作教程" showUnderLine="none" fontSize="18" color="#000000"></uni-link>
 					<uni-icons type="arrowright" class="my-app-item-arrow"></uni-icons>
 			</view>
 			<view class="my-app-item" @click="opens">
@@ -164,6 +164,8 @@
 					console.log(res)
 					if(res.data.code==0){
 						this.infodata=res.data.data;
+						this.infodata.score=Math.floor(this.infodata.score)
+						uni.setStorageSync('score',this.infodata.score);
 						uni.setStorageSync('userName', res.data.data.userName);
 						uni.setStorageSync('userPhone', res.data.data.userPhone);
 					}else if(res.data.code==-1){

@@ -70,7 +70,9 @@ export default {
 			showone:false,
 			showtwo:true,
 			showthree:true,
-			picList:[],
+			picList:[],//图片地址
+			pic:[],//图片内容
+			picuploadName:[],//上传后的地址信息
 			shenfeng:'',
 			name:'',
 			popupCenterMessage:'',
@@ -81,6 +83,7 @@ export default {
 		// console.log(this.$store.state.baseUrl)
 	},
 	methods:{
+		// 加载图片，获取图片信息
 		uploadPic: function(n){
 			let _this = this
 			uni.chooseImage({
@@ -89,15 +92,38 @@ export default {
 			    // sourceType: ['album'], //从相册选择
 			    success: function (res) {
 					let str=JSON.stringify(res.tempFilePaths[0]);
+					console.log(res)
 					str=str.substring(1,str.length-1);
-					_this.$set(_this.picList,n,str)
+					_this.$set(_this.picList,n,str);
+					_this.$set(_this.pic,n,res.tempFiles[0]);
+					_this.uploadImage(n)
 					console.log(_this.picList)
+					console.log(_this.pic)
 			    },
 				fail: function() {
 					
 				}
 			});
 		
+		},
+		// 上传图片，获取返回的图片返回路径
+		uploadImage:function(n){
+			let _this=this;
+			uni.uploadFile({
+				url:this.$baseUrl+'/api/v1/admin/upload/image',
+				file:this.pic[n],
+				name:'file',
+				header:{
+					'token':uni.getStorageSync('token')
+				},
+				formData:{
+					uploadType:'ID_CARD_URL'
+				},
+				success:(uploadFileRes)=>{
+					_this.$set(_this.picuploadName,n,JSON.parse(uploadFileRes.data).data);
+					console.log(_this.picuploadName)
+				}
+			})
 		},
 		// 身份证验证
 		shenfenzhengFn:function(n){
@@ -109,8 +135,9 @@ export default {
 				let namep=/[\u4e00-\u9fa5]/gm;
 				return namep.test(n)
 		},
+		// 上传个人实名信息，即图片名称
 		uploading:function(){
-			let _this=this;
+			console.log(this.picuploadName)
 			if(this.name==''){
 				this.popupCenterMessage='请填写姓名';
 				this.opens()
@@ -121,28 +148,24 @@ export default {
 				return false
 			}
 			if(this.shenfeng==''){
-				this.popupCenterMessage='请填写身份证号码'
+				this.popupCenterMessage='请填写身份证号码';
 				this.opens()
 				return false
 			}else if(!this.shenfenzhengFn(this.shenfeng)){
-				this.popupCenterMessage='身份证号码错误请重新填写'
-				// alert('')
+				this.popupCenterMessage='身份证号码错误请重新填写';
 				this.opens()
 				return false
 			}
-			if(this.picList.length<3){
-				this.popupCenterMessage='请上传身份证正、反面及手持身份证照片'
+			if(this.picuploadName.length<3){
+				this.popupCenterMessage='请上传身份证正、反面及手持身份证照片';
 				this.opens()
 				return false
 			}
-			// this.$goaxios("GET","/sadas","dasd").then((err)=>{
-				
-			// }).catch((err)=>{
-				
-			// });
+			
+	
 		},
 		opens:function(){
-			this.$refs.popup.open()
+			this.$refs.popup.open();
 		},
 	},
 	

@@ -268,8 +268,7 @@
 			}
 		},
 		mounted:function(){
-			
-			
+			let _this=this;
 			if(process.env.NODE_ENV === 'development')　{
 				_this.ifScan=false;
 			}

@@ -4,7 +4,7 @@
 		<view class="shop-jifen-box">
 			<view class="shop-jifen-wrap">
 				<text> 我的积分</text>
-				<view class="shop-jifen">23212321</view>
+				<view class="shop-jifen">{{score}}</view>
 			</view>
 			<view class="shop-jifen-class">
 				<router-link to="{name:'integraldetail'}" class="shop-jifen-item">
@@ -86,8 +86,11 @@ export default {
 	},
 	data (){
 		return{
-		
+		score:0,
 		}
+	},
+	onLoad() {
+	this.score=uni.getStorageSync('score');	
 	},
 	methods:{
 		popuFn:function(){
