@@ -63,9 +63,9 @@
 
 <style scoped>
 .scanpay-wary{
-	height: 100vh;
+	height: 90vh;
 	background-color: #FFAA36 ;
-	/* padding-top: 80upx; */
+	padding-top: 6vh;
 }
 .scanpay-box{
 	width: 660upx;
