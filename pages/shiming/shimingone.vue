@@ -71,7 +71,7 @@ export default {
 			showtwo:true,
 			showthree:true,
 			picList:[],//图片地址
-			pic:[],//图片内容
+			// pic:[],//图片内容
 			picuploadName:[],//上传后的地址信息
 			shenfeng:'',
 			name:'',
@@ -95,10 +95,10 @@ export default {
 					console.log(res)
 					str=str.substring(1,str.length-1);
 					_this.$set(_this.picList,n,str);
-					_this.$set(_this.pic,n,res.tempFiles[0]);
+					// _this.$set(_this.pic,n,res.tempFiles[0]);
 					_this.uploadImage(n)
 					console.log(_this.picList)
-					console.log(_this.pic)
+					// console.log(_this.pic)
 			    },
 				fail: function() {
 					
@@ -109,21 +109,22 @@ export default {
 		// 上传图片，获取返回的图片返回路径
 		uploadImage:function(n){
 			let _this=this;
-			uni.uploadFile({
-				url:this.$baseUrl+'/api/v1/admin/upload/image',
-				file:this.pic[n],
-				name:'file',
-				header:{
-					'token':uni.getStorageSync('token')
-				},
-				formData:{
-					uploadType:'ID_CARD_URL'
-				},
-				success:(uploadFileRes)=>{
-					_this.$set(_this.picuploadName,n,JSON.parse(uploadFileRes.data).data);
-					console.log(_this.picuploadName)
-				}
-			})
+					uni.uploadFile({
+						url:this.$baseUrl+'/api/v1/admin/upload/image',
+						// file:this.pic[n],
+						filePath:this.picList[n],
+						name:'file',
+						header:{
+							'token':uni.getStorageSync('token')
+						},
+						formData:{
+							uploadType:'ID_CARD_URL'
+						},
+						success:(uploadFileRes)=>{
+							_this.$set(_this.picuploadName,n,JSON.parse(uploadFileRes.data).data);
+							console.log(_this.picuploadName)
+						}
+					})
 		},
 		// 身份证验证
 		shenfenzhengFn:function(n){
