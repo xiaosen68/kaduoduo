@@ -70,7 +70,6 @@
 		    url: this.$baseUrl+'/api/v1/pri/shop/generalProductById', 
 		    data: {
 				id:this.goodsId,
-		
 		    },
 		    header: {
 				'token': uni.getStorageSync('token'),
@@ -162,8 +161,12 @@
 		},
 		selectPay:function(){
 			this.$Router.push({
-				name:'selectpay'
-			})
+				path:'/pages/shop/selectpay',
+				query:{
+					product:JSON.stringify(this.goodsStatus),
+					totalTransactionPrice:this.allMoney,
+					addressId:this.locationId,
+				}})
 		}
 		
 	},

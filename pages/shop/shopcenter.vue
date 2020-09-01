@@ -30,7 +30,7 @@
 					<uni-icons type="forward" color="#a3a3a3" style="vertical-align: bottom;"></uni-icons>
 				</router-link>
 			</view>
-			<view class="shop-deal-class-box">
+			<!-- <view class="shop-deal-class-box">
 				<router-link  class="shop-deal-class-item" to="{name:'delivery'}">
 					<image class="shop-deal-icon" src="../../static/img/daifu.png" mode=""></image>
 					<view class="">
@@ -56,7 +56,7 @@
 					</view>
 				</router-link>
 				
-			</view>
+			</view> -->
 		</view>
 		<router-link class="shop-area-box" to="{name:'selectlocation'}" >
 			我的收货地址

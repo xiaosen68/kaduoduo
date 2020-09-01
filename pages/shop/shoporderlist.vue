@@ -9,14 +9,14 @@
 			  @loadMore="loadMore" 
 			  @refresh="refresh" class="">
 			<view slot="content-list">
-				<router-link class="shop-order-item" to="{name:'shoporderitem'}">
+				<router-link class="shop-order-item" to="{name:'shoporderitem'}" v-for="item in showList">
 					<view class=" order-category-box">
-						<text class="order-category">消费订单</text> 
-						<text class="order-date-box">2020/03/23 12:12:12</text>
+						<text class="order-category">{{item.passageWayName}}</text> 
+						<text class="order-date-box">{{item.orderTime}}</text>
 					</view>
 					<view class="order-status-box">
 						<text class="order-money">
-							￥2223.00
+							{{item.totalTransactionPrice}}
 						</text>
 						<text class="order-status">
 							已支付
@@ -38,10 +38,13 @@ export default {
 	},
 	data (){
 		return{
-				list: [], // 数据集
-						currPage: 1, // 当前页码
-						totalPage: 1 ,// 总页数
+				showList: [], // 数据集
+				currPage: 1, // 当前页码
+				totalPage: 1 ,// 总页数
 		}
+	},
+	onLoad() {
+	this.getxiaofei();	
 	},
 	methods:{
 		loadMore() {
@@ -53,6 +56,31 @@ export default {
 		// 下拉刷新数据列表
 		refresh() {
 		  console.log('refresh')
+		},
+		getxiaofei:function(){
+				  uni.request({
+				  	method:'POST',
+				      url: this.$baseUrl+'/api/v1/pri/shop/generalOrderByUserId', 
+				      data: {
+						  size:this.size,
+						  page:this.currPage
+				      },
+				      header: {
+				  		'token':uni.getStorageSync('token'),
+				  		'Content-Type':'application/json' //自定义请求头信息
+				      },
+				      success: (res) => {
+				  		console.log(res)
+				  		if(res.data.code==0){
+							this.showList=res.data.data.list;
+							this.totalPage=res.data.total_page;
+				  		}else if(res.data.code==-1){
+				  			this.popupMessage=res.data.msg;
+				  		}else{
+				  		}
+				         
+				      }
+				  });	
 		},
 	},
 }

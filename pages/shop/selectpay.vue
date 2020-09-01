@@ -4,13 +4,13 @@
 			<view class="consume-money">
 				<view class="">
 					<image src="../../static/img/yinlian.png" mode="" class="consume-yinlain"></image>
-					<text class="cm-gm">购买金额:￥{{allGoodscj}}</text>
+					<text class="cm-gm">购买金额:￥{{totalTransactionPrice}}</text>
 				</view>
 
 				<view class="kq-select">
 					<text class="kq-title">支付信用卡：</text>
-					<image class="bank-head-img" src="../../static/img/bank/gongshang.png"></image>
-					<text class="con-bank-name">工商银行(9999)</text>
+					<image class="bank-head-img" :src="credit.bank_logo"></image>
+					<text class="con-bank-name">{{credit.bank}}{{credit.card_no|showbankCard}}</text>
 					<view class="loop-btn" @click="open1">
 						变更<uni-icons type="loop" style="color: #3cb4f1"></uni-icons>
 					</view>
@@ -20,23 +20,6 @@
 				<button type="" class="next-btn" @click="nextFn">下一步</button>
 			</view>
 		</view>
-<!-- 		<view id="cover" v-if="coverif" ></view>
-		<view class="bank-card-list"  v-if="coverif" >
-				<view class="esc-btn">
-					<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="coverif=false"></uni-icons>
-						选择信用卡
-					<text class="add-card">添加</text>
-				</view>
-				<view class="bank-card-item">
-					<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
-					<view class="bank-card-name">
-						<text>广发银行</text>
-						<text>\n</text>
-						<text>62**** **** **** 78</text>
-					</view>
-				</view>
-			</view>
-		 -->
 		 <uni-popup ref="popup1" type="bottom">
 		 	<view class="bank-card-list">
 		 	<view class="esc-btn">
@@ -44,12 +27,12 @@
 		 				选择信用卡
 		 			<text class="add-card"@click="addcredit">添加</text>
 		 		</view>
-		 		<view class="bank-card-item">
+		 		<view class="bank-card-item" v-for="item in creditCardList" @click="selectCredit(item)">
 		 			<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
 		 			<view class="bank-card-name">
-		 				<text>广发银行</text>
+		 				<text>{{item.bank}}</text>
 		 				<text>\n</text>
-		 				<text>62**** **** **** 78</text>
+		 				<text>{{item.card_no|showCard}}</text>
 		 			</view>
 		 		</view>
 		 		</view>
@@ -59,45 +42,86 @@
 		 		<view class="popup-title">
 		 			请选择支付通道
 		 		</view>
-				<view class="popup-name">
-					<image class="popup-icon" src="../../static/img/yinlian.png" mode=""></image>
-					<view class=" popup-name-status">
-						<view class="popup-name-title">
-							快捷TFT
-						</view>
-						<text class="popup-warning">提示：2小时内到账(不限日期，快速到账)</text>
-					</view>
-				</view>
-				<view class="pupou-tongdao">
-					<view class="popup-td-item">
-						<text>单笔限额：</text><text>10元-2万元</text>
-					</view>
-					<view class="popup-td-item">
-						<text>每日限额：</text><text>10元-2万元</text>
-					</view>
-					<view class="popup-td-item">
-						<text>交易时间：</text><text>07:00:00-23:00:00</text>
-					</view>
-					<view class="popup-td-item">
-						<text>交易费率：</text><text>10元-2万元</text>
-					</view>
-					<view class="popup-td-item">
-						<text>手续费用：</text><text>10元-2万元</text>
-					</view>
-					<view class="popup-td-item">
-						<text>实际到账：</text><text>10元-2万元</text>
-					</view>
-				</view>
-				<view class="popup-btn-box">
-					<view class="popup-btn-one" @click="changetdFN">
-						更换通道
-					</view>
-					<view class="popup-btn-two" @click="payFn">
-						确认支付
-					</view>
-				</view>
+		 				<view class="popup-name">
+		 					<image class="popup-icon" src="../../static/img/yinlian.png" mode=""></image>
+		 					<view class=" popup-name-status">
+		 						<view class="popup-name-title">
+		 							{{passageWay.passageWayName}}
+		 						</view>
+		 						<text class="popup-warning">提示：2小时内到账(不限日期，快速到账)</text>
+		 					</view>
+		 				</view>
+		 				<view class="pupou-tongdao">
+		 					<view class="popup-td-item">
+		 						<text>单笔限额：</text><text>100元-{{passageWay.sigleLimit}}元</text>
+		 					</view>
+		 					<view class="popup-td-item">
+		 						<text>每日限额：</text><text>100元-{{passageWay.oneDayLimit}}元</text>
+		 					</view>
+		 					<view class="popup-td-item">
+		 						<text>交易时间：</text><text>07:00:00-23:00:00</text>
+		 					</view>
+		 					<view class="popup-td-item">
+		 						<text>交易费率：</text><text>{{passageWay.myRate}}</text>
+		 					</view>
+		 					<view class="popup-td-item">
+		 						<text>手续费用：</text>{{allGoodscj*passageWay.myRate}}<text></text>
+		 					</view>
+		 					<view class="popup-td-item">
+		 						<text>实际到账：</text><text>{{allGoodscj*(1-passageWay.myRate)}}</text>
+		 					</view>
+		 				</view>
+		 				<view class="popup-btn-box">
+		 					<view class="popup-btn-one" @click="changetdFN">
+		 						更换通道
+		 					</view>
+		 					<view class="popup-btn-two" @click="payFn">
+		 						确认支付
+		 					</view>
+		 				</view>
 		 	</view>		
 		 </uni-popup>
+		 <uni-popup ref="popup3" type="bottom">
+		 	<view class="bank-card-list">
+		 	<view class="esc-btn">
+		 			<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="closedia2"></uni-icons>
+		 				选择通道
+		 		</view>
+		 		<view class="pay-item" v-for="item in passageWayList" @click="selectPay(item)" >
+		 			<view class="popup-name">
+		 				<image class="popup-icon" src="../../static/img/yinlian.png" mode=""></image>
+		 				<view class=" popup-name-status">
+		 					<view class="popup-name-title">
+		 						{{item.passageWayName}}
+		 					</view>
+		 					<text class="popup-warning">提示：2小时内到账(不限日期，快速到账)</text>
+		 				</view>
+		 			</view>
+		 			<view class="pupou-tongdao">
+		 				<view class="popup-td-item">
+		 					<text>单笔限额：</text><text>100元-{{item.sigleLimit}}元</text>
+		 				</view>
+		 				<view class="popup-td-item">
+		 					<text>每日限额：</text><text>100元-{{item.oneDayLimit}}元</text>
+		 				</view>
+		 				<view class="popup-td-item">
+		 					<text>交易时间：</text><text>07:00:00-23:00:00</text>
+		 				</view>
+		 				<view class="popup-td-item">
+		 					<text>交易费率：</text><text>{{item.myRate}}</text>
+		 				</view>
+		 				<view class="popup-td-item">
+		 					<text>手续费用：</text>{{allGoodscj*item.myRate}}<text></text>
+		 				</view>
+		 				<view class="popup-td-item">
+		 					<text>实际到账：</text><text>{{allGoodscj*(item.myRate)}}</text>
+		 				</view>
+		 			</view>
+		 		</view>
+		 		</view>
+		 </uni-popup>
+		 
+		 
 	</view>
 </template>
 
@@ -105,23 +129,97 @@
 	export default{
 		data() {
 			return {
-				buyList:[],
-				allGoodsjs:0,
-				allGoodscj:0,
+				product:[],
+				totalTransactionPrice:0,
+				addressId:0,
+				creditCardList:[],
+				credit:'',
+				passageWayList:[],
+				passageWay:'',
 				coverif:false
 			}
 		},
 		onLoad: function () {
-			this.buyList=JSON.parse(this.$Route.query.buyList)
-			this.allGoodsjs=this.$Route.query.allGoodsjs
-			this.allGoodscj=this.$Route.query.allGoodscj
-			console.log(this.buyList)
+			this.product=JSON.parse(this.$Route.query.product)
+			this.totalTransactionPrice=this.$Route.query.totalTransactionPrice
+			this.addressId=this.$Route.query.addressId;
+			uni.request({
+				method:'POST',
+			    url: this.$baseUrl+'/api/v1/pri/shop/initConsumptionZone', 
+			    data: {
+					orderType:'CONSUMPTION_ZONE',
+					totalTransactionPrice:this.totalTransactionPrice,
+					addressId:this.addressId,
+					product:this.product,
+			    },
+			    header: {
+					'token':uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					if(res.data.code==0){
+						this.creditCardList=res.data.data.userCreditCardlist;
+						this.credit=this.creditCardList[0];
+						console.log(this.credit)
+					}else if(res.data.code==-1){
+						this.popupMessage=res.data.msg;
+					}else{
+					}
+			       
+			    }
+			});	
+			
+			
+			console.log(this.product)
 		},
 		methods: {
+			selectPay:function(item){
+				this.passageWay=item;
+				this.closedia3();
+			},
 			changetdFN:function(){
-				this.$Router.push({name:'selectpay1'})
+				this.$refs.popup3.open()
+				
+			},
+			selectCredit:function(item){
+				this.credit=item;
+				this.closedia1();
+			},
+			selectPay:function(item){
+				this.passageWay=item;
+				this.closedia3();
 			},
 			payFn:function(){
+				
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+'/api/v1/pri/shop/generalOrder', 
+				    data: {
+						orderType:'CONSUMPTION_ZONE',
+						totalTransactionPrice:this.totalTransactionPrice,
+						creditId:this.credit.id,
+						passageWayId:this.passageWay.id,
+						addressId:this.addressId,
+						product:this.product
+				    },
+				    header: {
+						'token':uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+						}else{
+						}
+				       
+				    }
+				});	
+				
+				
+				
 					this.$Router.push({name:'selectpay2'})
 			},
 			 open1:function(){
@@ -141,6 +239,14 @@
 				this.$Router.push({name:'addcredit'})
 			}
 		},
+		filters:{
+			showCard(val){
+				return val.slice(0,4)+'**********'+val.slice(-4)
+			},
+			showbankCard(val){
+				return val.slice(-4)
+			}
+		}
 	};
 	
 </script>

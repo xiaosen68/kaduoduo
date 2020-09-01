@@ -14,7 +14,8 @@
 			</view>
 			<view class="input-box">
 				<text>发卡行:</text>
-				<text class="card-text">{{bank}}</text>
+				<input type="text" class="input-num" maxlength="10" v-model="bank" value=""placeholder="请输入发卡行" />
+				
 			</view>
 			<view class="input-box">
 				<text>安全码:</text>
@@ -69,6 +70,7 @@
 	},
 	onShow() {
 		this.cardholder=uni.getStorageSync('userName');
+		this.reservePhone=uni.getStorageSync('phone')
 	},
 	methods:{
 		// 填写卡号后，获取发卡行

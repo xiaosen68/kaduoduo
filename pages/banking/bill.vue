@@ -2,7 +2,7 @@
 	<view class="">
 		<view class="card-list-type">
 			<view class="card-list-credit " :class="{'type-select':cardtype}"  @click="typeclick(1)">
-				购买订单
+				消费订单
 			</view>
 			<view class="card-list-deposit":class="{'type-select':!cardtype}"  @click="typeclick(2)">
 				寄售订单
@@ -22,15 +22,15 @@
 					<router-link :to="{name:url,params:{}}" class="bill-detil" v-for="(item,index) in showList">
 						<view class="bill-date">
 							<view class="bill-type">
-								{{item.title}}
+								{{item.passageWayName}}
 							</view>
-							<text class="bill-date-box">{{item.time}}</text>
+							<text class="bill-date-box">{{item.orderTime}}</text>
 						</view>
 						<view class="bill-status">
 							<view class="bill-money">
-								{{item.money}}
+								{{item.totalTransactionPrice}}
 							</view>
-							<text>{{item.status}}</text>
+							<text>状态</text>
 						</view>
 					</router-link>
 				 </view>
@@ -50,29 +50,14 @@ export default {
 			list: [], // 数据集
 			currPage: 1, // 当前页码
 			totalPage: 1 ,// 总页数
+			size:20,
 			cardtype:true, 
 			url:'gmbilldetial',
 			showList:'',
-			jishou:[
-				{
-					title:'卡券寄售',
-					time:'2020-03-12 23:23:39',
-					money:'+290',
-					status:'已成功'
-				},
-			],
-			goumai:[
-				{
-					title:'卡券购买',
-					time:'2020-03-12 23:23:39',
-					money:'-290',
-					status:'预授权中'
-				}
-			]
 		}
 	},
 	onLoad(){
-		this.showList=this.goumai;
+		this.getxiaofei();
 	},
 	methods:{
 		loadMore() {
@@ -90,15 +75,65 @@ export default {
 	  		this.cardtype=true;
 	  		this.addcredit=true;
 			this.url='gmbilldetial'
-			this.showList=this.goumai;
+			this.getxiaofei()
 	  		
 	  	}else if(n===2){
 	  		this.cardtype=false;
 	  		this.addcredit=false;
 			this.url='jsbilldetial';
-			this.showList=this.jishou;
+			this.getjishou();
 	  	}
 	  },
+	  getxiaofei:function(){
+		  uni.request({
+		  	method:'POST',
+		      url: this.$baseUrl+'/api/v1/pri/shop/generalOrderByUserId', 
+		      data: {
+				  size:this.size,
+				  page:this.currPage
+		      },
+		      header: {
+		  		'token':uni.getStorageSync('token'),
+		  		'Content-Type':'application/json' //自定义请求头信息
+		      },
+		      success: (res) => {
+		  		console.log(res)
+		  		if(res.data.code==0){
+					this.showList=res.data.data.list;
+					this.totalPage=res.data.total_page;
+		  		}else if(res.data.code==-1){
+		  			this.popupMessage=res.data.msg;
+		  		}else{
+		  		}
+		         
+		      }
+		  });	
+	  },
+	  getjishou:function(){
+		  uni.request({
+		  	method:'POST',
+		      url: this.$baseUrl+'/api/v1/pri/shop/mailingOrderByUserId', 
+		      data: {
+		  				  size:this.size,
+		  				  page:this.currPage
+		      },
+		      header: {
+		  		'token':uni.getStorageSync('token'),
+		  		'Content-Type':'application/json' //自定义请求头信息
+		      },
+		      success: (res) => {
+		  		console.log(res)
+		  		if(res.data.code==0){
+		  					this.showList=res.data.data.list;
+		  					this.totalPage=res.data.total_page;
+		  		}else if(res.data.code==-1){
+		  			this.popupMessage=res.data.msg;
+		  		}else{
+		  		}
+		         
+		      }
+		  });	
+	  }
 	}
 }
 </script>

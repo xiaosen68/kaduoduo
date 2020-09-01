@@ -13,9 +13,9 @@
 					<text class="sxf">手续费:1元</text>
 				</view>
 				<view class="bank-select">
-					<image class="bank-head-img" src="../../static/img/bank/gongshang.png"></image>
+					<image class="bank-head-img" :src="credit.bank_logo"></image>
 					<view class="con-bank-static">
-						<text class="con-bank-name">{{creditCardList[0].bank}}({{creditCardList[0].card_no|showbankCard}})</text>
+						<text class="con-bank-name">{{credit.bank}}({{credit.card_no|showbankCard}})</text>
 						<text class="con-bank-type">信用卡</text>
 					</view>
 					<view class="loop-btn" @click="open1">
@@ -50,8 +50,8 @@
 		 				选择信用卡
 		 			<text class="add-card"@click="addcredit">添加</text>
 		 		</view>
-		 		<view class="bank-card-item" v-for="item in creditCardList">
-		 			<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
+		 		<view class="bank-card-item" v-for="item in creditCardList" @click="selectcredit(item)">
+		 			<image class="bank-item-head" :src="item.bank_logo" mode=""></image>
 		 			<view class="bank-card-name">
 		 				<text>{{item.bank}}</text>
 		 				<text>\n</text>
@@ -71,13 +71,16 @@
 				allGoodsjs:0,
 				allGoodscj:0,
 				coverif:false,
-				creditCardList:[]
+				creditCardList:[],
+				credit:'',
 			}
 		},
 		onLoad: function (option) {
 			this.buyList=JSON.parse(this.$Route.query.buyList)
+			console.log(this.buyList)
 			this.allGoodsjs=this.$Route.query.allGoodsjs
-			this.allGoodscj=this.$Route.query.allGoodscj
+			this.allGoodscj=this.$Route.query.allGoodscj;
+			// 初始化订单；
 			uni.request({
 				method:'POST',
 			    url: this.$baseUrl+'/api/v1/pri/shop/initMemberPlus', 
@@ -92,9 +95,11 @@
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
+					console.log(res)
 					if(res.data.code==0){
 						this.creditCardList=res.data.data.userCreditCardlist;
-						
+						this.credit=this.creditCardList[0];
+						console.log(this.credit)
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
 					}else{
@@ -120,20 +125,20 @@
 						query:{
 							buyList:JSON.stringify(this.buyList),
 							allGoodsjs:this.allGoodsjs,
-							allGoodscj:this.allGoodscj
+							allGoodscj:this.allGoodscj,
+							credit:this.credit.id
 						}})
 			},
 			addcredit:function(){
 				  this.$refs.popup1.close()
-				// uni.navigateTo({
-				// 	url:"../banking/addcredit"
-				// })
 				this.$Router.push({name:'addcredit'})
+			},
+			selectcredit:function(item){
+				this.credit=item;
+				this.$refs.popup1.close()
 			}
 		},
 		computed:{
-			
-			
 		},
 		filters:{
 			showCard(val){
@@ -230,7 +235,7 @@
 	}
 	.loop-btn{
 		display: inline-block;
-		width: 260upx;
+		width: 200upx;
 		text-align: right;
 		font-size: 30upx;
 		color: #3cb4f1;
@@ -260,7 +265,7 @@
 	}
 	.bank-card-list{
 		width: 710upx;
-		height: 200upx;
+		/* height: 200upx; */
 		background-color: #FFFFFF;
 		position: absolute;
 		bottom: 0;

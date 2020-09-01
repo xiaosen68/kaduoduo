@@ -267,6 +267,7 @@
 					return item.select;
 				})
 				console.log(this.buyList)
+				console.log(uni.getStorageSync('pageType'))
 				if(this.buyList.length>0){
 					if(uni.getStorageSync('pageType')==='1'){
 						this.$Router.push({path:'/pages/jishou/consume1',
@@ -282,7 +283,7 @@
 							allGoodsjs:this.allGoodsjs,
 							allGoodscj:this.allGoodscj
 						}})
-					}else if(this.pageType==='5'){
+					}else if(uni.getStorageSync('pageType')==='5'){
 						this.$Router.push({path:'/pages/kuaijie/kaquankj1',
 						query:{
 							buyList:JSON.stringify(this.buyList),

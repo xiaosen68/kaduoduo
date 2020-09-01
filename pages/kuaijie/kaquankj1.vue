@@ -10,18 +10,18 @@
 
 				<view class="kq-select">
 					<text class="kq-title">支付信用卡：</text>
-					<image class="bank-head-img" src="../../static/img/bank/gongshang.png"></image>
-					<text class="con-bank-name">工商银行(9999)</text>
+					<image class="bank-head-img" :src="credit.bank_logo"></image>
+					<text class="con-bank-name">{{credit.bank}}{{credit.card_no|showbankCard}}</text>
 					<view class="loop-btn" @click="open1">
 						变更<uni-icons type="loop" style="color: #3cb4f1"></uni-icons>
 					</view>
 					
 				</view>
 				<view class="kq-select kq-select1">
-					<text class="kq-title">寄售到账储蓄卡：</text>
-					<image class="bank-head-img" src="../../static/img/bank/gongshang.png"></image>
-					<text class="con-bank-name">工商银行(9999)</text>
-					<view class="loop-btn" @click="open1">
+					<text class="kq-title">结算储蓄卡：</text>
+					<image class="bank-head-img" src="deposit"></image>
+					<text class="con-bank-name">{{deposit.bank}}{{deposit.card_no|showbankCard}}</text>
+					<view class="loop-btn" @click="open2">
 						变更<uni-icons type="loop" style="color: #3cb4f1"></uni-icons>
 					</view>
 					
@@ -53,12 +53,29 @@
 		 				选择信用卡
 		 			<text class="add-card"@click="addcredit">添加</text>
 		 		</view>
-		 		<view class="bank-card-item">
+		 		<view class="bank-card-item" v-for="item in creditCardList" @click="selectCredit(item)">
 		 			<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
 		 			<view class="bank-card-name">
-		 				<text>广发银行</text>
+		 				<text>{{item.bank}}</text>
 		 				<text>\n</text>
-		 				<text>62**** **** **** 78</text>
+		 				<text>{{item.card_no|showCard}}</text>
+		 			</view>
+		 		</view>
+		 		</view>
+		 </uni-popup>
+		 <uni-popup ref="popup2" type="bottom">
+		 	<view class="bank-card-list">
+		 	<view class="esc-btn">
+		 			<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="closedia2"></uni-icons>
+		 				选择储蓄卡
+		 			<text class="add-card"@click="adddeposit">添加</text>
+		 		</view>
+		 		<view class="bank-card-item" v-for=" item in depositList" @click="selectDeposit(item)">
+		 			<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
+		 			<view class="bank-card-name">
+						<text>{{item.bank}}</text>
+		 				<text>\n</text>
+		 				<text>{{item.card_no|showCard}}</text>
 		 			</view>
 		 		</view>
 		 		</view>
@@ -72,29 +89,29 @@
 					<image class="popup-icon" src="../../static/img/yinlian.png" mode=""></image>
 					<view class=" popup-name-status">
 						<view class="popup-name-title">
-							快捷TFT
+							{{passageWay.passageWayName}}
 						</view>
 						<text class="popup-warning">提示：2小时内到账(不限日期，快速到账)</text>
 					</view>
 				</view>
 				<view class="pupou-tongdao">
 					<view class="popup-td-item">
-						<text>单笔限额：</text><text>10元-2万元</text>
+						<text>单笔限额：</text><text>100元-{{passageWay.sigleLimit}}元</text>
 					</view>
 					<view class="popup-td-item">
-						<text>每日限额：</text><text>10元-2万元</text>
+						<text>每日限额：</text><text>100元-{{passageWay.oneDayLimit}}元</text>
 					</view>
 					<view class="popup-td-item">
 						<text>交易时间：</text><text>07:00:00-23:00:00</text>
 					</view>
 					<view class="popup-td-item">
-						<text>交易费率：</text><text>10元-2万元</text>
+						<text>交易费率：</text><text>{{passageWay.myRate}}</text>
 					</view>
 					<view class="popup-td-item">
-						<text>手续费用：</text><text>10元-2万元</text>
+						<text>手续费用：</text>{{allGoodscj*passageWay.myRate}}<text></text>
 					</view>
 					<view class="popup-td-item">
-						<text>实际到账：</text><text>10元-2万元</text>
+						<text>实际到账：</text><text>{{allGoodscj*(1-passageWay.myRate)}}</text>
 					</view>
 				</view>
 				<view class="popup-btn-box">
@@ -107,6 +124,45 @@
 				</view>
 		 	</view>		
 		 </uni-popup>
+		 <uni-popup ref="popup3" type="bottom">
+		 	<view class="bank-card-list">
+		 	<view class="esc-btn">
+		 			<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="closedia2"></uni-icons>
+		 				选择通道
+		 		</view>
+		 		<view class="pay-item" v-for="item in passageWayList" @click="selectPay(item)" >
+		 			<view class="popup-name">
+		 				<image class="popup-icon" src="../../static/img/yinlian.png" mode=""></image>
+		 				<view class=" popup-name-status">
+		 					<view class="popup-name-title">
+		 						{{item.passageWayName}}
+		 					</view>
+		 					<text class="popup-warning">提示：2小时内到账(不限日期，快速到账)</text>
+		 				</view>
+		 			</view>
+		 			<view class="pupou-tongdao">
+		 				<view class="popup-td-item">
+		 					<text>单笔限额：</text><text>100元-{{item.sigleLimit}}元</text>
+		 				</view>
+		 				<view class="popup-td-item">
+		 					<text>每日限额：</text><text>100元-{{item.oneDayLimit}}元</text>
+		 				</view>
+		 				<view class="popup-td-item">
+		 					<text>交易时间：</text><text>07:00:00-23:00:00</text>
+		 				</view>
+		 				<view class="popup-td-item">
+		 					<text>交易费率：</text><text>{{item.myRate}}</text>
+		 				</view>
+		 				<view class="popup-td-item">
+		 					<text>手续费用：</text>{{allGoodscj*item.myRate}}<text></text>
+		 				</view>
+		 				<view class="popup-td-item">
+		 					<text>实际到账：</text><text>{{allGoodscj*(item.myRate)}}</text>
+		 				</view>
+		 			</view>
+		 		</view>
+		 		</view>
+		 </uni-popup>
 	</view>
 </template>
 
@@ -117,7 +173,13 @@
 				buyList:[],
 				allGoodsjs:0,
 				allGoodscj:0,
-				coverif:false
+				coverif:false,
+				credit:'',
+				creditCardList:[],
+				deposit:'',
+				depositList:[],
+				passageWayList:[],
+				passageWay:'',
 			}
 		},
 		onLoad: function () {
@@ -125,19 +187,148 @@
 			this.allGoodsjs=this.$Route.query.allGoodsjs
 			this.allGoodscj=this.$Route.query.allGoodscj
 			console.log(this.buyList)
+			console.log(uni.getStorageSync('pageType'))
+			
+			// 初始化卡券空间订单并获取信用卡列表
+			if(uni.getStorageSync('pageType')==5){
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+'/api/v1/pri/shop//initCardCouponSpace', 
+				    data: {
+						orderType:"CARD_COUPON_SPACE",
+						totalTransactionPrice:this.allGoodscj,
+						totalMailingPrice:this.allGoodsjs,
+						productList:this.buyList
+				    },
+				    header: {
+						'token':uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+							this.creditCardList=res.data.data.userCreditCardlist;
+							this.credit=this.creditCardList[0];
+							this.depositList=res.data.data.userSavingsCardList.sort(function(a,b){return b.defaultCard-a.defaultCard})
+							this.deposit=this.depositList[0];
+							this.passageWayList=res.data.data.passageWayList;
+							this.passageWay=this.passageWayList[0];
+							console.log(this.credit)
+							console.log(this.passageWayList)
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+						}else{
+						}
+				       
+				    }
+				});	
+			}else if(uni.getStorageSync('pageType')==3){
+				// 初始化快捷收款订单
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+'/api/v1/pri/shop//initExpressPayment', 
+				    data: {
+						orderType:"EXPRESS_PAYMENT",
+						totalTransactionPrice:this.allGoodscj,
+						totalMailingPrice:this.allGoodsjs,
+						productList:this.buyList
+				    },
+				    header: {
+						'token':uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+							this.creditCardList=res.data.data.userCreditCardlist;
+							this.credit=this.creditCardList[0];
+							this.depositList=res.data.data.userSavingsCardList.sort(function(a,b){return b.defaultCard-a.defaultCard})
+							this.deposit=this.depositList[0];
+							this.passageWayList=res.data.data.passageWayList;
+							this.passageWay=this.passageWayList[0];
+							console.log(this.credit)
+							console.log(this.passageWayList)
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+						}else{
+						}
+				       
+				    }
+				});	
+				
+				
+			}
 		},
 		methods: {
+			selectPay:function(item){
+				this.passageWay=item;
+				this.closedia3();
+			},
+			selectDeposit:function(item){
+				this.deposit=item;
+				this.closedia2();
+			},
+			selectCredit:function(item){
+				this.credit=item;
+				this.closedia1();
+			},
 			changetdFN:function(){
-				this.$Router.push({name:'kaquankj2'})
+				this.$refs.popup3.open()
+				
 			},
 			payFn:function(){
-					this.$Router.push({name:'kaquankj3'})
+				// 
+				let orderTypeCode='';
+				// 卡券空间
+				if(uni.getStorageSync('pageType')==5){
+					orderTypeCode='CARD_COUPON_SPACE'
+					
+					}else if(uni.getStorageSync('pageType')==3){
+						// 快捷收卡
+						orderTypeCode='EXPRESS_PAYMENT'
+					}
+				
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+'/api/v1/pri/shop/mailingOrder', 
+				    data: {
+						orderType:orderTypeCode,
+						totalTransactionPrice:this.allGoodscj,
+						totalMailingPrice:this.allGoodsjs,
+						creditId:this.credit.id,
+						savingsId:this.deposit.id,
+						passageWayId:this.passageWay.id,
+						productList:this.buyList
+				    },
+				    header: {
+						'token':uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+						}else{
+						}
+				       
+				    }
+				});	
 			},
 			 open1:function(){
 			         this.$refs.popup1.open()
 			},
+			open2:function(){
+				this.$refs.popup2.open()
+			},
 			 closedia1:function(done){
 				  this.$refs.popup1.close()
+			},
+			closedia2:function(done){
+				  this.$refs.popup2.close()
+			},
+			closedia3:function(done){
+				  this.$refs.popup3.close()
 			},
 			nextFn:function(){
 				this.$refs.popupcenter2.open();
@@ -148,8 +339,19 @@
 				// 	url:"../banking/addcredit"
 				// })
 				this.$Router.push({name:'addcredit'})
+			},
+			adddeposit:function(){
+				this.$Router.push({name:'adddeposit'})
 			}
 		},
+		filters:{
+			showCard(val){
+				return val.slice(0,4)+'**********'+val.slice(-4)
+			},
+			showbankCard(val){
+				return val.slice(-4)
+			}
+		}
 	};
 	
 </script>
@@ -222,7 +424,7 @@
 	.kq-title{
 		display: inline-block;
 		font-size: 24upx;
-		width: 200upx;
+		width: 160upx;
 	}
 	.bank-head-img{
 		width: 40upx;
@@ -243,12 +445,12 @@
 		color: #a3a3a3;
 	}
 	.loop-btn{
+		float: right;
 		display: inline-block;
 		width: 160upx;
 		text-align: right;
 		font-size: 30upx;
 		color: #3cb4f1;
-		/* line-height: 100upx; */
 		vertical-align: middle;
 	}
 	.next-btn{
@@ -274,7 +476,7 @@
 	}
 	.bank-card-list{
 		width: 710upx;
-		height: 200upx;
+		/* height: 200upx; */
 		background-color: #FFFFFF;
 		position: absolute;
 		bottom: 0;
@@ -298,6 +500,12 @@
 		right: 20upx;
 		color: #A3A3A3;
 		font-size: 28upx;
+	}
+	.pay-item{
+		/* width: 750upx; */
+		height:220upx;
+		padding: 20upx;
+		border-bottom: 2upx solid #e5e5e5;
 	}
 	.bank-card-item{
 		width: 750upx;

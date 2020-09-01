@@ -36,11 +36,11 @@
 				</view>
 				<view class="select-bank-box" @click="open1()">
 					<image class="back-head-box" src="../../static/img/bank/gongshang.png" mode=""></image>
-					<text>建设银行</text>
+					<text>{{deposit.bank}}</text>
 					<uni-icons type="forward"></uni-icons>
 				</view>
 			</view>
-			<view class="back-select last">
+		<!-- 	<view class="back-select last">
 				<view class="arr-select-icon"  >
 					<text>开户行省市</text>
 				</view>
@@ -48,7 +48,7 @@
 					<text>河南省-郑州市</text>
 					<uni-icons type="forward"></uni-icons>
 				</view>
-			</view>
+			</view> -->
 		</view>
 		<view class="safe-box">
 			<view class="safe-one">
@@ -63,22 +63,6 @@
 		<view class="next-btn-box">
 			<view type="" class="next-btn" @click="buyBtn">确认购买并寄售</view>
 		</view>
-		<!-- <view id="cover" v-if="coverif" ></view>
-		<view class="bank-card-list"  v-if="coverif" >
-				<view class="esc-btn">
-					<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="coverif=false"></uni-icons>
-						选择储蓄卡
-					<text class="add-card">添加</text>
-				</view>
-				<view class="bank-card-item">
-					<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
-					<view class="bank-card-name">
-						<text>广发银行</text>
-						<text>\n</text>
-						<text>62**** **** **** 78</text>
-					</view>
-				</view>
-			</view> -->
 		<uni-popup ref="popup1" type="bottom">
 			<view class="bank-card-list">
 			<view class="esc-btn">
@@ -86,12 +70,12 @@
 						选择储蓄卡
 					<text class="add-card" @click="adddeposit">添加</text>
 				</view>
-				<view class="bank-card-item">
+				<view class="bank-card-item" v-for="item in depositlist" @click="selectdeposit(item)">
 					<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
 					<view class="bank-card-name">
-						<text>广发银行</text>
+						<text>{{item.bank}}</text>
 						<text>\n</text>
-						<text>62**** **** **** 78</text>
+						<text>{{item.cardNo}}</text>
 					</view>
 				</view>
 				</view>
@@ -117,15 +101,52 @@
 				buyList:[],
 				allGoodsjs:0,
 				allGoodscj:0,
-				dianfuMoney:0
+				dianfuMoney:0,
+				depositlist:'',
+				deposit:'',
+				creditId:'',
 			}
 		},
 		onLoad: function (option) {
-			this.buyList=JSON.parse(this.$Route.query.buyList)
-			this.allGoodsjs=this.$Route.query.allGoodsjs
-			this.allGoodscj=this.$Route.query.allGoodscj
+			this.buyList=JSON.parse(this.$Route.query.buyList);
+			this.allGoodsjs=this.$Route.query.allGoodsjs;
+			this.allGoodscj=this.$Route.query.allGoodscj;
+			this.creditId=this.$Route.query.credit;
+			this.getdeposit();
 		},
 		methods: {
+			// 获取储蓄卡
+			getdeposit(){
+				uni.request({
+					method:'GET',
+				    url: this.$baseUrl+'/api/v1/pri/my/getUserSavingsCard', 
+				    data: {
+				    },
+				    header: {
+						'token': uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+							// 默认卡排序
+							this.depositlist=res.data.data.sort(function(a,b){return b.defaultCard-a.defaultCard})
+							this.deposit=this.depositlist[0];
+							console.log(this.depositlist)
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+							// this.$refs.popup.open();
+						}else{
+							console.log(res)
+						}
+				       
+				    }
+				});	
+			},
+			selectdeposit:function(item){
+				this.deposit=item;
+					this.$refs.popup1.close();
+			},
 			 open1:function(){
 			         this.$refs.popup1.open()
 			}, 
@@ -153,11 +174,41 @@
 				// uni.navigateTo({
 				// 	url:'../states/state?message='+'成功&type=waiting'
 				// })
-				this.$Router.push({path:'/pages/states/state',
-				query:{
-					message:'成功',
-					type:'waiting'
-				}})
+				// 会员Plus支付接口
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+'/api/v1/pri/shop/mailingOrder', 
+				    data: {
+						orderType:"MEMBER_PLUS",
+						totalTransactionPrice:this.allGoodscj,
+						totalMailingPrice:this.allGoodsjs,
+						creditId:this.creditId,
+						savingsId:this.deposit.id,
+						passageWayId:1,
+						productList:this.buyList
+				    },
+				    header: {
+						'token':uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+							this.creditCardList=res.data.data.userCreditCardlist;
+							this.credit=this.creditCardList[0];
+							console.log(this.credit)
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+						}else{
+						}
+				       
+				    }
+				});					
+				// this.$Router.push({path:'/pages/states/state',
+				// query:{
+				// 	message:'成功',
+				// 	type:'waiting'
+				// }})
 			},
 			adddeposit:function(){
 				
@@ -348,7 +399,7 @@
 	}
 	.bank-card-list{
 		width: 710upx;
-		height: 200upx;
+		/* height: 200upx; */
 		background-color: #FFFFFF;
 		position: absolute;
 		bottom: 0;

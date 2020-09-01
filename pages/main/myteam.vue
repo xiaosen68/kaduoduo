@@ -46,7 +46,38 @@
 
 <script>
 export default {
-	
+	data(){
+		return {
+			
+		}
+	},
+	onLoad() {
+			uni.request({
+				method:'POSt',
+			    url: this.$baseUrl+'/api/v1/admin/mall/deleteSharingPoster', 
+			    data: {
+					id:''
+			    },
+			    header: {
+					'token': uni.getStorageSync('token'),
+					// 'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					if(res.data.code==0){
+						this.myRate=res.data.data;
+						// console.log()
+						// console.log(this.myRate)
+					}else if(res.data.code==-1){
+						this.popupMessage=res.data.msg;
+						// this.$refs.popup.open();
+					}else{
+						// console.log(res)
+					}
+			       
+			    }
+			});	
+	},
 }
 </script>
 

@@ -11,7 +11,7 @@
 				<view class="shiming-text">
 					身份证号:
 				</view>
-				<input type="text" value="" maxlength="18" v-model="shenfeng" class="shiming-input" placeholder="请输入身份证号码"/>
+				<input type="text" value="" maxlength="18" v-model="idNumber" class="shiming-input" placeholder="请输入身份证号码"/>
 			</view>
 		</view>
 		<view class="shiming-two">
@@ -73,7 +73,7 @@ export default {
 			picList:[],//图片地址
 			// pic:[],//图片内容
 			picuploadName:[],//上传后的地址信息
-			shenfeng:'',
+			idNumber:'',
 			name:'',
 			popupCenterMessage:'',
 			
@@ -148,11 +148,11 @@ export default {
 				this.opens()
 				return false
 			}
-			if(this.shenfeng==''){
+			if(this.idNumber==''){
 				this.popupCenterMessage='请填写身份证号码';
 				this.opens()
 				return false
-			}else if(!this.shenfenzhengFn(this.shenfeng)){
+			}else if(!this.shenfenzhengFn(this.idNumber)){
 				this.popupCenterMessage='身份证号码错误请重新填写';
 				this.opens()
 				return false
@@ -161,6 +161,40 @@ export default {
 				this.popupCenterMessage='请上传身份证正、反面及手持身份证照片';
 				this.opens()
 				return false
+			}else {
+				console.log(this.picuploadName[2])
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+'/api/v1/pri/my/realNameAuthentication', 
+				    data: {
+						userId:21,
+						realName:this.name,
+						idNumber:this.idNumber,
+				        phone: uni.getStorageSync('userPhone'),
+						frontPhotoOfIdCard:this.picuploadName[0],
+						reversePhotoOfIdCard:this.picuploadName[1],
+						holdingIdCard:this.picuploadName[2]
+				    },
+				    header: {
+						'Content-Type':'application/json' ,//自定义请求头信息
+						'token':uni.getStorageSync('token'),
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+							this.popupMessage=res.data.msg;
+							this.$refs.popup.open();
+								this.$Router.pushTab('/pages/main/mycenter')
+							
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+						}else{
+							this.popupMessage=res.data.msg;
+							this.$refs.popup.open();
+						}
+				       
+				    }
+				});
 			}
 			
 	

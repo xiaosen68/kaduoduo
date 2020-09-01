@@ -52,7 +52,6 @@ export default {
 	},
 	onShow() {
 		this.cardholder=uni.getStorageSync('userName');
-		// console.log(this.cardholder)
 	},
 	methods:{
 		getcard(){
@@ -96,11 +95,10 @@ export default {
 				
 				// 添加储蓄卡
 		adddeposit(){
-			console.log(this.accountOpeningProvince+this.cardNo+this.cardholder+this.reservePhone)
-			
 			if(this.accountOpeningProvince==''||this.cardNo==''||this.cardholder==''||this.reservePhone==""){
 				return false
 				}
+				console.log('33')
 			uni.request({
 				method:'POST',
 			    url: this.$baseUrl+'/api/v1/pri/my/addUserSavingsCard', 
