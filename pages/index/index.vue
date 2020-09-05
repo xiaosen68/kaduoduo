@@ -86,11 +86,13 @@
 						'Content-Type': 'application/json' //自定义请求头信息
 					},
 					success: (res) => {
+						console.log('res')
 						console.log(res)
 						if (res.data.code == 0) {
 
 							// 储存token
-							uni.setStorageSync('token', res.data.data);
+							uni.setStorageSync('token', res.data.data.token);
+							uni.setStorageSync('userId', res.data.data.userId);
 							// this.$store.commit("setToken",res.data.data);
 							// console.log(uni.getStorageSync('token'))
 							this.$Router.pushTab('/pages/main/homepage')

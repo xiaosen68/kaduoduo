@@ -11,7 +11,10 @@
 				<view class="shiming-text">
 					身份证号:
 				</view>
-				<input type="text" value="" maxlength="18" v-model="idNumber" class="shiming-input" placeholder="请输入身份证号码"/>
+				<input type="text" value="" maxlength="18" v-model="idNumber" 
+				class="shiming-input" placeholder="请输入身份证号码"/>
+				<uni-icons type="camera" class="card-icons" size="20" @click="getcardFn"></uni-icons>
+				
 			</view>
 		</view>
 		<view class="shiming-two">
@@ -83,6 +86,54 @@ export default {
 		// console.log(this.$store.state.baseUrl)
 	},
 	methods:{
+		//获取银行卡图片，
+		getcardFn:function(){
+			let _this = this
+			uni.chooseImage({
+			    count: 1, //默认9
+			    success: function (res) {
+					let str = res.tempFilePaths[0];
+					console.log(res)
+					var reader = new FileReader()
+						reader.onloadend = function() {
+							_this.cardPic= reader.result;
+							_this.getCardBase();
+						}
+						if (res.tempFiles[0]) {
+						 reader.readAsDataURL(res.tempFiles[0])
+					   }
+			    },
+				fail: function() {
+					
+				}
+			});
+		},
+		// 上传图片，获取卡号；
+		getCardBase:function(){
+			console.log(this.cardPic);
+			uni.request({
+				method:'POST',
+			    url: 'http://idcardocrc.shumaidata.com/getidcardocrc', 
+				data:{
+					image:this.cardPic
+				},
+			    header: {
+					'Content-Type':'application/x-www-form-urlencoded',
+					'Authorization': 'APPCODE fa541816acdc4234b18dff3ae5f98a26'	
+			    },
+			    success: (res) => {
+					if(res.statusCode==200){
+						console.log(res.data)
+						this.idNumber=res.data.data.info.number;
+						this.name=res.data.data.info.name;
+						// this.cardNo=res.data.data.card_number;
+						// console.log(this.cardNo)
+						// console.log(this.accountBalance)
+					}else{
+					}
+			    }
+			});	
+		},
 		// 加载图片，获取图片信息
 		uploadPic: function(n){
 			let _this = this
@@ -120,8 +171,9 @@ export default {
 						formData:{
 							uploadType:'ID_CARD_URL'
 						},
-						success:(uploadFileRes)=>{
-							_this.$set(_this.picuploadName,n,JSON.parse(uploadFileRes.data).data);
+						success:(res)=>{
+							console.log(JSON.parse((res.data)).data.url);
+							_this.$set(_this.picuploadName,n,JSON.parse((res.data)).data.url);
 							console.log(_this.picuploadName)
 						}
 					})
@@ -294,4 +346,9 @@ export default {
 	text-align: center;
 	border-radius: 20upx;
 }
+.card-icons{
+		position: absolute;
+		right: 40upx;
+		font-size: 24upx;
+	}
 </style>

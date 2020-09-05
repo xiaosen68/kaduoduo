@@ -38,11 +38,18 @@
 		},
 		data() {
 			return {
+			scanVal:'',
 			name:'哈哈',
-			tel:'31928198218',
+			tel:'00000',
 			moneyNum:'',
 			paystatus:''
 			}
+		},
+		onLoad() {
+			this.scanVal=this.$Route.query.pageType;
+			this.scanVal='https://www.baidu.com/?phone:13071035369&userName:王森';
+			this.tel=(this.scanVal.split('?')[1]).split('&')[0].split(':')[1];
+			this.name=(this.scanVal.split('?')[1]).split('&')[1].split(':')[1];
 		},
 		methods: {
 			buyBtn:function(){
@@ -63,9 +70,6 @@
 				}
 			}
 		},
-		onLoad:function(){
-			this.name=this.$Route.query.payname.slice(0,3);
-		}
 	}
 	
 </script>

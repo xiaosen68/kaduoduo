@@ -2,7 +2,7 @@
 	<view class="consume-box">
 		<view class="cosume2-money-num">
 			<view class="cosume2-money-df">
-				寄售垫付金额
+				垫付金额
 			</view>
 			<text class="money-df">{{dianfuMoney}}<text style="font-size: 30upx;">(元)</text></text>
 			<view class="cosume2-money-box">
@@ -105,6 +105,8 @@
 				depositlist:'',
 				deposit:'',
 				creditId:'',
+				myRate:'',
+				consumptionRate:'',
 			}
 		},
 		onLoad: function (option) {
@@ -112,6 +114,9 @@
 			this.allGoodsjs=this.$Route.query.allGoodsjs;
 			this.allGoodscj=this.$Route.query.allGoodscj;
 			this.creditId=this.$Route.query.credit;
+			this.myRate=this.$Route.query.myRate;
+			this.consumptionRate=this.$Route.query.consumptionRate;
+			this.dianfuMoney=Math.floor((this.allGoodscj*(1-this.myRate)-this.consumptionRate)*100)/100;
 			this.getdeposit();
 		},
 		methods: {

@@ -9,8 +9,8 @@
 				</view>
 				<view class="cm-feilv">
 					<uni-icons type="help"></uni-icons>
-					<text class="fl">费率:2.1%+1.00元</text>
-					<text class="sxf">手续费:1元</text>
+					<text class="fl">费率:{{passageWay.myRate}}</text>
+					<text class="sxf">手续费:{{passageWay.consumptionRate}}元</text>
 				</view>
 				<view class="bank-select">
 					<image class="bank-head-img" :src="credit.bank_logo"></image>
@@ -60,6 +60,9 @@
 		 		</view>
 		 		</view>
 		 </uni-popup>
+		 <uni-popup ref="popup" type="center" class="popupstyle">
+		 	<view class="popupCenter-box">{{popupMessage}}</view>
+		 </uni-popup>
 	</view>
 </template>
 
@@ -73,6 +76,9 @@
 				coverif:false,
 				creditCardList:[],
 				credit:'',
+				passageWay:'',
+				tradable:false,
+				popupMessage:'',
 			}
 		},
 		onLoad: function (option) {
@@ -88,7 +94,7 @@
 					orderType:"MEMBER_PLUS",
 					totalTransactionPrice:this.allGoodscj,
 					totalMailingPrice:this.allGoodsjs,
-					productList:this.buyList
+					productList:this.buyList,
 			    },
 			    header: {
 					'token':uni.getStorageSync('token'),
@@ -99,6 +105,7 @@
 					if(res.data.code==0){
 						this.creditCardList=res.data.data.userCreditCardlist;
 						this.credit=this.creditCardList[0];
+						this.passageWay=res.data.data.passageWay;
 						console.log(this.credit)
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
@@ -121,13 +128,19 @@
 				// 	url:'./consume2?buyList='+ encodeURIComponent(JSON.stringify(this.buyList))+'&allGoodsjs='+this.allGoodsjs+'&allGoodscj='+this.allGoodscj
 				// })
 				
-				this.$Router.push({path:'/pages/jishou/consume2',
-						query:{
-							buyList:JSON.stringify(this.buyList),
-							allGoodsjs:this.allGoodsjs,
-							allGoodscj:this.allGoodscj,
-							credit:this.credit.id
-						}})
+				if(!this.tradable){
+					this.getTradable();
+				}else{
+					this.$Router.push({path:'/pages/jishou/consume2',
+							query:{
+								buyList:JSON.stringify(this.buyList),
+								allGoodsjs:this.allGoodsjs,
+								allGoodscj:this.allGoodscj,
+								credit:this.credit.id,
+								myRate:this.passageWay.myRate,
+								consumptionRate:this.passageWay.consumptionRate
+							}})
+				}
 			},
 			addcredit:function(){
 				  this.$refs.popup1.close()
@@ -135,10 +148,40 @@
 			},
 			selectcredit:function(item){
 				this.credit=item;
+				this.getTradable();
 				this.$refs.popup1.close()
-			}
-		},
-		computed:{
+			},
+			// 查询是否可交易
+			getTradable:function(){
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+'/api/v1/pri/my/getTradable', 
+				    data: {
+						cardId:this.credit.id
+				    },
+				    header: {
+						'token':uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+							if(res.data=="Y"){
+								this.tradable=true;
+							}else if(res.data=="N"){
+								this.tradable=false;
+								this.popupMessage='该信用卡不在交易日期内，请重新选择卡片';
+								this.$refs.popup.open();
+							}
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+							// this.$refs.popup.open();
+							this.tradable=true;
+						}
+				    }
+				});	
+			},
+		
 		},
 		filters:{
 			showCard(val){
@@ -304,5 +347,16 @@
 	.bank-card-name{
 		display: inline-block;
 		margin-left: 30upx;
+	}
+	.popupstyle {
+		background-color: #FFFFFF;
+		padding: 20upx 20upx;
+	}
+	
+	.popupCenter-box {
+		width: 400upx;
+		padding: 40upx;
+		text-align: center;
+		border-radius: 20upx;
 	}
 </style>

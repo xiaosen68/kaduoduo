@@ -181,6 +181,8 @@ export default {
 						if(res.data.code==0){
 						this.popupMessage=res.data.data;
 						this.$refs.popup.open();
+						
+						this.$Router.push({name:'selectlocation'})
 						}else{
 							console.log(res)
 						}

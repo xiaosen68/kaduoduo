@@ -22,7 +22,7 @@
 				<view class="card-item" v-for="item in cardList">
 					<view class="card-item-box1">
 						<view class="card-item-img-box">
-							<image class="card-item-img"  src="../../static/img/bank/gongshang.png" mode=""></image>
+							<image class="card-item-img"  :src="item.bankLogo" mode=""></image>
 						</view>
 						<text>{{item.bank}} {{item.cardholder|nameFilters}}</text>
 						<view class="defaule-btn" v-if="item.cardType=='SAVINGS_CARD'" @click="setDefault(item.id,item.defaultCard)">

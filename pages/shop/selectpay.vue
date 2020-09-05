@@ -37,89 +37,90 @@
 		 		</view>
 		 		</view>
 		 </uni-popup>
-		 <uni-popup ref="popupcenter2" type="center">
-		 	<view class="popupCenter-box">
-		 		<view class="popup-title">
-		 			请选择支付通道
-		 		</view>
-		 				<view class="popup-name">
-		 					<image class="popup-icon" src="../../static/img/yinlian.png" mode=""></image>
-		 					<view class=" popup-name-status">
-		 						<view class="popup-name-title">
-		 							{{passageWay.passageWayName}}
-		 						</view>
-		 						<text class="popup-warning">提示：2小时内到账(不限日期，快速到账)</text>
-		 					</view>
-		 				</view>
-		 				<view class="pupou-tongdao">
-		 					<view class="popup-td-item">
-		 						<text>单笔限额：</text><text>100元-{{passageWay.sigleLimit}}元</text>
-		 					</view>
-		 					<view class="popup-td-item">
-		 						<text>每日限额：</text><text>100元-{{passageWay.oneDayLimit}}元</text>
-		 					</view>
-		 					<view class="popup-td-item">
-		 						<text>交易时间：</text><text>07:00:00-23:00:00</text>
-		 					</view>
-		 					<view class="popup-td-item">
-		 						<text>交易费率：</text><text>{{passageWay.myRate}}</text>
-		 					</view>
-		 					<view class="popup-td-item">
-		 						<text>手续费用：</text>{{allGoodscj*passageWay.myRate}}<text></text>
-		 					</view>
-		 					<view class="popup-td-item">
-		 						<text>实际到账：</text><text>{{allGoodscj*(1-passageWay.myRate)}}</text>
-		 					</view>
-		 				</view>
-		 				<view class="popup-btn-box">
-		 					<view class="popup-btn-one" @click="changetdFN">
-		 						更换通道
-		 					</view>
-		 					<view class="popup-btn-two" @click="payFn">
-		 						确认支付
-		 					</view>
-		 				</view>
-		 	</view>		
-		 </uni-popup>
-		 <uni-popup ref="popup3" type="bottom">
-		 	<view class="bank-card-list">
-		 	<view class="esc-btn">
-		 			<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="closedia2"></uni-icons>
-		 				选择通道
-		 		</view>
-		 		<view class="pay-item" v-for="item in passageWayList" @click="selectPay(item)" >
-		 			<view class="popup-name">
-		 				<image class="popup-icon" src="../../static/img/yinlian.png" mode=""></image>
-		 				<view class=" popup-name-status">
-		 					<view class="popup-name-title">
-		 						{{item.passageWayName}}
-		 					</view>
-		 					<text class="popup-warning">提示：2小时内到账(不限日期，快速到账)</text>
-		 				</view>
-		 			</view>
-		 			<view class="pupou-tongdao">
-		 				<view class="popup-td-item">
-		 					<text>单笔限额：</text><text>100元-{{item.sigleLimit}}元</text>
-		 				</view>
-		 				<view class="popup-td-item">
-		 					<text>每日限额：</text><text>100元-{{item.oneDayLimit}}元</text>
-		 				</view>
-		 				<view class="popup-td-item">
-		 					<text>交易时间：</text><text>07:00:00-23:00:00</text>
-		 				</view>
-		 				<view class="popup-td-item">
-		 					<text>交易费率：</text><text>{{item.myRate}}</text>
-		 				</view>
-		 				<view class="popup-td-item">
-		 					<text>手续费用：</text>{{allGoodscj*item.myRate}}<text></text>
-		 				</view>
-		 				<view class="popup-td-item">
-		 					<text>实际到账：</text><text>{{allGoodscj*(item.myRate)}}</text>
-		 				</view>
-		 			</view>
-		 		</view>
-		 		</view>
-		 </uni-popup>
+		<uni-popup ref="popupcenter2" type="center">
+			<view class="popupCenter-box">
+				<view class="popup-title">
+					请选择支付通道
+				</view>
+						<view class="popup-name">
+							<image class="popup-icon" src="../../static/img/yinlian.png" mode=""></image>
+							<view class=" popup-name-status">
+								<view class="popup-name-title">
+									{{passageWay.passageWayName}}
+								</view>
+								<text class="popup-warning">提示：2小时内到账(不限日期，快速到账)</text>
+							</view>
+						</view>
+						<view class="pupou-tongdao">
+							<view class="popup-td-item">
+								<text>单笔限额：</text><text>100元-{{passageWay.sigleLimit}}元</text>
+							</view>
+							<view class="popup-td-item">
+								<text>每日限额：</text><text>100元-{{passageWay.oneDayLimit}}元</text>
+							</view>
+							<view class="popup-td-item">
+								<text>交易时间：</text><text>07:00:00-23:00:00</text>
+							</view>
+							<view class="popup-td-item">
+								<text>交易费率：</text><text>{{passageWay.myRate}}</text>
+							</view>
+							<view class="popup-td-item">
+								<text>手续费用：</text>{{totalTransactionPrice*passageWay.myRate}}<text></text>
+							</view>
+							<view class="popup-td-item">
+								<text>实际到账：</text><text>{{totalTransactionPrice*(1-passageWay.myRate)}}</text>
+							</view>
+						</view>
+						<view class="popup-btn-box">
+							<view class="popup-btn-one" @click="changetdFN">
+								更换通道
+							</view>
+							<view class="popup-btn-two" @click="payFn">
+								确认支付
+							</view>
+						</view>
+			</view>		
+		</uni-popup>
+		
+		<uni-popup ref="popup3" type="bottom">
+			<view class="bank-card-list">
+			<view class="esc-btn">
+					<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="closedia2"></uni-icons>
+						选择通道
+				</view>
+				<view class="pay-item" v-for="item in passageWayList" @click="selectPay(item)" >
+					<view class="popup-name">
+						<image class="popup-icon" src="../../static/img/yinlian.png" mode=""></image>
+						<view class=" popup-name-status">
+							<view class="popup-name-title">
+								{{item.passageWayName}}
+							</view>
+							<text class="popup-warning">提示：2小时内到账(不限日期，快速到账)</text>
+						</view>
+					</view>
+					<view class="pupou-tongdao">
+						<view class="popup-td-item">
+							<text>单笔限额：</text><text>100元-{{item.sigleLimit}}元</text>
+						</view>
+						<view class="popup-td-item">
+							<text>每日限额：</text><text>100元-{{item.oneDayLimit}}元</text>
+						</view>
+						<view class="popup-td-item">
+							<text>交易时间：</text><text>07:00:00-23:00:00</text>
+						</view>
+						<view class="popup-td-item">
+							<text>交易费率：</text><text>{{item.myRate}}</text>
+						</view>
+						<view class="popup-td-item">
+							<text>手续费用：</text>{{totalTransactionPrice*item.myRate}}<text></text>
+						</view>
+						<view class="popup-td-item">
+							<text>实际到账：</text><text>{{totalTransactionPrice*(item.myRate)}}</text>
+						</view>
+					</view>
+				</view>
+				</view>
+		</uni-popup>
 		 
 		 
 	</view>
@@ -143,6 +144,8 @@
 			this.product=JSON.parse(this.$Route.query.product)
 			this.totalTransactionPrice=this.$Route.query.totalTransactionPrice
 			this.addressId=this.$Route.query.addressId;
+			
+			// 初始化订单；
 			uni.request({
 				method:'POST',
 			    url: this.$baseUrl+'/api/v1/pri/shop/initConsumptionZone', 
@@ -161,6 +164,8 @@
 					if(res.data.code==0){
 						this.creditCardList=res.data.data.userCreditCardlist;
 						this.credit=this.creditCardList[0];
+						this.passageWayList=res.data.data.passageWayList;
+						this.passageWay=this.passageWayList[0];
 						console.log(this.credit)
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
@@ -220,13 +225,16 @@
 				
 				
 				
-					this.$Router.push({name:'selectpay2'})
+					// this.$Router.push({name:'selectpay2'})
 			},
 			 open1:function(){
 			         this.$refs.popup1.open()
 			},
 			 closedia1:function(done){
 				  this.$refs.popup1.close()
+			},
+			closedia3:function(done){
+				  this.$refs.popup3.close()
 			},
 			nextFn:function(){
 				this.$refs.popupcenter2.open();
@@ -319,7 +327,7 @@
 	.kq-title{
 		display: inline-block;
 		font-size: 24upx;
-		width: 200upx;
+		width: 150upx;
 	}
 	.bank-head-img{
 		width: 40upx;
@@ -372,7 +380,7 @@
 	}
 	.bank-card-list{
 		width: 710upx;
-		height: 200upx;
+		/* height: 200upx; */
 		background-color: #FFFFFF;
 		position: absolute;
 		bottom: 0;

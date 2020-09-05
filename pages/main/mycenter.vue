@@ -21,10 +21,10 @@
 				<router-link to="{name:'yue'}" class="my-ye-box">
 					<image class="my-info2-item-pic" src="../../static/img/bank/shouqian.png" mode=""></image>
 					<view class="">
-					余额
+					钱包
 					</view>
 				</router-link>
-				<router-link to="{name:'shoukuan'}" class="my-ye-box">
+				<router-link to="{name:'shoukuan'}" class="my-ye-box" v-if="ifyue">
 					<image class="my-info2-item-pic" src="../../static/img/bank/shoukuan.png" mode=""></image>
 					<view class="">
 					收款
@@ -144,8 +144,10 @@
 				popupCenterMessage:'',
 				popuppic:'',
 				shimingIf:false,
+				shimingtype:'',
 				infodata:{},
-				revenueAmount:{}
+				revenueAmount:{},
+				ifyue:true
 			}
 		},
 		onLoad(object){
@@ -167,7 +169,7 @@
 						this.infodata.score=Math.floor(this.infodata.score)
 						uni.setStorageSync('score',this.infodata.score);
 						uni.setStorageSync('userName', res.data.data.userName);
-						uni.setStorageSync('userPhone', res.data.data.userPhone);
+						uni.setStorageSync('userPhone', res.data.data.phone);
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
 					}else{
@@ -179,7 +181,33 @@
 					console.log(data)
 				}
 			});
-		
+			// 是否为商家
+	if(uni.getStorageSync('role')=='BUSINESS'){
+	this.ifyue=true	
+	}else{
+		this.ifyue=false
+	}
+		// 查看是否实名；
+		uni.request({
+			method:'GET',
+		    url: this.$baseUrl+'/api/v1/pri/my/myInfoData', 
+		    data: {
+		    },
+		    header: {
+				'token': uni.getStorageSync('token'),
+				'Content-Type':'application/json' //自定义请求头信息
+		    },
+		    success: (res) => {
+				console.log(res)
+				if(res.data.code==0){
+					this.shimingtype=res.data.data.isRealName;
+				}
+		       
+		    },
+			complete: (data) => {
+				console.log(data)
+			}
+		});
 			
 		},
 		methods: {
@@ -228,6 +256,10 @@
 				this.$refs.popupcenter2.open();
 			},
 			shimingFn:function(){
+				if(this.shimingtype=="已实名"){
+					this.shimingIf=true;
+				}
+				
 				if(!this.shimingIf){
 					this.$Router.push({name:'shimingone'})
 				}else {

@@ -4,25 +4,25 @@
 			<view class="myteam-title">
 				粉丝
 				<view class="myteam-num">
-					13
+					{{teamList.fansNum}}
 				</view>
 			</view>
 			<view class="myteam-title">
 				注册用户
 				<view class="myteam-num">
-					13
+					{{teamList.registerNum}}
 				</view>
 			</view>
 			<view class="myteam-title">
 				交易金额
 				<view class="myteam-num">
-					13
+					{{teamList.money}}
 				</view>
 			</view>
 			<view class="myteam-title">
 				分润
 				<view class="myteam-num">
-					13
+					{{teamList.revenue}}
 				</view>
 			</view>
 		</view>
@@ -30,12 +30,12 @@
 			<router-link  class="myteam-item" to="{name:'myteamstatus'}">
 				<image class="v-head" src="../../static/img/vhead/V5.png" mode=""></image>
 				<view class="myteam-num-box">
-					<view class="myteam-v-name">
+					<!-- <view class="myteam-v-name">
 						联合创始人
-					</view>
+					</view> -->
 					<view class="">
-						<text>直接推广<text class="myteam-number">0</text>人</text>
-						<text class="myteam-jj">间接推广<text class="myteam-number">0</text>人</text>
+						<text>直接推广<text class="myteam-number">{{teamList.directPushNum}}</text>人</text>
+						<text class="myteam-jj">间接推广<text class="myteam-number">{{teamList.interpositionNum}}</text>人</text>
 					</view>
 				</view>
 				<uni-icons type="arrowright" class="myteam-status"></uni-icons>
@@ -48,13 +48,13 @@
 export default {
 	data(){
 		return {
-			
+			teamList:'',
 		}
 	},
 	onLoad() {
 			uni.request({
-				method:'POSt',
-			    url: this.$baseUrl+'/api/v1/admin/mall/deleteSharingPoster', 
+				method:'GET',
+			    url: this.$baseUrl+'/api/v1/pri/my/myTeam', 
 			    data: {
 					id:''
 			    },
@@ -65,14 +65,8 @@ export default {
 			    success: (res) => {
 					console.log(res)
 					if(res.data.code==0){
-						this.myRate=res.data.data;
+						this.teamList=res.data.data;
 						// console.log()
-						// console.log(this.myRate)
-					}else if(res.data.code==-1){
-						this.popupMessage=res.data.msg;
-						// this.$refs.popup.open();
-					}else{
-						// console.log(res)
 					}
 			       
 			    }

@@ -199,8 +199,35 @@
 					console.log(res)
 				}
 			});
+			this.getUserRole();
 		},
 		methods: {
+			// 获取用户权限信息
+			getUserRole:function(){
+				uni.request({
+					method:'GET',
+				    url: this.$baseUrl+'/api/v1/pri/my/getUserRole', 
+				    data: {
+				    },
+				    header: {
+						'token':uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						if(res.data.code==0){
+							uni.setStorageSync('role',res.data.data.role);
+							uni.setStorageSync('roleName',res.data.roleName);
+							console.log(res.data)
+						}else if(res.data.code==-1){
+						}
+				       
+				    },
+					complete(res) {
+					}
+				});
+			},
+			
+			
 			change(e) {
 				this.current = e.detail.current;
 			},

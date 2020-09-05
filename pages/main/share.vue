@@ -12,7 +12,7 @@
 			移动二维码到合适位置，点击制作海报，然后去分享吧。
 		</view>
 		<canvas class="firstCanvas" :class="{'firstCanvas22':canvashow}" canvas-id="firstCanvas"></canvas>
-		 <movable-area class="share-box" :style="style">
+		 <movable-area class="share-box" :style="{backgroundImage:backgroundimage}" style="{backgroundSize:'540upx 810upx',backgroundRepeat: 'no-repeat'}">
 		    <movable-view :x="x" :y="y" class="mova-view" direction="all" @change="onChange"> 
 			<tki-qrcode class="code-pic" ref="qrcode" :size="size" :unit="unit" 
 			@result="resultqr" :show="show" :loadMake="loadMake" 
@@ -27,8 +27,8 @@
 			<navigator url="../share1">deadsdasda</navigator>
 		</view> -->
 		<view class="bj-box">
-			<view class="bj-list" :style="{width:bjListWidth}">
-				<image v-for="(item, index) in imgList" @click="selectImg(item)" :src="item" class="bj-item" mode=""></image>
+			<view class="bj-list" :style="{width:bjListWidth}" style="">
+				<image v-for="(item, index) in imgList" @click="selectImg(item)" :src="item.url" class="bj-item" mode=""></image>
 			</view>
 		</view>
 		
@@ -59,7 +59,7 @@
 				code:'',//二维码
 				bj:'../../static/img/share1.jpg',//海报背景
 				codeVal:'asdasd',//生成二维码内容
-				size:120,//二维码大小
+				size:140,//二维码大小
 				unit:'upx',//二维码大小单位
 				show:true,//
 				loadMake:true,//加载成功后自动生成二维码
@@ -69,24 +69,45 @@
 					x: 0,
 					y: 0
 				},
-				style:{
-					backgroundImage:'url(../../static/img/share1.jpg)',
-					backgroundSize:'540upx 810upx',
-					backgroundRepeat: 'no-repeat',
-				},//海报背景
+				backgroundimage:'',//海报背景
 				bjj:'',
 				canvashow:false,//设置canvas的z-index，
 				popupCenterMessage:'',//弹框信息
 				bjListWidth:'',
-				imgList:['../../static/img/share1.jpg','../../static/img/share2.jpg','../../static/img/share3.jpg',
-				'../../static/img/share4.jpg','../../static/img/share1.jpg','../../static/img/share3.jpg']
+				imgList:[]
 			}
 		},
 		onLoad(){
-			this.bjListWidth=this.imgList*220+'upx'
-			
+			this.getShareList();
+			this.backgroundimage='url('+this.imgList[0]+')'
+			this.bjListWidth=this.imgList*220+'upx';
+			this.codeVal=this.$shareUrl+'?phone:'+uni.getStorageSync('userPhone')+'&userName:'+uni.getStorageSync('userName')
+			console.log(this.codeVal)
 		},
 		methods: {
+			getShareList:function(){
+				uni.request({
+					method:'POSt',
+				    url: this.$baseUrl+'/api/v1/pri/my/findSharingPosters', 
+				    data: {
+				    },
+				    header: {
+						'token':uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {	
+						console.log(res.data.data)
+						if(res.data.code==0){
+						this.imgList=res.data.data
+						
+						}else if(res.data.code==-1){
+						}
+				       
+				    },
+					complete(res) {
+					}
+				})
+				},
 			// 移动二维码，获取信息
 			onChange: function(e) {
 					this.old.x = e.detail.x
@@ -258,7 +279,7 @@
 				console.log(item)
 				this.canvashow=false;
 				this.style={
-					backgroundImage:'url('+item+')',
+					backgroundImage:'url('+item.url+')',
 					backgroundSize:'540upx 810upx',
 					backgroundRepeat: 'no-repeat',
 				};
@@ -278,7 +299,7 @@
 	margin: 0 auto;
 	/* margin-top: 40upx; */
 	height: 810upx;
-	background: url(../../static/img/share3.jpg);
+	/* background: url(../../static/img/share3.jpg); */
 }
 .firstCanvas{
 	width: 540upx;

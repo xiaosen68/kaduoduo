@@ -23,6 +23,7 @@
 			</view>
 			<!-- <navigator url="../index/index" class="login-btn" hover-class="none">去登录</navigator> -->
 			<router-link to="{name:index}"class="login-btn" hover-class="none">去登录</router-link>
+			<router-link to="{name:uploadapp}"class="login-btn-two" hover-class="none">去下载</router-link>
 			<uni-popup ref="popup"  type="center" class="popupstyle">
 				<view class="popupCenter-box">{{popupMessage}}</view>
 			</uni-popup>
@@ -117,8 +118,6 @@
 				       
 				    }
 				});
-				
-				
 				// this.$Router.push({name:'index'})
 			}
 		}
@@ -174,6 +173,7 @@
 		background-color: #d71518;
 		color: #FFFFFF;
 	}
+	
 	.popupstyle{
 		background-color: #FFFFFF;
 		padding: 20upx 20upx;
@@ -185,10 +185,18 @@
 		border-radius: 20upx;
 	}
 	.login-btn{
-		text-align: right;
+		/* text-align: right; */
+		float: right;
 		font-size: 24upx;
 		color: #d71518;
 		margin-top: 28upx;
 		margin-right: 80upx;
+	}
+	.login-btn-two{
+		float: left;
+		font-size: 24upx;
+		color: #d71518;
+		margin-top: 28upx;
+		margin-left: 80upx;
 	}
 </style>

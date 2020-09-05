@@ -7,7 +7,9 @@
 			</view>
 			<view class="input-box">
 				<text>银行卡号:</text>
-				<input type="number" class="input-num" v-model="cardNo" @blur="getcard" maxlength="19" placeholder="请输入储蓄卡卡号" />
+				<input type="number" class="input-num" v-model="cardNo" @blur="getcard" 
+				maxlength="19" placeholder="请输入储蓄卡卡号" />
+				<uni-icons type="camera" class="card-icons" size="20" @click="getcardFn"></uni-icons>
 			</view>
 			<view class="input-box">
 				<text>发卡行:</text>
@@ -54,6 +56,53 @@ export default {
 		this.cardholder=uni.getStorageSync('userName');
 	},
 	methods:{
+		//获取银行卡图片，
+		getcardFn:function(){
+			let _this = this
+			uni.chooseImage({
+			    count: 1, //默认9
+			    success: function (res) {
+					let str = res.tempFilePaths[0];
+					console.log(res)
+					var reader = new FileReader()
+						reader.onloadend = function() {
+							_this.cardPic= reader.result;
+							_this.getCardBase();
+						}
+						if (res.tempFiles[0]) {
+						 reader.readAsDataURL(res.tempFiles[0])
+					   }
+			    },
+				fail: function() {
+					
+				}
+			});
+		},
+		// 上传图片，获取卡号；
+		getCardBase:function(){
+			console.log(this.cardPic);
+			uni.request({
+				method:'POST',
+			    url: 'http://bankocrb.shumaidata.com/getbankocrb', 
+				data:{
+					image:this.cardPic
+				},
+			    header: {
+					'Content-Type':'application/x-www-form-urlencoded',
+					'Authorization': 'APPCODE fa541816acdc4234b18dff3ae5f98a26'	
+			    },
+			    success: (res) => {
+					if(res.statusCode==200){
+						console.log(res.data)
+						this.cardNo=res.data.data.card_number;
+						this.bank=res.data.data.bank_name;
+						console.log(this.cardNo)
+						// console.log(this.accountBalance)
+					}else{
+					}
+			    }
+			});	
+		},
 		getcard(){
 			if(this.cardNo==''){
 				return false
@@ -190,5 +239,10 @@ export default {
 		padding: 40upx ;
 		text-align: center;
 		border-radius: 20upx;
+	}
+	.card-icons{
+		position: absolute;
+		right: 40upx;
+		font-size: 24upx;
 	}
 </style>

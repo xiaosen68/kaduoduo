@@ -26,9 +26,9 @@
 			</view>
 		</view>
 		<view class="kzfenrun-box">
-			<text>当前可转出收益(元)</text>
+			<text>当前可提现收益(元)</text>
 			<view class="kzfr-num">{{revenueAmount.revenue}}</view>
-			<router-link to="{name:'rollout'}" class="roll-out-btn">转出	</router-link>
+			<!-- <router-link to="{name:'rolloutmoney'}" class="roll-out-btn">提现</router-link> -->
 			<!-- 	<navigator url="./rollout"  class="roll-out-btn">
 				转出	
 				</navigator> -->

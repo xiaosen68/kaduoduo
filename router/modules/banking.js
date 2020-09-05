@@ -35,6 +35,13 @@ const banking = [
 	    },
 	},
 	{
+	    path: '/pages/banking/yingyee',
+	    name: 'yingyee',
+	    meta: {
+	        title: '营业额',
+	    },
+	},
+	{
 	    path: '/pages/banking/changedeposit',
 	    name: 'changedeposit',
 	    meta: {

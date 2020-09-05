@@ -15,6 +15,13 @@ const main = [
 	    },
 	},
 	{
+	    path: '/pages/sign/uploadapp',
+	    name: 'uploadapp',
+	    meta: {
+	        title: '下载app',
+	    },
+	},
+	{
 	    path: '/pages/main/cardstore',
         name: 'cardstore',
         meta: {
@@ -103,6 +110,13 @@ const main = [
 	    name: 'selectlocation',
 	    meta: {
 	        title: '选择收货地址',
+	    },
+	},
+	{
+	    path: '/pages/shop/yishoulist',
+	    name: 'yishoulist',
+	    meta: {
+	        title: '销售订单',
 	    },
 	},
 	{

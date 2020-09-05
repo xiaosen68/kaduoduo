@@ -14,6 +14,12 @@
 		}
 	},
 	{
+		"path": "pages/sign/uploadapp",
+		"style": {
+			"navigationBarTitleText": "下载app"
+		}
+	},
+	{
 		"path": "pages/main/cardstore",
 		"style": {
 			"navigationBarTitleText": "有粒糖商城"
@@ -77,6 +83,12 @@
 		"path": "pages/shop/selectlocation",
 		"style": {
 			"navigationBarTitleText": "确认收货地址"
+		}
+	},
+	{
+		"path": "pages/shop/yishoulist",
+		"style": {
+			"navigationBarTitleText": "销售订单"
 		}
 	},
 	{
@@ -185,6 +197,12 @@
 		"path": "pages/banking/rollout",
 		"style": {
 			"navigationBarTitleText": "转出到余额"
+		}
+	},
+	{
+		"path": "pages/banking/yingyee",
+		"style": {
+			"navigationBarTitleText": "营业额"
 		}
 	},
 	{

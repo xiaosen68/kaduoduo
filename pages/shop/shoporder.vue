@@ -8,11 +8,11 @@
 				<image class="goods-pic" mode="widthFix" src="../../static/img/goods1.png" ></image>
 				<view class="shop-goods-status">
 					<view class="shop-name">
-						{{goodsStatus.productName}}
+						{{productName}}
 					</view>
 					<view class="shop-money">
-						<text> {{goodsStatus.transactionPrice*goodsStatus.discount | price}}元</text>
-						<text class="shop-yuan-money"> {{goodsStatus.transactionPrice}}元</text>
+						<text> {{transactionPrice*discount | price}}元</text>
+						<text class="shop-yuan-money"> {{transactionPrice}}元</text>
 					</view>
 					<view class="input-box-wrap">
 							<view class="input-btn">
@@ -49,7 +49,6 @@
 	  },
 		data (){
 			return{
-
 				current: 0,
 				mode: 'default',
 				goodsNum:1,
@@ -57,11 +56,13 @@
 				goodsStatus:'',
 				locationId:'',
 				locationStatus:'',
-				
-				
+				productName:'',
+				discount:'',
+				transactionPrice:'',
 		}
 	},
 	onLoad() {
+		let _this=this;
 		this.goodsId=uni.getStorageSync('goodsId');
 		this.locationId=uni.getStorageSync('locationId');
 		// 获取产品信息
@@ -78,7 +79,10 @@
 		    success: (res) => {
 				console.log(res)
 				if(res.data.code==0){
-				this.goodsStatus=res.data.data;	
+					this.productName=res.data.data.productName;
+					this.goodsId=res.data.data.id;
+					this.transactionPrice=res.data.data.transactionPrice;
+					this.discount=res.data.data.discount;
 				}
 		       
 		    }
@@ -163,7 +167,12 @@
 			this.$Router.push({
 				path:'/pages/shop/selectpay',
 				query:{
-					product:JSON.stringify(this.goodsStatus),
+					product:JSON.stringify({
+						productName:this.productName,
+						id:this.goodsId,
+						transactionPrice:this.transactionPrice,
+						amount:this.goodsNum
+					}),
 					totalTransactionPrice:this.allMoney,
 					addressId:this.locationId,
 				}})
@@ -172,7 +181,7 @@
 	},
 	computed:{
 		allMoney:function(){
-			return ((this.goodsStatus.transactionPrice*this.goodsStatus.discount).toFixed(2)*this.goodsNum).toFixed(2)
+			return ((this.transactionPrice*this.discount).toFixed(2)*this.goodsNum).toFixed(2)
 		}	
 	},
 	filters:{

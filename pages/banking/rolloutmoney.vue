@@ -1,7 +1,7 @@
 <template>
 	<view class="rollout-box">
 		<view class="deposit-list" @click="open1">
-			<image class="deposit-icon" src="../../static/img/bank/gongshang.png" mode=""></image>
+			<image class="deposit-icon" :src="defaultCard.bankLogo" mode=""></image>
 			<view class="deposit-sttus">
 				<view class="deposit-name">
 					{{defaultCard.bank}}
@@ -15,11 +15,11 @@
 		<view class="rollout-num-box">
 			<text>提现金额</text>
 			<view class="rollout-ipt">
-				￥<input type="digit" class="rollout-int" v-model="zcmoney" value=""placeholder="请输入转出金额" />
+				￥{{zcmoney}}元
 			</view>
 			<view class="roll-all-box">
-				可提现金额<text>{{kzmoney}}</text>元 
-				<text class="roll-all" @click="rolloutMoney">全部提现</text>
+				可提现金额<text>{{zcmoney}}</text>元 
+				<!-- <text class="roll-all" @click="rolloutMoney">全部提现</text> -->
 			</view>
 		</view>
 		<button type="" class="roll-btn" @click="rolloutFn">确认提现</button>
@@ -39,7 +39,7 @@
 					<text class="add-card" @click="adddeposit">添加</text>
 				</view>
 				<view class="bank-card-item" v-for="item in cardList" @click="changeCard(item)">
-					<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
+					<image class="bank-item-head" :src="item.bankLogo" mode=""></image>
 					<view class="bank-card-name">
 						<text>{{item.bank}}</text>
 						<text>\n</text>
@@ -57,7 +57,6 @@ export default {
   },
 	data (){
 		return{
-			kzmoney:12.00,//可转出金额,
 			zcmoney:'',//转出金额
 			popupCenterMessage:'',//弹框信息
 			defaultCard:'',
@@ -65,7 +64,7 @@ export default {
 		}
 	},
 	onLoad() {
-		this.kzmoney=this.$Route.query.amount;
+		this.zcmoney=this.$Route.query.amount;
 		uni.request({
 			method:'GET',
 		    url: this.$baseUrl+'/api/v1/pri/my/getUserSavingsCard', 
@@ -84,6 +83,9 @@ export default {
 							return item
 						}
 					})[0];
+					if(!this.defaultCard){
+						this.defaultCard=this.cardList[0];
+					}
 					console.log(this.defaultCard)
 				}else if(res.data.code==-1){
 					// this.popupMessage=res.data.msg;
@@ -96,22 +98,19 @@ export default {
 		});	
 	},
 	methods:{
-		rolloutMoney:function(){
-			this.zcmoney=this.kzmoney;
-		},
+	
 		rolloutFn:function(){
-			if(this.zcmoney>this.kzmoney){
-				this.popupCenterMessage='转出金额大于可转出金额'
-					this.$refs.popupcenter.open();
-					this.zcmoney=this.kzmoney;
-			}else if(this.zcmoney==''||this.zcmoney<=0){
+			if(this.zcmoney==''){
 				this.popupCenterMessage='请正确填写金额'
+					this.$refs.popupcenter.open();
+			}else if(this.zcmoney<30){
+				this.popupCenterMessage='提现金额需不少于20元'
 					this.$refs.popupcenter.open();
 			}else{
 				console.log(this.zcmoney)
 				console.log(this.defaultCard.id)
 				uni.request({
-					method:'GET',
+					method:'POST',
 				    url: this.$baseUrl+'/api/v1/pri/my/withdrawalAmount', 
 				    data: {
 						amount:this.zcmoney,
@@ -128,9 +127,8 @@ export default {
 							console.log(this.revenueAmount)
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
-							// this.$refs.popup.open();
+							this.$refs.popupcenter.open();
 						}else{
-							console.log(res)
 						}
 				       
 				    }
@@ -169,7 +167,7 @@ export default {
 <style>
 	.bank-card-list{
 		width: 710upx;
-		height: 200upx;
+		/* height: 200upx; */
 		background-color: #FFFFFF;
 		position: absolute;
 		bottom: 0;

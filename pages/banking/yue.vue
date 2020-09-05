@@ -11,7 +11,7 @@
 		</view>
 		<view class="yue-box">
 			<view class="kzfenrun-box">
-				<text>当前可提现余额(元)</text>
+				<text>当前可提现收益(元)</text>
 				<view class="kzfr-num">{{accountBalance.withdrawableAmount}}</view>
 					<view @click="gorollout" class="roll-out-btn">
 					我要结算
@@ -22,11 +22,12 @@
 			</view>
 			
 			</view>
-			<view class="all-fenrun-box">
+			<view class="all-fenrun-box" v-if="ifyue">
 				<text class="all-fenrun-num">{{accountBalance.totalRevenue}}</text>
 				<view class="">
-					共累计收益(元)
+					可提现营业额(元)
 				</view>
+				<router-link to="{name:'yingyee'}" class="yingye-out-btn">我要结算</router-link>
 			</view>
 	</view>
 	
@@ -43,6 +44,7 @@ export default {
 		return{
 			cardtype:true, 
 			accountBalance:{},
+			ifyue:true,
 		}
 	},
 	onLoad() {
@@ -69,6 +71,12 @@ export default {
 			       
 			    }
 			});	
+			console.log(uni.getStorageSync('role'))
+			if(uni.getStorageSync('role')=='BUSINESS'){
+			this.ifyue=true	
+			}else{
+				this.ifyue=false
+			}
 	},
 	methods:{
 		backFn(){
@@ -89,6 +97,7 @@ export default {
 </script>
 
 <style>
+	
 	.home-nav{
 			border: none;
 			/* padding-top: var(--status-bar-height); */
@@ -135,6 +144,18 @@ export default {
 	border-radius: 60upx;
 	color: #d91829;
 }
+.yingye-out-btn{
+		display: inline-block;
+		height: 60upx;
+		line-height: 60upx;
+		width: 180upx;
+		padding: 10upx 20upx;
+		margin-top: 20upx;
+		color: #FFFFFF;
+		border: 2upx solid #b7babe;
+		background-color: #d91829;
+		border-radius: 60upx;
+	}
 .circle{
 	width: 100%;
 	height: 164upx;

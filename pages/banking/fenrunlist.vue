@@ -11,16 +11,18 @@
 			  @refresh="refresh" class="">
 			  <view slot="content-list">
 			    <!-- 数据列表 -->
-				<router-link to="{name:fenrunstatus}" class="fen-item-box">
+				<!-- <router-link to="{name:fenrunstatus}" class="fen-item-box" v-for="item in list"> -->
+				<view  class="fen-item-box" v-for="item in list">
 					<view class="date-box">
-						<text class="date1">五月</text>
-						<view>05-16</view>
+						<text class="date1">{{item.revenue_reason}}</text>
+						<view>{{item.revenue_time}}</view>
 					</view>
 					<view class="fen-state">
-						<text class="fen1">+0.22</text>
+						<text class="fen1">+{{item.revenue_amount}}</text>
 						<view>来自尾号<text>6345</text>的收益</view>
 					</view>
-				</router-link>
+				</view>
+				<!-- </router-link> -->
 			  </view>
 			</load-refresh>
 		</view>
@@ -38,7 +40,35 @@ export default {
 			list: [], // 数据集
 			currPage: 1, // 当前页码
 			totalPage: 1 ,// 总页数
+			size:20,
 		}
+	},
+	onLoad() {
+		uni.request({
+			method:'POST',
+		    url: this.$baseUrl+'/api/v1/pri/my/getUserRevenue', 
+		    data: {
+			page:this.currPage,
+			size:this.size
+		    },
+		    header: {
+				'token': uni.getStorageSync('token'),
+				'Content-Type':'application/json' //自定义请求头信息
+		    },
+		    success: (res) => {
+				console.log(res)
+				if(res.data.code==0){
+					this.list=res.data.data.list;
+					this.currPage=res.data.data.current_page;
+					this.totalPage=res.data.data.total_page;
+				}else if(res.data.code==-1){
+					this.popupMessage=res.data.msg;
+				}else{
+					console.log(res)
+				}
+		       
+		    }
+		});	
 	},
 	methods:{
 		loadMore() {

@@ -24,8 +24,15 @@
 		</view>
 		<view class="shop-deal-box">
 			<view class="shop-deal-title">
-				我的订单
+				消费订单
 				<router-link class="shop-deal-title-btn" to="{name:'shoporderlist'}">
+					全部
+					<uni-icons type="forward" color="#a3a3a3" style="vertical-align: bottom;"></uni-icons>
+				</router-link>
+			</view>
+			<view class="shop-deal-title" v-if="yishouif">
+				已售订单
+				<router-link class="shop-deal-title-btn" to="{name:'yishoulist'}">
 					全部
 					<uni-icons type="forward" color="#a3a3a3" style="vertical-align: bottom;"></uni-icons>
 				</router-link>
@@ -87,9 +94,16 @@ export default {
 	data (){
 		return{
 		score:0,
+		yishouif:false,
 		}
 	},
 	onLoad() {
+	// 是否为商家
+	if(uni.getStorageSync('role')=='BUSINESS'){
+	this.yishouif=true	
+	}else{
+		this.yishouif=false
+	}
 	this.score=uni.getStorageSync('score');	
 	},
 	methods:{

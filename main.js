@@ -11,7 +11,7 @@ Vue.component('router-link',routerLink)
 // Vue.prototype.$store = store
 Vue.config.productionTip = false
 Vue.prototype.$baseUrl="/prefix"  //线下接口
-
+Vue.prototype.$shareUrl="https://www.baidu.com/"  //线下接口
 
 
 App.mpType = 'app'
