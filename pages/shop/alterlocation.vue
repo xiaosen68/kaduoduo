@@ -74,7 +74,7 @@ export default {
 		}
 	},
 	onLoad() {
-		
+		// 修改地址
 		if(this.$Route.query.id){
 			this.id=this.$Route.query.id
 			this.changeType=true;
@@ -154,6 +154,7 @@ export default {
 						if(res.data.code==0){
 						this.popupMessage=res.data.data;
 						this.$refs.popup.open();
+						this.$Router.push({name:'selectlocation'})
 						}else{
 							console.log(res)
 						}
@@ -165,11 +166,11 @@ export default {
 					method:'POST',
 				    url: this.$baseUrl+'/api/v1/pri/my/saveUserAddress', 
 				    data: {
-									   	"customerName":this.name,
-									   	"customerPhone":this.phone,
-									   	"region":this.address,
-									   	"addressDetails":this.addressStatus,
-									   	"isDefault":this.isDefault
+						"customerName":this.name,
+						"customerPhone":this.phone,
+						"region":this.address,
+						"addressDetails":this.addressStatus,
+						"isDefault":this.isDefault
 				
 				    },
 				    header: {

@@ -9,11 +9,11 @@
 				<uni-icons type="locked" class="locked-icon" size="30"></uni-icons>
 				<input type="text" password maxlength="12" placeholder="请确认新密码" class=" sign-input" v-model="confirmPwd" />
 			</view>
-			<view class="sign-title">
+			<!-- <view class="sign-title">
 				<uni-icons type="compose" class="locked-icon" size="30"></uni-icons>
 				<input type="number" number maxlength="6" placeholder="输入验证码" class=" sign-input yanz-input" v-model="verifyNum" />
 				 <button type="primary" plain="true" class="yanz-btn" :disabled="verifyDisabled" @click="sendyanzheng()">{{sendVerify}}</button>
-			</view>
+			</view> -->
 			<view class="">
 				<button type=""  class="sign-btn" @click="getPassword()" >确认修改</button>
 			</view>

@@ -29,23 +29,6 @@
 				<button type="" class="next-btn" @click="nextFn">下一步</button>
 			</view>
 		</view>
-<!-- 		<view id="cover" v-if="coverif" ></view>
-		<view class="bank-card-list"  v-if="coverif" >
-				<view class="esc-btn">
-					<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="coverif=false"></uni-icons>
-						选择信用卡
-					<text class="add-card">添加</text>
-				</view>
-				<view class="bank-card-item">
-					<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
-					<view class="bank-card-name">
-						<text>广发银行</text>
-						<text>\n</text>
-						<text>62**** **** **** 78</text>
-					</view>
-				</view>
-			</view>
-		 -->
 		 <uni-popup ref="popup1" type="bottom">
 		 	<view class="bank-card-list">
 		 	<view class="esc-btn">

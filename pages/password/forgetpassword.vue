@@ -15,7 +15,9 @@
 			</view>
 			<view class="sign-title">
 				<uni-icons type="compose" class="locked-icon" size="30"></uni-icons>
-				<input type="number" number maxlength="6" placeholder="输入验证码" class=" sign-input yanz-input" v-model="verifyNum" />
+				<input type="number" number maxlength="6" 
+				placeholder="输入验证码" class=" sign-input yanz-input"
+				 v-model="code" />
 				 <button type="primary" plain="true" class="yanz-btn" :disabled="verifyDisabled" @click="sendyanzheng()">{{sendVerify}}</button>
 			</view>
 			<view class="">
@@ -35,6 +37,7 @@
 				phone:'',
 				inputPwd:'',
 				confirmPwd:'',
+				code:'',
 				verifyNum:'',
 				referrer:'',
 				sendVerify: '获取验证码',
@@ -43,7 +46,38 @@
 			}
 		},
 		methods: {
+			getyanzhengFn:function(){
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+'/api/v1/pri/login/forgetSendMgs', 
+				    data: {
+				        phone: this.phone,
+				    },
+				    header: {
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+							this.popupMessage=res.data.data.Message;
+							this.$refs.popup.open();
+							// this.$store.commit("setToken",res.data.data);
+									// this.$Router.pushTab('/pages/index/index')
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+							this.$refs.popup.open();
+						}
+				       
+				    }
+				});
+			},
 			sendyanzheng:function(){
+				if(!this.verifyDisabled&&this.isPoneAvailable(this.phone)){
+					this.getyanzhengFn()
+				}else if(!this.isPoneAvailable(this.phone)){
+					this.$refs.popup.open();
+					return false
+				}
 				this.sendVerify=60;
 				this.verifyDisabled=true;
 				let setyanzheng='';
@@ -88,11 +122,11 @@
 					this.$refs.popup.open()
 					return false
 				}
-				// else if(this.verifyNum==''){
-				// 	this.popupMessage="请输入验证码"
-				// 	this.$refs.popup.open()
-				// 	return false
-				// }
+				else if(this.code==''){
+					this.popupMessage="请输入验证码"
+					this.$refs.popup.open()
+					return false
+				}
 				
 				uni.request({
 					method:'POST',
@@ -100,7 +134,8 @@
 				    data: {
 				        phone: this.phone,
 						inputPwd:this.inputPwd,
-						confirmPwd:this.confirmPwd
+						confirmPwd:this.confirmPwd,
+						code:this.code
 				    },
 				    header: {
 						'Content-Type':'application/json' //自定义请求头信息

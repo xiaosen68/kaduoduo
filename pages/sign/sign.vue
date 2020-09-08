@@ -3,7 +3,8 @@
 		<view class="login-input">
 			<view class="sign-title sign-title-one">
 				<uni-icons type="phone-filled" class="locked-icon" size="30"></uni-icons>
-				<input type="number" maxlength="11" placeholder="请输入手机号" class=" sign-input" value="" v-model="phone" />
+				<input type="number" maxlength="11" placeholder="请输入手机号" class=" 
+				sign-input" value="" v-model="phone" />
 			</view>
 			<view class="sign-title">
 				<uni-icons type="locked" class="locked-icon" size="30"></uni-icons>
@@ -11,12 +12,15 @@
 			</view>
 			<view class="sign-title">
 				<uni-icons type="compose" class="locked-icon" size="30"></uni-icons>
-				<input type="number" number maxlength="6" placeholder="输入验证码" class=" sign-input yanz-input" v-model="verifyNum" />
+				<input type="number" number maxlength="6" 
+				placeholder="输入验证码" class=" sign-input yanz-input"
+				 v-model="code" />
 				 <button type="primary" plain="true" class="yanz-btn" :disabled="verifyDisabled" @click="sendyanzheng()">{{sendVerify}}</button>
 			</view>
 			<view class="sign-title">
 				<uni-icons type="phone-filled" class="locked-icon" size="30"></uni-icons>
-				<input type="number" number maxlength="11" placeholder="请输入推荐人手机号" class=" sign-input" v-model="superiorUserPhone" />
+				<input type="number" number maxlength="11" placeholder="请输入推荐人手机号" 
+				class=" sign-input" v-model="superiorUserPhone" />
 			</view>
 			<view class="">
 				<button type="" class="sign-btn" @click="verifySign">注册</button>
@@ -39,14 +43,52 @@
 				phone:'',
 				password:'',
 				superiorUserPhone:'',
+				code:'',
 				verifyNum:'',
 				sendVerify: '获取验证码',
 				verifyDisabled:false,
 				popupMessage:""
 			}
 		},
+		onLoad:function(option) {
+			// 获取推荐人手机号
+			if(option.phone){
+				this.superiorUserPhone=option.phone;
+			}
+		},
 		methods: {
+			getyanzhengFn:function(){
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+'/api/v1/pri/login/registSendMgs', 
+				    data: {
+				        phone: this.phone,
+				    },
+				    header: {
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+							this.popupMessage=res.data.data.Message;
+							this.$refs.popup.open();
+							// this.$store.commit("setToken",res.data.data);
+									// this.$Router.pushTab('/pages/index/index')
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+							this.$refs.popup.open();
+						}
+				       
+				    }
+				});
+			},
 			sendyanzheng:function(){
+				if(!this.verifyDisabled&&this.isPoneAvailable(this.phone)){
+					this.getyanzhengFn()
+				}else if(!this.isPoneAvailable(this.phone)){
+					this.$refs.popup.open();
+					return false
+				}
 				this.sendVerify=60;
 				this.verifyDisabled=true;
 				let setyanzheng='';
@@ -85,11 +127,11 @@
 					this.$refs.popup.open()
 					return false
 				}
-				// else if(this.verifyNum==''){
-				// 	this.popupMessage="请输入验证码"
-				// 	this.$refs.popup.open()
-				// 	return false
-				// }
+				else if(this.code==''){
+					this.popupMessage="请输入验证码"
+					this.$refs.popup.open()
+					return false
+				}
 				// else if(!this.isPoneAvailable(this.superiorUserPhone)){
 				// 	this.popupMessage="请输入推荐人手机号"
 				// 	this.$refs.popup.open()
@@ -102,7 +144,8 @@
 				    data: {
 				        phone: this.phone,
 						password:this.password,
-						superiorUserPhone:this.superiorUserPhone
+						superiorUserPhone:this.superiorUserPhone,
+						code:this.code,
 				    },
 				    header: {
 						'Content-Type':'application/json' //自定义请求头信息

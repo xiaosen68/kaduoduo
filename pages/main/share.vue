@@ -81,7 +81,7 @@
 			this.getShareList();
 			this.backgroundimage='url('+this.imgList[0]+')'
 			this.bjListWidth=this.imgList*220+'upx';
-			this.codeVal=this.$shareUrl+'?phone:'+uni.getStorageSync('userPhone')+'&userName:'+uni.getStorageSync('userName')
+			this.codeVal=this.$shareUrl+'?phone:'+uni.getStorageSync('userPhone')+'&storeName:'+uni.getStorageSync('userName')
 			console.log(this.codeVal)
 		},
 		methods: {

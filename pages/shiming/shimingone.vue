@@ -172,6 +172,7 @@ export default {
 							uploadType:'ID_CARD_URL'
 						},
 						success:(res)=>{
+							console.log(res)
 							console.log(JSON.parse((res.data)).data.url);
 							_this.$set(_this.picuploadName,n,JSON.parse((res.data)).data.url);
 							console.log(_this.picuploadName)
