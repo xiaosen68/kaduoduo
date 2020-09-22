@@ -38,6 +38,11 @@
 				确认订单
 			</view>
 		</view>
+		<uni-popup ref="popup" type="center">
+			<view class="popupCenter-box">
+				{{popupCenterMessage}}
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
@@ -59,6 +64,7 @@
 				productName:'',
 				discount:'',
 				transactionPrice:'',
+				popupCenterMessage:''
 		}
 	},
 	onLoad() {
@@ -164,18 +170,28 @@
 			// this.addbuyCar();
 		},
 		selectPay:function(){
-			this.$Router.push({
-				path:'/pages/shop/selectpay',
-				query:{
-					product:JSON.stringify({
-						productName:this.productName,
-						id:this.goodsId,
-						transactionPrice:this.transactionPrice,
-						amount:this.goodsNum
-					}),
-					totalTransactionPrice:this.allMoney,
-					addressId:this.locationId,
-				}})
+			if(this.allMoney>=100&&this.allMoney<=50000){
+				this.$Router.push({
+					path:'/pages/shop/selectpay',
+					query:{
+						product:JSON.stringify({
+							productName:this.productName,
+							id:this.goodsId,
+							transactionPrice:this.transactionPrice,
+							amount:this.goodsNum
+						}),
+						totalTransactionPrice:this.allMoney,
+						addressId:this.locationId,
+					}})
+			}else if(this.allMoney<=100){
+					this.popupCenterMessage='请选择商品需大于100元'
+						this.$refs.popup.open()
+			}else if(this.allMoney>50000){
+				this.popupCenterMessage='请选择商品需小于50000元'
+					this.$refs.popup.open()
+			}
+			
+		
 		}
 		
 	},
@@ -197,7 +213,12 @@
 	}
 </style>
 <style scoped>
-	
+	.popupCenter-box{
+		width: 400upx;
+		padding: 40upx ;
+		text-align: center;
+		border-radius: 20upx;
+	}
 	.shop-center-box{
 		min-height: 90vh;
 		background-color:#f4f8fb;

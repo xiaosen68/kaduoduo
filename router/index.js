@@ -16,7 +16,7 @@ router.beforeEach((to, from, next) => {
 		next()
 	}else{
 		if(uni.getStorageSync('token')!==''){
-			console.log(uni.getStorageSync('token'))
+			// console.log(uni.getStorageSync('token'))
 			next()
 		}else{
 			next({

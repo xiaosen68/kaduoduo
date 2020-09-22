@@ -60,7 +60,7 @@
 		</view>
 		<uni-popup ref="popup" type="center">
 			<view class="popupCenter-box">
-				{{popupCenterMessage}}
+				{{popupMessage}}
 			</view>
 		</uni-popup>
 	</view>
@@ -78,7 +78,7 @@ export default {
 			picuploadName:[],//上传后的地址信息
 			idNumber:'',
 			name:'',
-			popupCenterMessage:'',
+			popupMessage:'',
 			
 		}
 	},
@@ -110,6 +110,7 @@ export default {
 		},
 		// 上传图片，获取卡号；
 		getCardBase:function(){
+			
 			console.log(this.cardPic);
 			uni.request({
 				method:'POST',
@@ -173,8 +174,10 @@ export default {
 						},
 						success:(res)=>{
 							console.log(res)
-							console.log(JSON.parse((res.data)).data.url);
+							let ress=JSON.parse((res.data));
 							_this.$set(_this.picuploadName,n,JSON.parse((res.data)).data.url);
+							this.popupMessage=ress.data.url;
+							this.$refs.popup.open()
 							console.log(_this.picuploadName)
 						}
 					})
@@ -193,25 +196,25 @@ export default {
 		uploading:function(){
 			console.log(this.picuploadName)
 			if(this.name==''){
-				this.popupCenterMessage='请填写姓名';
+				this.popupMessage='请填写姓名';
 				this.opens()
 				return false
 			}else if(!this.namefn(this.name)){
-				this.popupCenterMessage='请填写中文姓名';
+				this.popupMessage='请填写中文姓名';
 				this.opens()
 				return false
 			}
 			if(this.idNumber==''){
-				this.popupCenterMessage='请填写身份证号码';
+				this.popupMessage='请填写身份证号码';
 				this.opens()
 				return false
 			}else if(!this.shenfenzhengFn(this.idNumber)){
-				this.popupCenterMessage='身份证号码错误请重新填写';
+				this.popupMessage='身份证号码错误请重新填写';
 				this.opens()
 				return false
 			}
 			if(this.picuploadName.length<3){
-				this.popupCenterMessage='请上传身份证正、反面及手持身份证照片';
+				this.popupMessage='请上传身份证正、反面及手持身份证照片';
 				this.opens()
 				return false
 			}else {
@@ -220,7 +223,7 @@ export default {
 					method:'POST',
 				    url: this.$baseUrl+'/api/v1/pri/my/realNameAuthentication', 
 				    data: {
-						userId:21,
+						userId:uni.getStorageSync('userId'),
 						realName:this.name,
 						idNumber:this.idNumber,
 				        phone: uni.getStorageSync('userPhone'),
@@ -234,13 +237,15 @@ export default {
 				    },
 				    success: (res) => {
 						console.log(res)
-						if(res.data.code==0){
+						if(res.data.code===0){
 							this.popupMessage=res.data.msg;
 							this.$refs.popup.open();
 								this.$Router.pushTab('/pages/main/mycenter')
 							
-						}else if(res.data.code==-1){
+						}else if(res.data.code===-1){
 							this.popupMessage=res.data.msg;
+							console.log(res.data.msg)
+							this.$refs.popup.open();
 						}else{
 							this.popupMessage=res.data.msg;
 							this.$refs.popup.open();

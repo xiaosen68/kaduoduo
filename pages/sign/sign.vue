@@ -27,7 +27,7 @@
 			</view>
 			<!-- <navigator url="../index/index" class="login-btn" hover-class="none">去登录</navigator> -->
 			<router-link to="{name:index}"class="login-btn" hover-class="none">去登录</router-link>
-			<router-link to="{name:uploadapp}"class="login-btn-two" hover-class="none">去下载</router-link>
+			<router-link @click="goupload" class="login-btn-two" hover-class="none">去下载</router-link>
 			<uni-popup ref="popup"  type="center" class="popupstyle">
 				<view class="popupCenter-box">{{popupMessage}}</view>
 			</uni-popup>
@@ -50,11 +50,14 @@
 				popupMessage:""
 			}
 		},
+	
 		onLoad:function(option) {
-			// 获取推荐人手机号
-			if(option.phone){
-				this.superiorUserPhone=option.phone;
-			}
+		console.log()
+		if(((window.location.href.split('?')[1]).split('&')[0]).split('=')[1]){
+			this.superiorUserPhone=((window.location.href.split('?')[1]).split('&')[0]).split('=')[1]
+		}
+			console.log(this.superiorUserPhone)
+			
 		},
 		methods: {
 			getyanzhengFn:function(){
@@ -79,7 +82,12 @@
 							this.$refs.popup.open();
 						}
 				       
-				    }
+				    },
+					fail:()=>{
+						this.popupMessage = '请稍后重试';
+						this.$refs.popup.open();
+						return false
+					}
 				});
 			},
 			sendyanzheng:function(){
@@ -162,6 +170,9 @@
 				    }
 				});
 				// this.$Router.push({name:'index'})
+			},
+			goupload:function(){
+				this.$Router.push({name:'uploadapp'})
 			}
 		}
 	}

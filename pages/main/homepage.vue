@@ -7,7 +7,7 @@
 					卡商城
 				</view>
 				<view class="">
-					<uni-icons type="scan" v-if="ifScan" class="scan-icon" @click="scanFn" color="#ffffff" size="24"></uni-icons>
+					<uni-icons type="scan" class="scan-icon" @click="scanFn" color="#ffffff" size="24"></uni-icons>
 					<uni-icons type="chat" @click="gomessage" color="#ffffff" size="24"></uni-icons>
 				</view>
 			</view>
@@ -60,7 +60,6 @@
 		data() {
 			return {
 				message:'',
-				ifScan:true,
 				naticeText:'',
 				alertNaticeText:'',
 				main :[
@@ -77,7 +76,8 @@
 					},{
 						name:'快捷收卡',
 						icon:'../../static/img/main3.png',
-						url:'cardstore',
+						// url:'cardstore',
+						url:'waiting',
 						pageType:'3'
 					},{
 						name:'大额快收',
@@ -266,40 +266,40 @@
 			// 扫描二维码
 			scanFn:function(){
 				let _this = this;
-				if(process.env.NODE_ENV === 'development')　{
-					
-				}else{
-					uni.scanCode({
-						scanType:['qrCode'],
-						success:function(res){
-							_this.$Router.push({
-								path:'/pages/main/scanpayment',
-								query:{
-									payname:res.result
-								}
-							})
-							
-						},fail:function(){
-							
-						},complete:function(){
+				//#ifdef H5
+				_this.$Router.push({
+					path:'/pages/main/scanpayment',
+				})
+				//#endif
+				
+				//#ifndef H5
+				uni.scanCode({
+					scanType:['qrCode'],
+					success:function(res){
+						alert(res.result)
 						_this.$Router.push({
 							path:'/pages/main/scanpayment',
 							query:{
 								payname:res.result
 							}
 						})
-							
+						
+					},fail:function(){
+						
+					},complete:function(){
+					_this.$Router.push({
+						path:'/pages/main/scanpayment',
+						query:{
+							payname:res.result
 						}
-						})
-				}
+					})
+						
+					}
+					})
+				//#endif
 			}
 		},
-		mounted:function(){
-			let _this=this;
-			if(process.env.NODE_ENV === 'development')　{
-				_this.ifScan=false;
-			}
-		}
+	
 	}
 	
 </script>

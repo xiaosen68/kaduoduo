@@ -58,8 +58,8 @@
 			return {
 				code:'',//二维码
 				bj:'../../static/img/share1.jpg',//海报背景
-				codeVal:'asdasd',//生成二维码内容
-				size:140,//二维码大小
+				codeVal:'',//生成二维码内容
+				size:240,//二维码大小
 				unit:'upx',//二维码大小单位
 				show:true,//
 				loadMake:true,//加载成功后自动生成二维码
@@ -78,10 +78,9 @@
 			}
 		},
 		onLoad(){
+			// this.codeVal='sss'+'?phone='+uni.getStorageSync('userPhone')+'&storeName='+uni.getStorageSync('userName')
+			this.codeVal=this.$shareUrl+'?phone='+uni.getStorageSync('userPhone')+'&storeName='+uni.getStorageSync('userName')
 			this.getShareList();
-			this.backgroundimage='url('+this.imgList[0]+')'
-			this.bjListWidth=this.imgList*220+'upx';
-			this.codeVal=this.$shareUrl+'?phone:'+uni.getStorageSync('userPhone')+'&storeName:'+uni.getStorageSync('userName')
 			console.log(this.codeVal)
 		},
 		methods: {
@@ -96,10 +95,10 @@
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {	
-						console.log(res.data.data)
+						// console.log(res.data.data)
 						if(res.data.code==0){
 						this.imgList=res.data.data
-						
+						this.getListWidth();
 						}else if(res.data.code==-1){
 						}
 				       
@@ -108,15 +107,21 @@
 					}
 				})
 				},
+				getListWidth:function(){
+					this.backgroundimage='url('+this.imgList[0]+')'
+					this.bjListWidth=this.imgList*220+'upx';
+					
+					
+				},
 			// 移动二维码，获取信息
 			onChange: function(e) {
 					this.old.x = e.detail.x
 					this.old.y = e.detail.y
 			},
-			// // 生成二维码
-			// getQr:function(){
-			// 	this.$refs.qrcode._makeCode()
-			// },
+			// 生成二维码
+			getQr:function(){
+				this.$refs.qrcode._makeCode()
+			},
 			// 获取二维码
 			resultqr:function(e){
 				this.code=e
@@ -131,17 +136,18 @@
 				let codeicon=uni.createSelectorQuery().select('.code-pic');//获取二维码节点信息
 				codeicon.boundingClientRect(data =>{
 					codeStatus=data;
-					// console.log(codeStatus)
+					console.log(codeStatus)
 				}).exec();
 				can.boundingClientRect(data =>{
 					canStatus=data;
-					// console.log(canStatus)
+					console.log(canStatus)
 				}).exec();
 				// 获取背景图
+				console.log(_this.bj)
 			  uni.getImageInfo({
-				src: _this.bj ,
+				src: _this.bj.url ,
 				success: function (image) {
-					// console.log(image);
+					console.log(image);
 					setTimeout(function(){
 						// 画背景图
 						context.drawImage(image.path,0,0,image.width,image.height,0,0,canStatus.width,canStatus.height)
@@ -156,28 +162,35 @@
 							canvasId:'firstCanvas',
 							fileType:'jpg',
 							success:function(res){
-								// console.log(res.tempFilePath)
+								console.log(res.tempFilePath)
 								_this.canvashow=true;
 								// 判断h5时长按保存
-								if(process.env.NODE_ENV === 'development'){
-									
-									_this.popupCenterMessage='长按保存并分享'
-									_this.opencenter();
-								}else {
-									// 非h5时保存图片
-									uni.saveImageToPhotosAlbum({
-										filePath:res.tempFilePath,
-										success:function(e){
-											_this.popupCenterMessage='已保存相册前去分享'	
-											_this.opencenter();
-											}
-									})
-								}
+								//#ifdef H5
+								_this.popupCenterMessage='长按保存并分享'
+								_this.opencenter();
+								
+								//#endif
+								//#ifndef H5
+								_this.popupCenterMessage=res.tempFilePath;
+								_this.opencenter();
+								uni.saveImageToPhotosAlbum({
+									filePath:res.tempFilePath,
+									success:function(e){
+										_this.popupCenterMessage='已保存相册前去分享'	
+										_this.opencenter();
+										}
+								})
+								_this.popupCenterMessage='已保前去分享'
+								_this.opencenter();
+								//#endif
 								_this.bjj=res.tempFilePath
 							}
 						})
 					},100)
 							
+				},
+				complete(ww) {
+					console.log(ww)
 				}
 			});
 			},
@@ -188,69 +201,66 @@
 				this.$refs.popupcenter.open()
 			},
 			select:function(e){
-				if(process.env.NODE_ENV === 'development'){
-					this.popupCenterMessage='请长按图片，保存相册后分享';
-					this.opencenter();
-				}else{
-					if(e.item.name==='wx'){
-						uni.share({
-							provider:'weixin',//weixin|qq|sinaweibo
-							type:0,
-							title:'诚邀您来一起使用哦',//标题
-							scene:'WXSceneSession',//聊天，WXSenceTimeline，朋友圈
-							summary:'我正在使用它，很好用哦，快快加入吧',//内容摘要
-							href:this.shareUrl,
-							imageUrl:this.imgDownLoadUrl,
-							success:function(){
-								this.popupCenterMessage='已分享成功';
-								this.opencenter();
-							},
-							fail:function(){
-								// this.popupCenterMessage='保存相册失败，请重试，或长按保存'
-								this.savexc('分享失败，已保存至相册，快去分享吧');
-							}	
-						})
-					}else if(e.item.name==='py'){
-						uni.share({
-							provider:'weixin',//weixin|qq|sinaweibo
-							type:0,
-							title:'诚邀您来一起使用哦',//标题
-							scene:'WXSenceTimeline',//朋友圈
-							summary:'我正在使用它，很好用哦，快快加入吧',//内容摘要
-							href:this.shareUrl,
-							imageUrl:this.imgDownLoadUrl,
-							success:function(){
-								this.popupCenterMessage='已分享成功';
-								this.opencenter();
-							},
-							fail:function(){
-								// this.popupCenterMessage='保存相册失败，请重试，或长按保存'
-								this.savexc('分享失败，已保存至相册，快去分享吧');
-							}	
-						})
-					}else if(e.item.name==='qq'){
-						uni.share({
-							provider:'qq',//weixin|qq|sinaweibo
-							type:2,
-							title:'诚邀您来一起使用哦',//标题
-							scene:'WXSenceTimeline',//朋友圈
-							summary:'我正在使用它，很好用哦，快快加入吧',//内容摘要
-							href:this.shareUrl,
-							imageUrl:this.imgDownLoadUrl,
-							success:function(){
-								this.popupCenterMessage='已分享成功';
-								this.opencenter();
-							},
-							fail:function(){
-								// this.popupCenterMessage='保存相册失败，请重试，或长按保存'
-								this.savexc('分享失败，已保存至相册，快去分享吧');
-							}	
-						})
-					}else if(e.item.name==='xc'){
-						// 保存到相册
-						this.savexc('已保存至相册，快去分享吧')
-					}
-				}
+				//#ifdef H5
+				this.popupCenterMessage='请长按图片，保存相册后分享';
+				this.opencenter();
+				//#endif
+				//#ifndef H5
+				if(e.item.name==='wx'){
+					uni.share({
+						provider:'weixin',//weixin|qq|sinaweibo
+						type:0,
+						title:'诚邀您来一起使用哦',//标题
+						scene:'WXSceneSession',//聊天，WXSenceTimeline，朋友圈
+						summary:'我正在使用它，很好用哦，快快加入吧',//内容摘要
+						href:this.shareUrl,
+						imageUrl:this.imgDownLoadUrl,
+						success:function(){
+							this.popupCenterMessage='已分享成功';
+							this.opencenter();
+						},
+						fail:function(){
+							this.savexc('分享失败，已保存至相册，快去分享吧');
+						}	
+					})
+				}else if(e.item.name==='py'){
+					uni.share({
+						provider:'weixin',//weixin|qq|sinaweibo
+						type:0,
+						title:'诚邀您来一起使用哦',//标题
+						scene:'WXSenceTimeline',//朋友圈
+						summary:'我正在使用它，很好用哦，快快加入吧',//内容摘要
+						href:this.shareUrl,
+						imageUrl:this.imgDownLoadUrl,
+						success:function(){
+							this.popupCenterMessage='已分享成功';
+							this.opencenter();
+						},
+						fail:function(){
+							this.savexc('分享失败，已保存至相册，快去分享吧');
+						}	
+					})
+				}else if(e.item.name==='qq'){
+					uni.share({
+						provider:'qq',//weixin|qq|sinaweibo
+						type:2,
+						title:'诚邀您来一起使用哦',//标题
+						scene:'WXSenceTimeline',//朋友圈
+						summary:'我正在使用它，很好用哦，快快加入吧',//内容摘要
+						href:this.shareUrl,
+						imageUrl:this.imgDownLoadUrl,
+						success:function(){
+							this.popupCenterMessage='已分享成功';
+							this.opencenter();
+						},
+						fail:function(){
+							this.savexc('分享失败，已保存至相册，快去分享吧');
+						}	
+					})
+				}else if(e.item.name==='xc'){
+					this.savexc('已保存至相册，快去分享吧')
+				}		
+				//#endif
 			} ,
 			//保存相册
 			savexc:function(mess){
@@ -278,11 +288,12 @@
 			selectImg:function(item){
 				console.log(item)
 				this.canvashow=false;
-				this.style={
-					backgroundImage:'url('+item.url+')',
-					backgroundSize:'540upx 810upx',
-					backgroundRepeat: 'no-repeat',
-				};
+				this.backgroundimage='url('+item.url+')';
+				// this.style={
+				// 	backgroundImage:'url('+item.url+')',
+				// 	backgroundSize:'540upx 810upx',
+				// 	backgroundRepeat: 'no-repeat',
+				// };
 				this.bj=item;
 			}
 		}

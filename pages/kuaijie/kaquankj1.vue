@@ -29,6 +29,7 @@
 				<button type="" class="next-btn" @click="nextFn">下一步</button>
 			</view>
 		</view>
+	
 		 <uni-popup ref="popup1" type="bottom">
 		 	<view class="bank-card-list">
 		 	<view class="esc-btn">
@@ -146,6 +147,9 @@
 		 		</view>
 		 		</view>
 		 </uni-popup>
+		 <uni-popup ref="popup" type="center" class="popupstyle">
+		 	<view class="popupCenter-box">{{popupMessage}}</view>
+		 </uni-popup>
 	</view>
 </template>
 
@@ -163,6 +167,7 @@
 				depositList:[],
 				passageWayList:[],
 				passageWay:'',
+				popupMessage:''
 			}
 		},
 		onLoad: function () {
@@ -171,9 +176,58 @@
 			this.allGoodscj=this.$Route.query.allGoodscj
 			console.log(this.buyList)
 			console.log(uni.getStorageSync('pageType'))
-			
+			let _this =this;
 			// 初始化卡券空间订单并获取信用卡列表
 			if(uni.getStorageSync('pageType')==5){
+				this.chusikaquan();
+			}else if(uni.getStorageSync('pageType')==3){
+				// 初始化快捷收款订单
+				this.chusikuaijie();
+			}
+		},
+		methods: {
+			chusikuaijie:function(){
+			uni.request({
+				method:'POST',
+			    url: this.$baseUrl+'/api/v1/pri/shop//initExpressPayment', 
+			    data: {
+					orderType:"EXPRESS_PAYMENT",
+					totalTransactionPrice:this.allGoodscj,
+					totalMailingPrice:this.allGoodsjs,
+					productList:this.buyList
+			    },
+			    header: {
+					'token':uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					if(res.data.code==0){
+						this.creditCardList=res.data.data.userCreditCardlist;
+						this.credit=this.creditCardList[0];
+						this.depositList=res.data.data.userSavingsCardList.sort(function(a,b){return b.defaultCard-a.defaultCard})
+						this.deposit=this.depositList[0];
+						this.passageWayList=res.data.data.passageWayList;
+						this.passageWay=this.passageWayList[0];
+						console.log(this.credit)
+						console.log(this.passageWayList)
+					}else if(res.data.code==-1){
+						console.log(res.data.code)
+						this.popupMessage=res.data.msg;
+						this.$refs.popup.open();
+						console.log(res.data.code)
+					}else{
+					}
+			       
+			    },
+				fail :()=> {
+					this.popupMessage = '初始化订单失败，请稍后重试';
+					this.$refs.popup.open();
+				}
+			});	
+				
+			},
+			chusikaquan:function(){
 				uni.request({
 					method:'POST',
 				    url: this.$baseUrl+'/api/v1/pri/shop//initCardCouponSpace', 
@@ -196,53 +250,16 @@
 							this.deposit=this.depositList[0];
 							this.passageWayList=res.data.data.passageWayList;
 							this.passageWay=this.passageWayList[0];
-							console.log(this.credit)
 							console.log(this.passageWayList)
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
+							this.$refs.popup.open();
 						}else{
 						}
 				       
 				    }
 				});	
-			}else if(uni.getStorageSync('pageType')==3){
-				// 初始化快捷收款订单
-				uni.request({
-					method:'POST',
-				    url: this.$baseUrl+'/api/v1/pri/shop//initExpressPayment', 
-				    data: {
-						orderType:"EXPRESS_PAYMENT",
-						totalTransactionPrice:this.allGoodscj,
-						totalMailingPrice:this.allGoodsjs,
-						productList:this.buyList
-				    },
-				    header: {
-						'token':uni.getStorageSync('token'),
-						'Content-Type':'application/json' //自定义请求头信息
-				    },
-				    success: (res) => {
-						console.log(res)
-						if(res.data.code==0){
-							this.creditCardList=res.data.data.userCreditCardlist;
-							this.credit=this.creditCardList[0];
-							this.depositList=res.data.data.userSavingsCardList.sort(function(a,b){return b.defaultCard-a.defaultCard})
-							this.deposit=this.depositList[0];
-							this.passageWayList=res.data.data.passageWayList;
-							this.passageWay=this.passageWayList[0];
-							console.log(this.credit)
-							console.log(this.passageWayList)
-						}else if(res.data.code==-1){
-							this.popupMessage=res.data.msg;
-						}else{
-						}
-				       
-				    }
-				});	
-				
-				
-			}
-		},
-		methods: {
+			},
 			selectPay:function(item){
 				this.passageWay=item;
 				this.closedia3();
@@ -292,6 +309,7 @@
 						if(res.data.code==0){
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
+							this.$refs.popup.open();
 						}else{
 						}
 				       
@@ -486,7 +504,7 @@
 	}
 	.pay-item{
 		/* width: 750upx; */
-		height:220upx;
+		/* height:220upx; */
 		padding: 20upx;
 		border-bottom: 2upx solid #e5e5e5;
 	}
@@ -557,4 +575,10 @@
 	.popup-btn-box{
 		padding: 10upx 0;
 	}
+/* 	.popupCenter-box {
+		width: 400upx;
+		padding: 40upx;
+		text-align: center;
+		border-radius: 20upx;
+	} */
 </style>

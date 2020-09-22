@@ -67,6 +67,9 @@ export default {
 					var reader = new FileReader()
 						reader.onloadend = function() {
 							_this.cardPic= reader.result;
+							_this.popupMessage=	_this.cardPic;
+							_this.$refs.popup.open();
+							// alert(_this.cardPic)
 							_this.getCardBase();
 						}
 						if (res.tempFiles[0]) {
@@ -80,7 +83,7 @@ export default {
 		},
 		// 上传图片，获取卡号；
 		getCardBase:function(){
-			console.log(this.cardPic);
+			alert(this.cardPic);
 			uni.request({
 				method:'POST',
 			    url: 'http://bankocrb.shumaidata.com/getbankocrb', 
@@ -94,6 +97,7 @@ export default {
 			    success: (res) => {
 					if(res.statusCode==200){
 						console.log(res.data)
+						alert(res.data)
 						this.cardNo=res.data.data.card_number;
 						this.bank=res.data.data.bank_name;
 						console.log(this.cardNo)

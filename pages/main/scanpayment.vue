@@ -1,12 +1,21 @@
 <template>
 	<view class="scanpay-box">
-		<view class="scanpay-name-box">
+		<view class="scanpay-name-box" v-if="ifh5">
+		
+			<view class="scanpay-tel">
+				<input type="number" class=" input-num card-input scanpay-name" maxlength="11" 
+				v-model="tel" value=""placeholder="请输入商家手机号" />
+			</view>
+			
+		</view>
+		<view class="scanpay-name-box" else>
 			<view class="scanpay-name">
 				{{name}}
 			</view>	
 			<view class="scanpay-tel">
 				{{tel}}
 			</view>
+			
 		</view>
 		<view class="money-box">
 			<view class="money-num-title">
@@ -14,7 +23,8 @@
 			</view>
 			<view >
 				<text class="money-icon">￥</text>
-				<input type="digit" class="money-num" maxlength="7" value="" @blur="changeMoney" v-model="moneyNum"/>
+				<input type="digit" class="money-num" maxlength="7" 
+				value="" @blur="changeMoney" v-model="moneyNum"/>
 			</view>
 		</view>
 		<view class="money-box">
@@ -49,6 +59,11 @@
 		<!-- <view class="next-btn-box">
 			<view type="" class="next-btn" :class="{'sure-btn':sureBtn}" @click="buyBtn">确认付款</view>
 		</view> -->
+		<uni-popup ref="popup" type="center">
+			<view class="popupCenter-box">
+				{{popupMessage}}
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
@@ -65,15 +80,23 @@
 				paystatus:'',
 				creditCardList:[],
 				credit:'',
+				popupMessage:'',
+				ifh5:true
 			}
 		},
-		onLoad(option) {
-			console.log(option)
+		beforeMount() {
 			this.scanVal=this.$Route.query.pageType;
-			this.scanVal='https://www.baidu.com/?phone=18039229610&storeName=王森';
+			console.log(this.scanVal)
 			if(this.scanVal){
+				this.ifh5=false;
 				this.tel=(this.scanVal.split('?')[1]).split('&')[0].split('=')[1];
 			this.name=(this.scanVal.split('?')[1]).split('&')[1].split('=')[1];
+			}else{
+				this.ifh5=true;
+				this.tel='';
+				this.name='';
+				this.popupMessage="请扫描有效二维码";
+				this.$refs.popup.open();
 			}
 			
 			this.getcredit();
@@ -93,11 +116,19 @@
 				    success: (res) => {
 						console.log(res)
 						if(res.data.code==0){
+							
 							this.creditCardList=res.data.data;
-							this.credit=this.creditCardList[0];
+							// this.credit=this.creditCardList[0];
+							if(!this.creditCardList[0]){
+								this.popupMessage="未绑定信用卡"
+								this.$refs.popup.open();
+								this.$Router.push({ name: 'myteam',})
+							}else{
+								this.credit=this.creditCardList[0];	
+							}
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
-							// this.$refs.popup.open();
+							this.$refs.popup.open();
 						}else{
 							console.log(res)
 						}
@@ -142,7 +173,6 @@
 					    success: (res) => {
 							console.log(res.data)
 							if(res.data.code==0){
-							
 								console.log(res.data)
 							}else if(res.data.code==-1){
 							}
@@ -170,9 +200,15 @@
 		},
 		computed:{
 			sureBtn:function(){
-				if(this.moneyNum>0){
+				if(this.moneyNum>=100&&this.moneyNum<=50000){
 					return true
-				}else{
+				}else if(this.moneyNum<100){
+					this.popupMessage='请选择商品需大于100元'
+					this.$refs.popup.open()
+					return false
+				}else if(this.moneyNum>50000){
+					this.popupMessage='请选择商品需小于50000元'
+					this.$refs.popup.open()
 					return false
 				}
 			}
@@ -182,7 +218,12 @@
 </script>
 
 <style scoped>
-
+.popupCenter-box{
+		width: 400upx;
+		padding: 40upx ;
+		text-align: center;
+		border-radius: 20upx;
+	}
 .scanpay-name-box{
 	padding-top: 80upx;
 	text-align: center;

@@ -3,7 +3,7 @@
 		<view class="store-box" >
 		<view class="store-list1"  >
 			<view class="store-item" v-for="(item,index) in goodsList" v-if="!iflast(index)" >
-				<image class="good-pic" src="../../static/img/goods1.png" mode="aspectFit"></image>
+				<image class="good-pic" :src="item.productUrl" mode="aspectFit"></image>
 				<view class="goods-name">
 					{{item.productName}}
 				</view>
@@ -26,7 +26,7 @@
 		</view>
 		<view class="store-list2" >
 			<view class="store-item" v-for="(item,index) in goodsList"  v-if="iflast(index)">
-				<image class="good-pic" src="../../static/img/goods1.png" mode="aspectFit"></image>
+				<image class="good-pic" :src="item.productUrl" mode="aspectFit"></image>
 				<view class="goods-name">
 					{{item.productName}}
 				</view>
@@ -109,7 +109,9 @@
 		},
 		onLoad() {
 			console.log(uni.getStorageSync('token'))
-			uni.setStorageSync('pageType',this.$Route.query.pageType)//从哪里跳转来的。
+			if(this.$Route.query.pageType){
+				uni.setStorageSync('pageType',this.$Route.query.pageType)//从哪里跳转来的。
+			}
 			uni.request({
 				method:'POST',
 			    url: this.$baseUrl+'/api/v1/pri/shop/mailingProduct', 
@@ -138,9 +140,61 @@
 			       
 			    }
 			});	
-			
+			this.getdeposit();
+			this.getcredit();
 		},
 		methods: {
+			// 获取信用卡
+			getcredit(){
+				uni.request({
+					method:'GET',
+				    url: this.$baseUrl+'/api/v1/pri/my/getUserCreditCard', 
+				    data: {
+				    },
+				    header: {
+						'token': uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+							if(res.data.data.length=0){
+								this.popupCenterMessage='请绑定信用卡';
+								this.$refs.popup.open()
+								this.$Router.push({ name: 'addcredit'})
+							}
+						}
+				       
+				    }
+				});	
+			},
+			// 获取储蓄卡
+			getdeposit(){
+				uni.request({
+					method:'GET',
+				    url: this.$baseUrl+'/api/v1/pri/my/getUserSavingsCard', 
+				    data: {
+				    },
+				    header: {
+						'token': uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+							if(res.data.data.length=0){
+								this.popupCenterMessage='请绑定储蓄卡';
+								this.$refs.popup.open();
+									this.$Router.push({ name: 'adddeposit'})
+							}
+						}
+				       
+				    }
+				});	
+			},
+			
+			
+			
 			// 输入框输入数字0~99
 			outinput:function(e){
 				if(e.detail.value>99){
@@ -268,7 +322,7 @@
 				})
 				console.log(this.buyList)
 				console.log(uni.getStorageSync('pageType'))
-				if(this.buyList.length>0){
+				if(this.buyList.length>0&&this.allGoodscj>100&&this.allGoodscj<50000){
 					if(uni.getStorageSync('pageType')==='1'){
 						this.$Router.push({path:'/pages/jishou/consume1',
 						query:{
@@ -293,7 +347,13 @@
 					}
 					
 				}else {
-					this.popupCenterMessage='请选择商品'
+					if(this.allGoodscj<100){
+						this.popupCenterMessage='选择商品需大于100元'
+					}else if(this.allGoodscj>50000){
+						this.popupCenterMessage='请选择商品需小于50000元'
+					}else{
+							this.popupCenterMessage='请选择商品'
+					}
 					this.$refs.popup.open()
 				}
 			

@@ -1,24 +1,28 @@
 <template>
 	<view class="seting-box">
 		<view class="">
-			<view class="seting-item" v-if="!ifH5">
-				<image src="../../static/img/gengxin.png" class="seting-item-icon" mode=""></image>
-				<view class="seting-item-title">
-					版本更新
+			<!-- #ifndef H5 -->
+				<view class="seting-item">
+					<image src="../../static/img/gengxin.png" class="seting-item-icon" mode=""></image>
+					<view class="seting-item-title">
+						版本更新
+					</view>
+					<view class="seting-item-value">
+						{{version}}
+					</view>
 				</view>
-				<view class="seting-item-value">
-					{{version}}
+			
+				<view class="seting-item"  @click="clear">
+					<image src="../../static/img/qingli.png" class="seting-item-icon" mode=""></image>
+					<view class="seting-item-title">
+						清理缓存
+					</view>
+					<view class="seting-item-value">
+						{{huancun}}
+					</view>
 				</view>
-			</view>
-			<view class="seting-item" v-if="!ifH5" @click="clear">
-				<image src="../../static/img/qingli.png" class="seting-item-icon" mode=""></image>
-				<view class="seting-item-title">
-					清理缓存
-				</view>
-				<view class="seting-item-value">
-					{{huancun}}
-				</view>
-			</view>
+			<!-- #endif -->
+			
 			<navigator url="./aboutme" class="seting-item">
 				<image src="../../static/img/guanyu.png" class="seting-item-icon" mode=""></image>
 				<view class="seting-item-title">
@@ -39,7 +43,6 @@
 		data() {
 			return {
 				huancun:'0',
-				ifH5:true,
 				version:'1.1.1.0'
 			}
 		},
@@ -80,27 +83,23 @@
 		},
 		onLoad:function(){
 			let _this=this;
-			if(process.env.NODE_ENV === 'development'){
-				this.ifH5=true;
-			}else{
-				this.ifH5=false;
-				// 获取垃圾缓存
-				plus.cache.calculate(function(n){
-					if(n<1024){
-						 _this.huancun=n+'B'; 
-					 }  
-					 else if(n/1024>=1 && n/1024/1024<1){
-						  _this.huancun= Math.floor(n/1024*100)/100+'KB';
-					 }
-					else if(n/1024/1024>=1){
-					     _this.huancun=Math.floor(n/1024/1024*100)/100+'M';
-					}
-				})
-				
-				// 获取版本号
-				_this.version=plus.runtime.version;
-			}
+			//#ifndef H5
+			// 获取垃圾缓存
+			plus.cache.calculate(function(n){
+				if(n<1024){
+					 _this.huancun=n+'B'; 
+				 }  
+				 else if(n/1024>=1 && n/1024/1024<1){
+					  _this.huancun= Math.floor(n/1024*100)/100+'KB';
+				 }
+				else if(n/1024/1024>=1){
+				     _this.huancun=Math.floor(n/1024/1024*100)/100+'M';
+				}
+			})
 			
+			// 获取版本号
+			_this.version=plus.runtime.version;
+			//#endif			
 		}
 	}
 	

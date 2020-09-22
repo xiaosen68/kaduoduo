@@ -112,7 +112,11 @@
 					}else{
 					}
 			       
-			    }
+			    },
+				fail :()=> {
+					this.popupMessage = '请稍后重试';
+					this.$refs.popup.open();
+				}
 			});	
 			
 		},
@@ -175,10 +179,14 @@
 							}
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
-							// this.$refs.popup.open();
-							this.tradable=true;
+							this.$refs.popup.open();
+							this.tradable=false;
 						}
-				    }
+				    },
+					fail :()=> {
+						this.popupMessage = '请稍后重试';
+						this.$refs.popup.open();
+					}
 				});	
 			},
 		
@@ -358,5 +366,6 @@
 		padding: 40upx;
 		text-align: center;
 		border-radius: 20upx;
+		
 	}
 </style>

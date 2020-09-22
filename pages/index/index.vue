@@ -114,6 +114,10 @@
 							this.$refs.popup.open();
 						}
 
+					},
+					fail :()=> {
+						this.popupMessage = '请稍后重试';
+						this.$refs.popup.open();
 					}
 				});
 			}

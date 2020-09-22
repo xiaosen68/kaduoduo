@@ -67,12 +67,12 @@
 					<uni-icons v-else type="arrowright" class="my-app-item-arrow"></uni-icons>
 				</view>
 			</view>
-			<view class="my-app-item">
-				<router-link to="{name:'cardlist'}">
+			<view class="my-app-item" @click="clickCardList">
+				<!-- <router-link to="{name:'cardlist'}"> -->
 					<image src="../../static/img/bank/bankcard.png" class="my-app-item-pic" mode=""></image>
 					<text>银行卡</text>
 					<uni-icons type="arrowright" class="my-app-item-arrow"></uni-icons>
-				</router-link>
+				<!-- </router-link> -->
 			</view>
 			<view class="my-app-item">
 				<router-link to="{name:'passwordlist'}">
@@ -150,7 +150,7 @@
 				ifyue:true
 			}
 		},
-		onLoad(object){
+		onShow(object){
 			let _this=this;
 			// 获取我的信息
 			uni.request({
@@ -254,6 +254,15 @@
 			clickShengjiFn:function(){
 				this.popupCenterMessage="推荐10名实名认证会员即可升级为VIP会员"
 				this.$refs.popupcenter2.open();
+			},
+			// 点击银行卡列表，查看是否实名
+			clickCardList:function(){
+				if(this.shimingtype=="已实名"){
+					this.$Router.push({name:'cardlist'})
+				}else{
+					this.popupCenterMessage="请先进行实名认证"
+					this.$refs.popupcenter2.open();
+				}
 			},
 			shimingFn:function(){
 				if(this.shimingtype=="已实名"){

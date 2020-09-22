@@ -336,7 +336,7 @@
 		"style": {
 			"navigationStyle": "custom",
 			"app-plus":{
-				"titleNView":false
+				// "titleNView":false
 				
 			}
 		}

@@ -1,5 +1,5 @@
 {
-    "name" : "咔多多",
+    "name" : "有粒糖",
     "appid" : "__UNI__A97D0AF",
     "description" : "",
     "versionName" : "1.0.0",
@@ -86,7 +86,11 @@
         "title" : "有粒糖",
         "router" : {
             "mode" : "hash",
-            "base" : "/h5/"
+            "base" : "./"
+        },
+        "domain" : "http://47.96.91.58:8088",
+        "devServer" : {
+            "https" : false
         }
     }
 }
