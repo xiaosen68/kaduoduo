@@ -8,7 +8,8 @@
 			</view>
 			<view class="sign-title">
 				<uni-icons type="locked" class="locked-icon" size="30"></uni-icons>
-				<input type="text" password maxlength="12" placeholder="请输入密码" class=" sign-input" v-model="password" />
+				<input type="text" password maxlength="12" placeholder="请输入密码" 
+				class=" sign-input" v-model="password" />
 			</view>
 			<view class="sign-title">
 				<uni-icons type="compose" class="locked-icon" size="30"></uni-icons>
@@ -132,6 +133,10 @@
 					return false
 				}else if(this.password==''){
 					this.popupMessage="请输入密码"
+					this.$refs.popup.open()
+					return false
+				}else if(this.password.length<6){
+					this.popupMessage="密码至少为六位"
 					this.$refs.popup.open()
 					return false
 				}

@@ -13,7 +13,7 @@
 					<image class="bank-head-img" :src="credit.bank_logo"></image>
 					<text class="con-bank-name">{{credit.bank}}{{credit.card_no|showbankCard}}</text>
 					<view class="loop-btn" @click="open1">
-						变更<uni-icons type="loop" style="color: #3cb4f1"></uni-icons>
+						更换
 					</view>
 					
 				</view>
@@ -22,7 +22,7 @@
 					<image class="bank-head-img" src="deposit"></image>
 					<text class="con-bank-name">{{deposit.bank}}{{deposit.card_no|showbankCard}}</text>
 					<view class="loop-btn" @click="open2">
-						变更<uni-icons type="loop" style="color: #3cb4f1"></uni-icons>
+						更换
 					</view>
 					
 				</view>

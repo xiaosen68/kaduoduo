@@ -39,18 +39,11 @@
 			}
 		},
 		onReady() {
-			uni.getStorage({
-				key: "phone",
-				success: function(res) {
-					this.phone = res.data
-				}
-			})
-			uni.getStorage({
-				key: "password",
-				success: function(res) {
-					this.password = res.data
-				}
-			})
+			try{
+				this.phone=  uni.getStorageSync('phone');
+			}catch(e){
+				
+			}
 		},
 		methods: {
 			isPoneAvailable: function(pone) {
@@ -75,6 +68,12 @@
 					this.$refs.popup.open()
 					return false
 				};
+				// 记住账号
+				try{
+					 uni.setStorageSync('phone', this.phone);
+				}catch(e){
+					
+				}
 				uni.request({
 					method: 'POST',
 					url: this.$baseUrl + '/api/v1/pri/login/login',
@@ -96,19 +95,7 @@
 							// this.$store.commit("setToken",res.data.data);
 							// console.log(uni.getStorageSync('token'))
 							this.$Router.pushTab('/pages/main/homepage')
-							// 登录成功后记住账号密码
-							uni.setStorage({
-								key: 'phone',
-								data: this.phone,
-								success: function() {},
-								fail: function() {}
-							});
-							uni.setStorage({
-								key: 'password',
-								data: this.password,
-								success: function() {},
-								fail: function() {}
-							});
+						
 						} else if (res.data.code == -1) {
 							this.popupMessage = res.data.msg;
 							this.$refs.popup.open();

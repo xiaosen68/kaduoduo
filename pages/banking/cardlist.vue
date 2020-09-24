@@ -31,7 +31,8 @@
 					</view>
 					<view class="card-item-box2">
 						{{item.cardNo}}
-						<uni-icons type="trash" class="trash-icon" color="#ffffff"></uni-icons>
+						<uni-icons type="trash" class="trash-icon"
+						 @click="deleteCardFn(item.id)" color="#ffffff"></uni-icons>
 					</view>
 					<view class="card-item-box3">
 						<text>{{item.cardType|cardTypeFilters}}</text>
@@ -89,6 +90,32 @@ export default {
 		}
 	},
 	methods:{
+		// 删除卡片
+		deleteCardFn:function(id){
+			uni.request({
+				method:'POSt',
+			    url: this.$baseUrl+'/api/v1/pri/my/deleteUserCard', 
+			    data: {
+					id:id
+			    },
+			    header: {
+					'token': uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					if(res.data.code==0){
+						this.creditlist=res.data.data
+					}else if(res.data.code==-1){
+						this.popupMessage=res.data.msg;
+						// this.$refs.popup.open();
+					}else{
+						console.log(res)
+					}
+			       
+			    }
+			});	
+		},
 		// 获取信用卡
 		getcredit(){
 			uni.request({

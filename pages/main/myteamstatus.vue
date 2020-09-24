@@ -5,7 +5,7 @@
 				<image class="v-head" src="../../static/img/vhead/V5.png" mode=""></image>
 				<view class="myteam-num-box">
 					<view class="myteam-v-name">
-						name
+						{{item.realName}}
 					</view>
 					<view class="">
 					{{item.userLevelName}}	

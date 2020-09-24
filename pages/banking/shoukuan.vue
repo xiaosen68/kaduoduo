@@ -41,7 +41,7 @@
 			}
 		},
 		created() {
-			this.codeVal=uni.getStorageSync('phone')
+			this.codeVal='收款?phone='+uni.getStorageSync('phone')+'&name='+uni.getStorageSync('userName');
 			// this.codeVal='https://www.baidu.com/?tn=02003390_5_hao_pg'
 			this.name=uni.getStorageSync('userName');
 		},

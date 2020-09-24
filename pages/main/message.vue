@@ -2,7 +2,7 @@
 	
 	<view class="message-list">
 		<view class="message-head">
-			<uni-icons type="back" class="message-left" @click="backFn" color="#000000" size="24"></uni-icons>
+			<!-- <uni-icons type="back" class="message-left" @click="backFn" color="#000000" size="24"></uni-icons> -->
 			<view class="message-button-box">
 				<view class="message-button" :class="{messageselect:select}" @click="messageSelect(1)">
 					个人信息

@@ -19,7 +19,7 @@
 						<text class="con-bank-type">信用卡</text>
 					</view>
 					<view class="loop-btn" @click="open1">
-						变更<uni-icons type="loop" style="color: #3cb4f1"></uni-icons>
+						更换
 					</view>
 					
 				</view>
@@ -286,8 +286,9 @@
 	}
 	.loop-btn{
 		display: inline-block;
-		width: 200upx;
-		text-align: right;
+		float: right;
+		width: 120upx;
+		text-align: left;
 		font-size: 30upx;
 		color: #3cb4f1;
 		line-height: 100upx;

@@ -334,13 +334,8 @@
 	{
 		"path": "pages/main/message",
 		"style": {
-			"navigationStyle": "custom",
-			"app-plus":{
-				// "titleNView":false
-				
-			}
+			"navigationBarTitleText": "信息列表"
 		}
-		
 	},{
 		"path": "pages/main/mycenter",
 		"style": {

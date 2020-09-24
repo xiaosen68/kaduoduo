@@ -173,10 +173,9 @@ export default {
 					if(res.data.code==0){
 						this.popupMessage=res.data.data;
 						this.$refs.popup.open()
-						console.log(this.accountBalance)
+						this.$Router.back(1)
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
-						// this.popupMessage=res.data.data;
 						this.$refs.popup.open()
 					}else{
 						console.log(res)

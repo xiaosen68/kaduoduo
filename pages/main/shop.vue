@@ -6,7 +6,7 @@
 		    <swiper class="swiper-box" @change="change">
 		        <swiper-item v-for="(item ,index) in info" :key="index">
 		            <view class="swiper-item">
-		                {{item.content}}
+		                <image :src="item.url" mode="widthFix" class="banner-img"></image>
 		            </view>
 		        </swiper-item>
 		    </swiper>
@@ -73,11 +73,14 @@ export default {
 		return{
 			 info: [
 				{
-					content: '内容 A'
+					content: '内容 A',
+					url:'../../static/img/1.jpg'
 				}, {
-					content: '内容 B'
+					content: '内容 B',
+					url:'../../static/img/2.jpg'
 				}, {
-					content: '内容 C'
+					content: '内容 C',
+					url:'../../static/img/3.jpg'
 				}],
 			current: 0,
 			mode: 'default',
@@ -85,18 +88,6 @@ export default {
 			goodsList:[
 				{
 					goodsName:'网易一卡通1',
-					goodsId:'',
-					goodsPic:'',
-					goodscj:'80',
-					goodsNum:0,
-				},{
-					goodsName:'网易一卡通2',
-					goodsId:'',
-					goodsPic:'',
-					goodscj:'80',
-					goodsNum:0,
-				},{
-					goodsName:'网易一卡通4',
 					goodsId:'',
 					goodsPic:'',
 					goodscj:'80',
@@ -122,7 +113,6 @@ export default {
 				console.log(res)
 				if(res.data.code==0){
 					this.goodsList=res.data.data.list;
-					// this.rollStatus=res.data.data;
 				}
 		       
 		    }
@@ -153,7 +143,12 @@ export default {
 </script>
 
 <style>
-	
+	.swiper-item{
+		text-align: center;
+	}
+	.banner-img{
+		width: 720upx;
+	}
 	.shop-box{
 		padding: 20upx;
 	}

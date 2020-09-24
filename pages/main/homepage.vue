@@ -3,7 +3,7 @@
 		<view class="home-box1">
 			<view  class="home-nav">
 				<uni-icons type="phone" @click="goleft" color="#ffffff" size="24"></uni-icons>
-				<view class="">
+				<view class=""style="font-size: 24;">
 					卡商城
 				</view>
 				<view class="">
@@ -111,7 +111,7 @@
 						icon:'../../static/img/model5.png',
 						url:'myteam'
 					},{
-						name:'设备管理',
+						name:'积分兑换',
 						icon:'../../static/img/model9.png',
 						url:'waiting'
 					},{
@@ -272,11 +272,10 @@
 				})
 				//#endif
 				
-				//#ifndef H5
+				//#ifdef APP-PLUS
 				uni.scanCode({
 					scanType:['qrCode'],
 					success:function(res){
-						alert(res.result)
 						_this.$Router.push({
 							path:'/pages/main/scanpayment',
 							query:{
@@ -285,17 +284,22 @@
 						})
 						
 					},fail:function(){
-						
+						_this.$Router.push({
+							path:'/pages/main/scanpayment',
+							query:{
+								payname:res.result
+							}
+						})
 					},complete:function(){
-					_this.$Router.push({
-						path:'/pages/main/scanpayment',
-						query:{
-							payname:res.result
-						}
-					})
+						_this.$Router.push({
+							path:'/pages/main/scanpayment',
+							query:{
+								payname:res.result
+							}
+						})
 						
 					}
-					})
+				})
 				//#endif
 			}
 		},
@@ -320,6 +324,7 @@
 	color:#ffffff;
 	background-color:#d41c26;
 	display: flex;
+	line-height: 40upx;
 	justify-content: space-between;
 }
 .unilink{

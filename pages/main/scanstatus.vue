@@ -1,7 +1,7 @@
 <template>
 	<view class="scanstatus-box">
 		<view class="scanstatus-money">
-			<view class="scanstatus-name">哈哈哈</view>
+			<view class="scanstatus-name">{{datas.statusMsg}}</view>
 			<text class="money-icon">￥</text>{{moneyNum}}
 			<view class="scanstatus-status">
 				交易成功
@@ -13,7 +13,7 @@
 					支付状态：
 				</view>
 				<view class="scanstatus-value">
-					预授权中
+					{{datas.statusMsg}}
 				</view>
 			</view>
 			<view class="scanstatus-item">
@@ -24,38 +24,12 @@
 					小黑
 				</view>
 			</view>
-			
-		
-			<view class="scanstatus-item">
-				<view class="scanstatus-title">
-					交易通道：
-				</view>
-				<view class="scanstatus-value">
-					NP
-				</view>
-			</view>
-			<view class="scanstatus-item">
-				<view class="scanstatus-title">
-					交易说明：
-				</view>
-				<view class="scanstatus-value">
-					驱蚊器翁群无
-				</view>
-			</view>
 			<view class="scanstatus-item">
 				<view class="scanstatus-title">
 					支付时间：
 				</view>
 				<view class="scanstatus-value">
-					2020-07-28 23:21:22
-				</view>
-			</view>
-			<view class="scanstatus-item">
-				<view class="scanstatus-title">
-					交易编号：
-				</view>
-				<view class="scanstatus-value">
-					123123123123123
+					{{datas.orderTime}}
 				</view>
 			</view>
 			<view class="scanstatus-item">
@@ -63,7 +37,7 @@
 					订单编号：
 				</view>
 				<view class="scanstatus-value">
-					12312312312321
+					{{datas.orderNo}}
 				</view>
 			</view>
 			<view class="scanstatus-item">
@@ -71,7 +45,7 @@
 					商户号：
 				</view>
 				<view class="scanstatus-value">
-					12312312312321
+					{{datas.merchId}}
 				</view>
 			</view>
 		</view>
@@ -84,16 +58,18 @@
 		},
 		data() {
 			return {
-				moneyNum:''
+				moneyNum:'',
+				datas:'',
 			}
+		},
+		onLoad(){
+			this.datas=JSON.parse(this.$Route.query.data);
+			
 		},
 		methods: {
 		},
 		computed:{
 			
-		},
-		onLoad:function(option) {
-			this.moneyNum=this.$Route.query.moneyNum;
 		}
 		
 	}
