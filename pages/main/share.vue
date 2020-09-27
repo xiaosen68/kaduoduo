@@ -12,7 +12,7 @@
 			移动二维码到合适位置，点击制作海报，然后去分享吧。
 		</view>
 		<canvas class="firstCanvas" :class="{'firstCanvas22':canvashow}" canvas-id="firstCanvas"></canvas>
-		 <movable-area class="share-box" :style="{backgroundImage:backgroundimage}" style="{backgroundSize:'540upx 810upx',backgroundRepeat: 'no-repeat'}">
+		 <movable-area class="share-box" :style="{backgroundImage:backgroundimage}" style="{backgroundSize:'270upx 405upx',backgroundRepeat: 'no-repeat'}">
 		    <movable-view :x="x" :y="y" class="mova-view" direction="all" @change="onChange"> 
 			<tki-qrcode class="code-pic" ref="qrcode" :size="size" :unit="unit" 
 			@result="resultqr" :show="show" :loadMake="loadMake" 
@@ -59,7 +59,7 @@
 				code:'',//二维码
 				bj:'../../static/img/share1.jpg',//海报背景
 				codeVal:'',//生成二维码内容
-				size:240,//二维码大小
+				size:200,//二维码大小
 				unit:'upx',//二维码大小单位
 				show:true,//
 				loadMake:true,//加载成功后自动生成二维码
@@ -310,6 +310,8 @@
 	margin: 0 auto;
 	/* margin-top: 40upx; */
 	height: 810upx;
+	background-size:540upx 810upx;
+	background-repeat: no-repeat;
 	/* background: url(../../static/img/share3.jpg); */
 }
 .firstCanvas{
