@@ -14,7 +14,7 @@
 			<view class="home-main-box">
 				<uni-notice-bar scrollable="true" class="home-notice-bar" showIcon="true" color="#ffffff" backgroundColor="#dd4c53" single="true" @click="gomessage" :text="naticeText"></uni-notice-bar>
 				<view class="home-main-wrap" >
-						<view class=" home-main-item" v-for="(item, index) in main" @click="goweb(item)"  >
+						<view class=" home-main-item" v-for="(item, index) in main" @click="goweb(item)" v-if="item.pageType!=='0'||ifyue==true" >
 							<image class="main-item-icon" :src="item.icon" mode="widthFix"></image>
 							{{item.name}}
 						</view>
@@ -64,28 +64,35 @@
 				alertNaticeText:'',
 				main :[
 					{
+						name:'二维码收款',
+						icon:'../../static/img/bank/shoukuan.png',
+						url:'shoukuan',
+						pageType:'0',
+					},
+					{
 						name:'会员PLus',
 						icon:'../../static/img/main1.png',
 						url:'cardstore',
 						pageType:'1',
-					},{
-						name:'卡券寄售',
-						icon:'../../static/img/main2.png',
-						url:'waiting',
-						pageType:'2'
-					},{
+					},
+					// {
+					// 	name:'卡券寄售',
+					// 	icon:'../../static/img/main2.png',
+					// 	url:'waiting',
+					// 	pageType:'2'
+					// },
+					{
 						name:'快捷收卡',
 						icon:'../../static/img/main3.png',
-						// url:'cardstore',
-						url:'waiting',
+						url:'cardstore',
 						pageType:'3'
-					},{
-						name:'大额快收',
-						icon:'../../static/img/main4.png',
-						url:'waiting',
-						pageType:'4'
-					}
-					
+					},
+					// {
+					// 	name:'大额快收',
+					// 	icon:'../../static/img/main4.png',
+					// 	url:'waiting',
+					// 	pageType:'4'
+					// },
 				],
 				model:[
 					{
@@ -144,6 +151,7 @@
 					selectedBackgroundColor:"#d1d1d1",
 					bottom:10
 				},
+				ifyue:true,
 			}
 		},onReady() {
 			// 获取平台推送
@@ -200,6 +208,7 @@
 				}
 			});
 			this.getUserRole();
+			
 		},
 		methods: {
 			// 获取用户权限信息
@@ -217,6 +226,12 @@
 						if(res.data.code==0){
 							uni.setStorageSync('role',res.data.data.role);
 							uni.setStorageSync('roleName',res.data.roleName);
+							// 判断是否为商家
+							if(uni.getStorageSync('role')=='BUSINESS'){
+							this.ifyue=true	
+							}else{
+								this.ifyue=false
+							}
 							console.log(res.data)
 						}else if(res.data.code==-1){
 						}
