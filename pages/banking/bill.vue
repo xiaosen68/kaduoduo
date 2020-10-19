@@ -19,7 +19,7 @@
 				  @refresh="refresh" class="">
 				  <view slot="content-list">
 					<!-- 数据列表 -->
-					<router-link :to="{name:url,params:{}}" class="bill-detil" v-for="(item,index) in showList">
+					<view @click="gobillStatus(item)" class="bill-detil" v-for="(item,index) in showList">
 						<view class="bill-date">
 							<view class="bill-type">
 								{{item.passageWayName}}
@@ -30,9 +30,9 @@
 							<view class="bill-money">
 								{{item.totalTransactionPrice}}
 							</view>
-							<text>状态</text>
+							<text>{{item.stateMsg}}</text>
 						</view>
-					</router-link>
+					</view>
 				 </view>
 				</load-refresh>
 		</view>	
@@ -83,6 +83,13 @@ export default {
 			this.url='jsbilldetial';
 			this.getjishou();
 	  	}
+	  },
+	  gobillStatus:function(states){
+		  if(this.cardtype){
+			  this.$Router.push({ name: 'gmbilldetial', params: { states:JSON.stringify(states) }})
+		  }else{
+			  this.$Router.push({ name: 'jsbilldetial', params: { states:JSON.stringify(states) }})
+		  }
 	  },
 	  getxiaofei:function(){
 		  uni.request({

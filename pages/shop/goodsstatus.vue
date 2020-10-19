@@ -1,15 +1,9 @@
 <template>
 	<view class="shop-center-box">
 		<router-link class="shop-center" to="{name:'shop'}">商城首页</router-link>
-		<uni-swiper-dot :info="info" :current="current" field="content" :mode="mode">
-		    <swiper class="swiper-box" @change="change">
-		        <swiper-item v-for="(item ,index) in info" :key="index">
-		            <view class="swiper-item">
-		                {{item.content}}
-		            </view>
-		        </swiper-item>
-		    </swiper>
-		</uni-swiper-dot>
+		<view class="goods-pictures-box">
+			<image :src="goodsStatus.productUrl" mode="widthFix"></image>
+		</view>
 		<view class="goods-status-box">
 			<view class="goods-name-box">
 				<text  class="goods-name">{{goodsStatus.productName}}</text>
@@ -20,7 +14,7 @@
 				<text class="goods-price-cj">市场价：{{goodsStatus.transactionPrice}}元</text>
 			</view>
 			<view class="goods-picture-box">
-				<image src="../../static/img/goods1.png" mode="widthFix"></image>
+				<image :src="goodsStatus.productDetailsUrl" mode="widthFix"></image>
 			</view>
 			
 		</view>
@@ -61,8 +55,20 @@
 		}
 	},
 	onLoad() {
-			uni.setStorageSync('goodsId',this.$Route.query.id);
-			this.goodsId=uni.getStorageSync('goodsId');
+			if(this.$Route.query.id){
+				uni.setStorageSync('goodsId',this.$Route.query.id);
+				this.goodsId=this.$Route.query.id;	
+			}else{
+				if(uni.getStorageSync('goodsId')){
+					this.goodsId=uni.getStorageSync('goodsId');
+				}else{
+					uni.navigateTo({
+					    delta: 1
+					});
+				}
+				
+			}
+			
 			uni.request({
 				method:'POST',
 			    url: this.$baseUrl+'/api/v1/pri/shop/generalProductById', 
@@ -162,6 +168,9 @@
 .goods-status-box{
 	padding: 40upx 0;
 	
+}
+.goods-pictures-box{
+	text-align: center;
 }
 .goods-picture-box{
 	text-align: center;

@@ -53,7 +53,6 @@
 		},
 	
 		onLoad:function(option) {
-		console.log()
 		if(((window.location.href.split('?')[1]).split('&')[0]).split('=')[1]){
 			this.superiorUserPhone=((window.location.href.split('?')[1]).split('&')[0]).split('=')[1]
 		}
@@ -150,7 +149,10 @@
 				// 	this.$refs.popup.open()
 				// 	return false
 				// }
-				
+				uni.showLoading({
+					title:'加载中',
+					mask:true
+				})
 				uni.request({
 					method:'POST',
 				    url: this.$baseUrl+'/api/v1/pri/login/register', 
@@ -172,7 +174,10 @@
 							this.$refs.popup.open();
 						}
 				       
-				    }
+				    },
+					complete: () => {
+						uni.hideLoading()
+					}
 				});
 				// this.$Router.push({name:'index'})
 			},

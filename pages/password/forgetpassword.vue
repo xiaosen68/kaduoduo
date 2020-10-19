@@ -127,6 +127,10 @@
 					this.$refs.popup.open()
 					return false
 				}
+				uni.showLoading({
+					title:'加载中',
+					mask:true
+				})
 				
 				uni.request({
 					method:'POST',
@@ -157,7 +161,10 @@
 							this.$refs.popup.open();
 						}
 				       
-				    }
+				    },
+					complete: () => {
+						uni.hideLoading()
+					}
 				});
 				
 			}

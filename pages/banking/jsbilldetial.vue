@@ -1,21 +1,21 @@
 <template>
 	<view class="billdetial-box">
-		<view class="goods-list">
-			<view class="goods-item">
-				<image class="goods-pic" src="../../static/img/bank/feilv.png" mode=""></image>
+		<view class="goods-list" v-if="datas.orderList">
+			<view class="goods-item" v-for="item in datas.orderList">
+				<image class="goods-pic" :src="item.productUrl" mode=""></image>
 				<view class="goods-status">
 					<view class="">
-						哈哈哈提货卡
+						{{item.productName}}
 					</view>
 					<view class="">
-						成交价:23.0
+						成交价:{{item.transactionPrice}}
 					</view>
 					<view class="">
-						挂牌价:123.0
+						挂牌价:{{item.mailingPrice}}
 					</view>
 				</view>
 				<view class="goods-num">
-					X16
+					{{item.payamount}}
 				</view>
 			</view>
 		</view>
@@ -24,42 +24,42 @@
 				<view class="goods-ft">
 					商品总价
 				</view>
-				<text class="goos-ft-num">2309.00</text>
+				<text class="goos-ft-num">{{datas.totalTransactionPrice}}</text>
 			</view>
 			<view class="goods-price-item">
 				<view class="goods-ft">
 					寄售总价
 				</view>
-				<text class="goos-ft-num">2400.00</text>
+				<text class="goos-ft-num">{{datas.totalMailingPrice}}</text>
 			</view>
 			<view class="goods-price-item">
 				<view class="goods-ft">
 					寄售垫付
 				</view>
-				<text class="goos-ft-num">2240.00</text>
+				<text class="goos-ft-num">{{datas.totalSellingPrice}}</text>
 			</view>
 		</view>
 		<view class="bill-type">
 			<view class="deal-item">
 				<text>订单类型:</text>
-				<text class="bill-types">卡券寄售</text>
+				<text class="bill-types">{{datas.passageWayName}}</text>
 			</view>
 			<view class="deal-item">
 				<view class="deal-title">
 					订单编号
 				</view>
 				<view class="deal-detial">
-					213123123123
+					{{datas.orderNo}}
 				</view>
 			</view>
 		</view>
 		<view class="deal-box">
 			<view class="deal-item">
 				<view class="deal-title">
-					寄售状态
+					完成日期
 				</view>
 				<view class="deal-detial">
-					已垫付
+					{{datas.finishDate|datafilter}}
 				</view>
 			</view>
 			<view class="deal-item">
@@ -67,7 +67,7 @@
 					寄售垫付金额
 				</view>
 				<view class="deal-detial">
-					2240.00元
+					{{datas.totalSellingPrice}}元
 				</view>
 			</view>
 			<view class="deal-item">
@@ -75,7 +75,7 @@
 					寄售手续费
 				</view>
 				<view class="deal-detial">
-					1.0元/笔
+					{{datas.fee}}元/笔
 				</view>
 			</view>
 			<view class="deal-item">
@@ -83,7 +83,7 @@
 					创建时间
 				</view>
 				<view class="deal-detial">
-					2020-02-02 28:12:12
+					{{datas.orderTime}}
 				</view>
 			</view>
 			
@@ -92,7 +92,7 @@
 					交易单号
 				</view>
 				<view class="deal-detial">
-					21312312312
+					{{datas.payNo}}
 				</view>
 			</view>
 			<view class="deal-item">
@@ -100,7 +100,7 @@
 					商户号
 				</view>
 				<view class="deal-detial">
-					213123123123
+					{{datas.merchId}}
 				</view>
 			</view>
 		</view>
@@ -111,11 +111,19 @@
 export default {
 	data (){
 		return{
-			
+			datas:'',
 		}
+	},
+	onLoad:function() {
+		this.datas=JSON.parse(this.$Route.query.states);
 	},
 	methods:{
 		
+	},
+	filters:{
+		datafilter:function(val){
+			return val.slice(0,4)+'-'+val.slice(4,6)+'-'+val.slice(6,8)
+		}
 	}
 }
 </script>

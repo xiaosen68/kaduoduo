@@ -101,7 +101,6 @@
 		},
 		// 上传图片，获取卡号；
 		getCardBase:function(){
-			console.log(this.cardPic);
 			uni.request({
 				method:'POST',
 			    url: 'http://bankocrb.shumaidata.com/getbankocrb', 
@@ -157,6 +156,10 @@
 		// 添加卡片
 		addcredit(){
 		
+		uni.showLoading({
+			title:'请求中'
+		})
+		
 		uni.request({
 			method:'POST',
 		    url: this.$baseUrl+'/api/v1/pri/my/addUserCreditCard', 
@@ -190,7 +193,10 @@
 					console.log(res)
 				}
 		       
-		    }
+		    },
+			complete: () => {
+				uni.hideLoading()
+			}
 		});	
 		},
 		ifcredit (n){

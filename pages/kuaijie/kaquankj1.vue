@@ -167,7 +167,9 @@
 				depositList:[],
 				passageWayList:[],
 				passageWay:'',
-				popupMessage:''
+				popupMessage:'',
+				orderTypeCode:'',//交易类型
+				tradable:false,
 			}
 		},
 		onLoad: function () {
@@ -186,6 +188,49 @@
 			}
 		},
 		methods: {
+			// 查询是否可交易
+			getTradable:function(){
+				uni.showLoading({
+					title:'加载中',
+						mask:true
+				})
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+'/api/v1/pri/my/getTradable', 
+				    data: {
+						cardId:this.credit.id,
+						productType:'MAILING'
+				    },
+				    header: {
+						'token':uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+							if(res.data.data=="Y"){
+								this.tradable=true;
+							}else if(res.data.data=="N"){
+								this.tradable=false;
+								this.popupMessage='该信用卡不在交易日期内，请重新选择卡片';
+								this.$refs.popup.open();
+							}
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+							this.$refs.popup.open();
+							this.tradable=false;
+						}
+				    },
+					fail :()=> {
+						this.popupMessage = '请稍后重试';
+						this.$refs.popup.open();
+					},
+					complete: () => {
+						uni.hideLoading()
+					}
+				});	
+			},
+			// 初始化快捷订单
 			chusikuaijie:function(){
 			uni.request({
 				method:'POST',
@@ -209,6 +254,7 @@
 						this.deposit=this.depositList[0];
 						this.passageWayList=res.data.data.passageWayList;
 						this.passageWay=this.passageWayList[0];
+						this.getTradable();
 						console.log(this.credit)
 						console.log(this.passageWayList)
 					}else if(res.data.code==-1){
@@ -227,6 +273,7 @@
 			});	
 				
 			},
+			// 初始化卡券空间订单
 			chusikaquan:function(){
 				uni.request({
 					method:'POST',
@@ -250,6 +297,7 @@
 							this.deposit=this.depositList[0];
 							this.passageWayList=res.data.data.passageWayList;
 							this.passageWay=this.passageWayList[0];
+							this.getTradable();
 							console.log(this.passageWayList)
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
@@ -278,43 +326,48 @@
 			},
 			payFn:function(){
 				// 
-				let orderTypeCode='';
 				// 卡券空间
 				if(uni.getStorageSync('pageType')==5){
-					orderTypeCode='CARD_COUPON_SPACE'
+					this.orderTypeCode='CARD_COUPON_SPACE'
 					
 					}else if(uni.getStorageSync('pageType')==3){
 						// 快捷收卡
-						orderTypeCode='EXPRESS_PAYMENT'
+						this.orderTypeCode='EXPRESS_PAYMENT'
 					}
+				// 判断是否可以消费
+				if(!this.tradable){
+					this.getTradable();
+				}else{
+					uni.request({
+						method:'POST',
+					    url: this.$baseUrl+'/api/v1/pri/shop/mailingOrder', 
+					    data: {
+							orderType:this.orderTypeCode,
+							totalTransactionPrice:this.allGoodscj,
+							totalMailingPrice:this.allGoodsjs,
+							creditId:this.credit.id,
+							savingsId:this.deposit.id,
+							passageWayId:this.passageWay.id,
+							productList:this.buyList
+					    },
+					    header: {
+							'token':uni.getStorageSync('token'),
+							'Content-Type':'application/json' //自定义请求头信息
+					    },
+					    success: (res) => {
+							console.log(res)
+							if(res.data.code==0){
+							}else if(res.data.code==-1){
+								this.popupMessage=res.data.msg;
+								this.$refs.popup.open();
+							}else{
+							}
+					       
+					    }
+					});	
+				}
 				
-				uni.request({
-					method:'POST',
-				    url: this.$baseUrl+'/api/v1/pri/shop/mailingOrder', 
-				    data: {
-						orderType:orderTypeCode,
-						totalTransactionPrice:this.allGoodscj,
-						totalMailingPrice:this.allGoodsjs,
-						creditId:this.credit.id,
-						savingsId:this.deposit.id,
-						passageWayId:this.passageWay.id,
-						productList:this.buyList
-				    },
-				    header: {
-						'token':uni.getStorageSync('token'),
-						'Content-Type':'application/json' //自定义请求头信息
-				    },
-				    success: (res) => {
-						console.log(res)
-						if(res.data.code==0){
-						}else if(res.data.code==-1){
-							this.popupMessage=res.data.msg;
-							this.$refs.popup.open();
-						}else{
-						}
-				       
-				    }
-				});	
+				
 			},
 			 open1:function(){
 			         this.$refs.popup1.open()

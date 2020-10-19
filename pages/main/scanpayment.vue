@@ -78,7 +78,8 @@
 				creditCardList:[],
 				credit:'',
 				popupMessage:'',
-				ifh5:true
+				ifh5:true,
+				tradable:false,
 			}
 		},
 		onLoad(option) {
@@ -102,6 +103,47 @@
 			this.getcredit();
 		},
 		methods: {
+			// 查询是否可交易
+			getTradable:function(){
+				uni.showLoading({
+					title:'加载中'
+				})
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+'/api/v1/pri/my/getTradable', 
+				    data: {
+						cardId:this.credit.id,
+						productType:'MAILING'
+				    },
+				    header: {
+						'token':uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+							if(res.data.data=="Y"){
+								this.tradable=true;
+							}else if(res.data.data=="N"){
+								this.tradable=false;
+								this.popupMessage='该信用卡不在交易日期内，请重新选择卡片';
+								this.$refs.popup.open();
+							}
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+							this.$refs.popup.open();
+							this.tradable=false;
+						}
+				    },
+					fail :()=> {
+						this.popupMessage = '请稍后重试';
+						this.$refs.popup.open();
+					},
+					complete: () => {
+						uni.hideLoading()
+					}
+				});	
+			},
 			// 查询是否为商家
 			selectPhoneMerch:function(phone){
 				uni.request({
@@ -153,6 +195,7 @@
 								this.$Router.push({ name: 'myteam',})
 							}else{
 								this.credit=this.creditCardList[0];	
+								this.getTradable();
 							}
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
@@ -167,6 +210,7 @@
 			
 			selectCredit:function(item){
 				this.credit=item;
+				this.getTradable();
 				this.closedia1();
 			},
 			
@@ -185,6 +229,11 @@
 			},
 			buyBtn:function(){
 				if(this.moneyNum>=100&&this.moneyNum<50000){
+					uni.showLoading({
+						title:'加载中',
+						mask:true
+					})
+					
 					// 查询是否为商户
 					uni.request({
 						method:'POST',
@@ -199,35 +248,40 @@
 					    success: (res) => {
 							console.log(res)
 							if(res.data.code==0){
-								// 进行支付
-								uni.request({
-									method:'POST',
-								    url: this.$baseUrl+'/api/v1/pri/shop/customGeneralOrder', 
-								    data: {
-										userId:uni.getStorageSync('userId'),
-										store:this.tel,
-										creditId:this.credit.id,//信用卡id
-										totalTransactionPrice:this.moneyNum,
-								    },
-								    header: {
-										'token':uni.getStorageSync('token'),
-										'Content-Type':'application/json' //自定义请求头信息
-								    },
-								    success: (res) => {
-										console.log(res.data)
-										if(res.data.code==0){
+								// 判断是否为交易日
+								if(!this.tradable){
+									this.getTradable();
+								}else{
+									// 进行支付
+									uni.request({
+										method:'POST',
+									    url: this.$baseUrl+'/api/v1/pri/shop/customGeneralOrder', 
+									    data: {
+											userId:uni.getStorageSync('userId'),
+											store:this.tel,
+											creditId:this.credit.id,//信用卡id
+											totalTransactionPrice:this.moneyNum,
+									    },
+									    header: {
+											'token':uni.getStorageSync('token'),
+											'Content-Type':'application/json' //自定义请求头信息
+									    },
+									    success: (res) => {
 											console.log(res.data)
-												this.$Router.push({ name: 'scanstatus', params: { data: res.data.data}})
-										}else if(res.data.code==-1){
-											this.popupMessage=res.data.msg;
-											this.$refs.popup.open();
-										}
-								       
-								    },
-									complete(res) {
-										
+											if(res.data.code==0){
+												console.log(res.data)
+													this.$Router.push({ name: 'scanstatus', params: { data: res.data.data}})
+											}else if(res.data.code==-1){
+												this.popupMessage=res.data.msg;
+												this.$refs.popup.open();
+											}
+									       
+									    },
+										complete: () => {
+											uni.hideLoading()
+											}
+									});
 									}
-								});
 							}else if(res.data.code==-1){
 								this.popupMessage=res.data.msg;
 								this.$refs.popup.open();
@@ -236,7 +290,10 @@
 								console.log(res)
 							}
 					       
-					    }
+					    },
+						complete: () => {
+							uni.hideLoading()
+						}
 					});	
 					
 					

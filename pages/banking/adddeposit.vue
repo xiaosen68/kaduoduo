@@ -83,7 +83,7 @@ export default {
 		},
 		// 上传图片，获取卡号；
 		getCardBase:function(){
-			alert(this.cardPic);
+			// alert(this.cardPic);
 			uni.request({
 				method:'POST',
 			    url: 'http://bankocrb.shumaidata.com/getbankocrb', 
@@ -152,6 +152,9 @@ export default {
 				return false
 				}
 				console.log('33')
+				uni.showLoading({
+					title:'请求中'
+				})
 			uni.request({
 				method:'POST',
 			    url: this.$baseUrl+'/api/v1/pri/my/addUserSavingsCard', 
@@ -161,8 +164,7 @@ export default {
 						bank:this.bank,
 						cardNo:this.cardNo,
 						reservePhone:this.reservePhone,
-						accountOpeningProvince:this.accountOpeningProvince,
-
+						accountOpeningProvince:this.accountOpeningProvince+'金水区',
 			    },
 			    header: {
 					'token': uni.getStorageSync('token'),
@@ -181,7 +183,10 @@ export default {
 						console.log(res)
 					}
 			       
-			    }
+			    },
+				complete: () => {
+					uni.hideLoading()
+				}
 			});	
 		}
 	}

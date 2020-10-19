@@ -44,6 +44,9 @@
 		</view>
 		
 	</view>
+	
+	
+	
 </template>
 
 <script>	
@@ -100,6 +103,28 @@ export default {
 		  			 this.list.push.apply(this.list,res.data.data.list);
 					 this.currPage=res.data.data.current_page;
 					 this.totalPage=res.data.data.total_page;
+		  		}
+		         
+		      }
+		  });
+	  },
+	  // 营业额提现
+	  turnoverWithdrawal:function(){
+		  uni.request({
+		  	method:'POST',
+		      url: this.$baseUrl+'/api/v1/pri/my/turnoverWithdrawal', 
+		      data: {
+		  		orderId:'',
+		  		cardId:'',
+				orderNo:''
+		      },
+		      header: {
+		  		'token': uni.getStorageSync('token'),
+		  		'Content-Type':'application/json' //自定义请求头信息
+		      },
+		      success: (res) => {
+		  		console.log(res)
+		  		if(res.data.code==0){
 		  		}
 		         
 		      }

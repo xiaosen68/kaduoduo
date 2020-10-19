@@ -1,25 +1,28 @@
 <template>
 	<view class="shop-center-box">
-		<router-link :to="{name:'selectlocation',params: {beforePage:'shoporder'}}" class="location-status-box">
+		<router-link v-if="locationStatus" :to="{name:'selectlocation',params: {beforePage:'shoporder'}}" class="location-status-box">
 			{{locationStatus.region}}{{locationStatus.address_details}}{{locationStatus.customer_name}}{{locationStatus.customer_phone}}
+		</router-link>
+		<router-link v-else :to="{name:'alterlocation'}" class="location-status-box">
+			添加地址
 		</router-link>
 		<view class="shop-goods">
 			<view class="shop-goods-pic">
-				<image class="goods-pic" mode="widthFix" src="../../static/img/goods1.png" ></image>
+				<image class="goods-pic" mode="widthFix" :src="product.productUrl" ></image>
 				<view class="shop-goods-status">
 					<view class="shop-name">
-						{{productName}}
+						{{product.productName}}
 					</view>
 					<view class="shop-money">
-						<text> {{transactionPrice*discount | price}}元</text>
-						<text class="shop-yuan-money"> {{transactionPrice}}元</text>
+						<text> {{product.transactionPrice*product.discount | price}}元</text>
+						<text class="shop-yuan-money"> {{product.transactionPrice}}元</text>
 					</view>
 					<view class="input-box-wrap">
-							<view class="input-btn">
-								<uni-icons class="in-btn" size="24" type="minus" color="#8a8a8a" @click="minus()"></uni-icons>
-								<input class="input-btn-box" type="number" min="0" v-model="goodsNum" maxlength="2" @input="outinput" />
-								<uni-icons class="in-btn" size="24" type="plus" color="#fb2e03" @click="plus()"></uni-icons>
-							</view>
+						<view class="input-btn">
+							<uni-icons class="in-btn" size="24" type="minus" color="#8a8a8a" @click="minus()"></uni-icons>
+							<input class="input-btn-box" type="number"  v-model="goodNum" maxlength="2" @input="outinput" />
+							<uni-icons class="in-btn" size="24" type="plus" color="#fb2e03" @click="plus()"></uni-icons>
+						</view>
 					</view>
 				</view>
 			</view>
@@ -48,23 +51,14 @@
 
 <script>
 	export default {
-	    components: {
-		
-	  
-	  },
 		data (){
 			return{
-				current: 0,
-				mode: 'default',
-				goodsNum:1,
-				goodsId:'',
-				goodsStatus:'',
+				product:'',
+				goodNum:0,
 				locationId:'',
 				locationStatus:'',
-				productName:'',
-				discount:'',
-				transactionPrice:'',
-				popupCenterMessage:''
+				popupCenterMessage:'',
+				allMoney:0,
 		}
 	},
 	onLoad() {
@@ -85,10 +79,7 @@
 		    success: (res) => {
 				console.log(res)
 				if(res.data.code==0){
-					this.productName=res.data.data.productName;
-					this.goodsId=res.data.data.id;
-					this.transactionPrice=res.data.data.transactionPrice;
-					this.discount=res.data.data.discount;
+					this.product=res.data.data
 				}
 		       
 		    }
@@ -128,7 +119,8 @@
 			    success: (res) => {
 					console.log(res)
 					if(res.data.code==0){
-					this.locationStatus=res.data.data.list[0];	
+					this.locationStatus=res.data.data.list[0];
+					this.locationId=res.data.data.list[0].id;
 					}
 			       
 			    }
@@ -137,26 +129,31 @@
 		console.log(this.locationStatus)
 	},
 	methods:{
+		// 总价格
+		getallMoney:function(){
+			this.allMoney=((this.product.transactionPrice*this.product.discount).toFixed(2)*this.goodNum).toFixed(2)
+			console.log(this.allMoney)
+		},
 		// 减少
 		minus:function(){
-			if(Math.floor(this.goodsNum)>0){
-				this.goodsNum=Math.floor(this.goodsNum)-1;
+			if(Math.floor(this.goodNum)>0){
+				this.goodNum=Math.floor(this.goodNum)-1;
 			}else{
-				this.goodsNum=0;
+				this.goodNum=0;
 			}
-			console.log(this.goodsNum);
+			this.getallMoney();
+			console.log(this.goodNum);
 			// this.addbuyCar();
 		},
 		// 增加
-		plus:function(n){
-			
-			if(Math.floor(this.goodsNum)<99){
-				this.goodsNum=Math.floor(this.goodsNum)+1;
-			}else if(Math.floor(this.goodsNum)>=99){
-				this.goodsNum=99;
+		plus:function(){
+			if(Math.floor(this.goodNum)<99){
+				this.goodNum=Math.floor(this.goodNum)+1;
+			}else if(Math.floor(this.goodNum)>=99){
+				this.goodNum=99;
 			}
-			console.log(this.goodsNum);
-			// this.addbuyCar();
+			this.getallMoney();
+			console.log(this.goodNum);
 		},
 		// 输入框输入数字0~99
 		outinput:function(e){
@@ -166,19 +163,26 @@
 			if(e.detail.value<0){
 				e.detail.value=0
 			}
-			console.log(e.detail.value)
+			this.getallMoney();
+			console.log(this.goodNum)
 			// this.addbuyCar();
 		},
 		selectPay:function(){
+			if(!this.locationId){
+				this.popupCenterMessage='请添加地址'
+					this.$refs.popup.open();
+					return false;
+			}
+			
 			if(this.allMoney>=100&&this.allMoney<=50000){
 				this.$Router.push({
 					path:'/pages/shop/selectpay',
 					query:{
 						product:JSON.stringify({
-							productName:this.productName,
-							id:this.goodsId,
-							transactionPrice:this.transactionPrice,
-							amount:this.goodsNum
+							productName:this.product.productName,
+							id:this.product.id,
+							transactionPrice:this.product.transactionPrice,
+							amount:this.goodNum
 						}),
 						totalTransactionPrice:this.allMoney,
 						addressId:this.locationId,
@@ -195,11 +199,7 @@
 		}
 		
 	},
-	computed:{
-		allMoney:function(){
-			return ((this.transactionPrice*this.discount).toFixed(2)*this.goodsNum).toFixed(2)
-		}	
-	},
+	
 	filters:{
 		price:function(value){
 			return value.toFixed(2)

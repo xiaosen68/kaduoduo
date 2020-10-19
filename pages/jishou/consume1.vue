@@ -10,7 +10,8 @@
 				<view class="cm-feilv">
 					<uni-icons type="help"></uni-icons>
 					<text class="fl">费率:{{passageWay.myRate}}</text>
-					<text class="sxf">手续费:{{passageWay.consumptionRate}}元</text>
+					<!-- <text class="sxf">手续费:{{passageWay.singleAdditionalHandlingCharge}}元</text> -->
+					<text class="sxf">手续费:<text class="line-font">3</text>元</text>
 				</view>
 				<view class="bank-select">
 					<image class="bank-head-img" :src="credit.bank_logo"></image>
@@ -106,6 +107,7 @@
 						this.creditCardList=res.data.data.userCreditCardlist;
 						this.credit=this.creditCardList[0];
 						this.passageWay=res.data.data.passageWay;
+						this.getTradable();
 						console.log(this.credit)
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
@@ -142,7 +144,7 @@
 								allGoodscj:this.allGoodscj,
 								credit:this.credit.id,
 								myRate:this.passageWay.myRate,
-								consumptionRate:this.passageWay.consumptionRate
+								consumptionRate:this.passageWay.singleAdditionalHandlingCharge
 							}})
 				}
 			},
@@ -157,11 +159,15 @@
 			},
 			// 查询是否可交易
 			getTradable:function(){
+				uni.showLoading({
+					title:'加载中'
+				})
 				uni.request({
 					method:'POST',
 				    url: this.$baseUrl+'/api/v1/pri/my/getTradable', 
 				    data: {
-						cardId:this.credit.id
+						cardId:this.credit.id,
+						productType:'MAILING'
 				    },
 				    header: {
 						'token':uni.getStorageSync('token'),
@@ -170,9 +176,9 @@
 				    success: (res) => {
 						console.log(res)
 						if(res.data.code==0){
-							if(res.data=="Y"){
+							if(res.data.data=="Y"){
 								this.tradable=true;
-							}else if(res.data=="N"){
+							}else if(res.data.data=="N"){
 								this.tradable=false;
 								this.popupMessage='该信用卡不在交易日期内，请重新选择卡片';
 								this.$refs.popup.open();
@@ -186,6 +192,9 @@
 					fail :()=> {
 						this.popupMessage = '请稍后重试';
 						this.$refs.popup.open();
+					},
+					complete: () => {
+						uni.hideLoading()
 					}
 				});	
 			},
@@ -211,6 +220,10 @@
 		/* text-align: center; */
 		padding-top: 30upx;
 	
+	}
+	.line-font{
+		text-decoration: line-through;
+		color: #ff0000;
 	}
 	.consume-main{
 		background-color: #FFFFFF;

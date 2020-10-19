@@ -41,7 +41,7 @@
 		<uni-popup ref="popupcenter" type="center">
 			<view class="popupcenter">
 				<view class="popup-title">
-					温馨提示
+					{{alertNaticeTextTitle}}
 				</view>
 				<view class="popup-content">
 					{{alertNaticeText}}
@@ -62,18 +62,20 @@
 				message:'',
 				naticeText:'',
 				alertNaticeText:'',
+				alertNaticeTextTitle:'',
 				main :[
-					{
-						name:'二维码收款',
-						icon:'../../static/img/bank/shoukuan.png',
-						url:'shoukuan',
-						pageType:'0',
-					},
+				
 					{
 						name:'会员PLus',
 						icon:'../../static/img/main1.png',
 						url:'cardstore',
 						pageType:'1',
+					},
+					{
+						name:'收款码',
+						icon:'../../static/img/bank/shoukuan.png',
+						url:'shoukuan',
+						pageType:'0',
 					},
 					// {
 					// 	name:'卡券寄售',
@@ -168,6 +170,7 @@
 			    success: (res) => {
 					if(res.data.code==0){
 						this.alertNaticeText=res.data.data[0].content;
+						this.alertNaticeTextTitle=res.data.data[0].titel;
 						let _this=this
 						if(this.alertNaticeText){
 							this.$refs.popupcenter.open();
@@ -183,6 +186,7 @@
 			});
 		},
 		onLoad() {
+			this.getUserRole();
 			// 获取最近一条信息
 			uni.request({
 				method:'GET',
@@ -207,7 +211,7 @@
 					console.log(res)
 				}
 			});
-			this.getUserRole();
+			
 			
 		},
 		methods: {

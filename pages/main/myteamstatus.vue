@@ -16,7 +16,7 @@
 						{{item.phone}}
 					</view>
 					<view class="">
-						注册日期:2020-02-02
+						注册日期:{{item.createTime|timefilter}}
 					</view>
 				</view>
 				<uni-icons @click="callFn(item.phone)" type="phone" size="36" color="#fe7f75" class="myteam-status"></uni-icons>
@@ -60,6 +60,12 @@ export default {
 		    }
 		});	
 	},
+	filters:{
+		timefilter:function(val){
+			let b=val.split(' ');
+			return b[0]
+		}
+	}
 	
 }
 </script>

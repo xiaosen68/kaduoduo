@@ -218,7 +218,7 @@ export default {
 				this.opens()
 				return false
 			}else {
-				console.log(this.picuploadName[2])
+				// console.log(this.picuploadName[2])
 				uni.request({
 					method:'POST',
 				    url: this.$baseUrl+'/api/v1/pri/my/realNameAuthentication', 

@@ -83,7 +83,9 @@
 		<uni-popup ref="popup2" type="dialog">
 		    <uni-popup-dialog type="info" mode="base" title="温馨提示" content="是否前去完善储蓄卡信息"  :duration="2000" :before-close="true" @close="closedia2" @confirm="confirmdia2"></uni-popup-dialog>
 		</uni-popup>
-		
+		<uni-popup ref="popup" type="center" class="popupstyle">
+			<view class="popupCenter-box">{{popupMessage}}</view>
+		</uni-popup>
 	</view>
 </template>
 
@@ -107,6 +109,7 @@
 				creditId:'',
 				myRate:'',
 				consumptionRate:'',
+				popupMessage:'',
 			}
 		},
 		onLoad: function (option) {
@@ -117,6 +120,10 @@
 			this.myRate=this.$Route.query.myRate;
 			this.consumptionRate=this.$Route.query.consumptionRate;
 			this.dianfuMoney=Math.floor((this.allGoodscj*(1-this.myRate)-this.consumptionRate)*100)/100;
+			console.log(this.allGoodscj);
+			console.log(this.myRate);
+			console.log(this.consumptionRate);
+			console.log(this.dianfuMoney)
 			this.getdeposit();
 		},
 		methods: {
@@ -180,6 +187,10 @@
 				// 	url:'../states/state?message='+'成功&type=waiting'
 				// })
 				// 会员Plus支付接口
+				uni.showLoading({
+					title:'加载中',
+					mask:true
+				})
 				uni.request({
 					method:'POST',
 				    url: this.$baseUrl+'/api/v1/pri/shop/mailingOrder', 
@@ -202,12 +213,18 @@
 							this.creditCardList=res.data.data.userCreditCardlist;
 							this.credit=this.creditCardList[0];
 							console.log(this.credit)
+							this.popupMessage = res.data.data;
+							this.$refs.popup.open();
+							
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
-						}else{
+							this.$refs.popup.open();
 						}
 				       
-				    }
+				    },
+					complete: () => {
+						uni.hideLoading()
+					}
 				});					
 				// this.$Router.push({path:'/pages/states/state',
 				// query:{
@@ -443,5 +460,17 @@
 	.bank-card-name{
 		display: inline-block;
 		margin-left: 30upx;
+	}
+	.popupstyle {
+		background-color: #FFFFFF;
+		padding: 20upx 20upx;
+	}
+	
+	.popupCenter-box {
+		width: 400upx;
+		padding: 40upx;
+		text-align: center;
+		border-radius: 20upx;
+		
 	}
 </style>

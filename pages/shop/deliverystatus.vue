@@ -1,7 +1,7 @@
 <template>
 	<view class="delivery-box">
 		<view class="goods-status-box">
-			<image src="../../static/img/goods12.png" class="goods-img" mode="widthFix"></image>
+			<image :src="product.productUrl" class="goods-img" mode="widthFix"></image>
 			<view class="goods-status">
 				<text class="goods-name">精品提货卡</text>
 				<text class="goods-price">￥23.32</text>
@@ -68,6 +68,7 @@ export default {
 	data (){
 		return{
 			type:'',
+			product:''
 		}
 	},
 	methods:{

@@ -22,6 +22,9 @@
 					费率
 				</view>
 				<view class="">
+					单笔手续费
+				</view>
+				<view class="">
 					单笔限额
 				</view>
 			</view>
@@ -32,6 +35,9 @@
 					</view>
 					<view class="">
 						{{item.myRate| rate}}
+					</view>
+					<view class="">
+						<text class="line-font">3</text> 元
 					</view>
 					<view class="">
 						{{item.singleLimit}}
@@ -100,12 +106,16 @@ export default {
 </script>
 
 <style>
+	.line-font{
+		text-decoration: line-through;
+		color: #ff0000;
+	}
 	.dengji-box{
-		padding: 40upx 20upx;
+		padding: 20upx 20upx;
 	}
 .dengji-box1{
-	height: 200upx;
-
+	/* height: 200upx; */
+	padding-top: 20upx;
 	background:url(../../static/img/dengjibg.jpg) ;
 }
 .dengji-head{

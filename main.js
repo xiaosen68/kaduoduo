@@ -11,7 +11,7 @@ Vue.use(Router)
 Vue.component('router-link',routerLink)
 // Vue.prototype.$store = store
 Vue.config.productionTip = false
-//Vue.prototype.$baseUrl="/prefix"  //线下接口
+// Vue.prototype.$baseUrl="/prefix"  //线下接口
 Vue.prototype.$baseUrl="http://47.96.91.58:8088/huqing"  //线上接口
 Vue.prototype.$shareUrl="http://47.96.91.58:8088/#/pages/sign/sign"  //线上分享接口?phone=12312313&storeName='asdas'
 

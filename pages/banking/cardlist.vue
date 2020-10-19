@@ -105,14 +105,11 @@ export default {
 			    success: (res) => {
 					console.log(res)
 					if(res.data.code==0){
-						this.creditlist=res.data.data
+						this.popupMessage=res.data.data;
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
-						// this.$refs.popup.open();
-					}else{
-						console.log(res)
 					}
-			       
+			       this.$refs.popup.open();
 			    }
 			});	
 		},
@@ -296,7 +293,7 @@ export default {
 		/* height: 220upx; */
 		/* padding: 30upx; */
 		border-radius: 20upx;
-		background-color: #09BB07;
+		background-color: #ce7611;
 		margin: 20upx auto;
 		color: #FFFFFF;
 	}

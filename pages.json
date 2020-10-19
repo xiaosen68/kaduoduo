@@ -340,7 +340,7 @@
 		"path": "pages/main/mycenter",
 		"style": {
 			"navigationStyle": "custom",
-			"enablePullDownRefresh":true,
+			"enablePullDownRefresh":false,
 			"app-plus":{
 				"titleNView":false
 				
@@ -350,7 +350,7 @@
 		"path": "pages/banking/yue",
 		"style": {
 			"navigationStyle": "custom",
-			"enablePullDownRefresh":true,
+			"enablePullDownRefresh":false,
 			"app-plus":{
 				"titleNView":false
 				
