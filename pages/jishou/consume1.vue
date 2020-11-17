@@ -8,9 +8,7 @@
 					<text class="cm-gp">挂牌金额:￥{{allGoodsjs}}</text>
 				</view>
 				<view class="cm-feilv">
-					<uni-icons type="help"></uni-icons>
-					<text class="fl">费率:{{passageWay.myRate}}</text>
-					<!-- <text class="sxf">手续费:{{passageWay.singleAdditionalHandlingCharge}}元</text> -->
+					<text class="fl">佣金比率:{{passageWay.myRate}}</text>
 					<text class="sxf">手续费:<text class="line-font">3</text>元</text>
 				</view>
 				<view class="bank-select">
@@ -19,48 +17,32 @@
 						<text class="con-bank-name">{{credit.bank}}({{credit.card_no|showbankCard}})</text>
 						<text class="con-bank-type">信用卡</text>
 					</view>
-					<view class="loop-btn" @click="open1">
+					<view class="loop-btn" @click="coverOpen()">
 						更换
 					</view>
-					
+					<!-- <button type="" class="loop-btn"  @click="open1()">更换</button> -->
 				</view>
-				<button type="" class="next-btn" @click="nextFn">下一步</button>
+				<button type="" class="next-btn" @click="nextFn()">下一步</button>
 			</view>
 		</view>
-<!-- 		<view id="cover" v-if="coverif" ></view>
-		<view class="bank-card-list"  v-if="coverif" >
-				<view class="esc-btn">
-					<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="coverif=false"></uni-icons>
-						选择信用卡
-					<text class="add-card">添加</text>
-				</view>
-				<view class="bank-card-item">
-					<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
-					<view class="bank-card-name">
-						<text>广发银行</text>
-						<text>\n</text>
-						<text>62**** **** **** 78</text>
-					</view>
+		<!-- 遮罩层 -->
+		<view class="cover" v-if="coverShow" @click="coverClose()">
+		</view>
+		<view class="bank-card-list" v-if="bankListShow">
+			<view class="esc-btn">
+				<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="coverClose()"></uni-icons>
+					选择信用卡
+				<text class="add-card"@click="addcredit()">添加</text>
+			</view>
+			<view class="bank-card-item" v-for="item in creditCardList" @click="selectcredit(item)">
+				<image class="bank-item-head" :src="item.bank_logo" mode=""></image>
+				<view class="bank-card-name">
+					<text>{{item.bank}}</text>
+					<text>\n</text>
+					<text>{{item.card_no|showCard}}</text>
 				</view>
 			</view>
-		 -->
-		 <uni-popup ref="popup1" type="bottom">
-		 	<view class="bank-card-list">
-		 	<view class="esc-btn">
-		 			<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="closedia1"></uni-icons>
-		 				选择信用卡
-		 			<text class="add-card"@click="addcredit">添加</text>
-		 		</view>
-		 		<view class="bank-card-item" v-for="item in creditCardList" @click="selectcredit(item)">
-		 			<image class="bank-item-head" :src="item.bank_logo" mode=""></image>
-		 			<view class="bank-card-name">
-		 				<text>{{item.bank}}</text>
-		 				<text>\n</text>
-		 				<text>{{item.card_no|showCard}}</text>
-		 			</view>
-		 		</view>
-		 		</view>
-		 </uni-popup>
+		</view>
 		 <uni-popup ref="popup" type="center" class="popupstyle">
 		 	<view class="popupCenter-box">{{popupMessage}}</view>
 		 </uni-popup>
@@ -68,7 +50,13 @@
 </template>
 
 <script>
+	import uniPopup from '@/components/uni-popup/uni-popup.vue'
+	import uniPopupDialog from '@/components/uni-popup/uni-popup-dialog.vue'
 	export default{
+		components: {
+		    uniPopup,
+		    uniPopupDialog
+		},
 		data() {
 			return {
 				buyList:[],
@@ -80,6 +68,9 @@
 				passageWay:'',
 				tradable:false,
 				popupMessage:'',
+				coverShow:false,
+				bankListShow:false,
+				huan:'',
 			}
 		},
 		onLoad: function (option) {
@@ -102,15 +93,16 @@
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
+					// console.log(res)
 					if(res.data.code==0){
 						this.creditCardList=res.data.data.userCreditCardlist;
 						this.credit=this.creditCardList[0];
 						this.passageWay=res.data.data.passageWay;
 						this.getTradable();
-						console.log(this.credit)
+						// console.log(this.credit)
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
+						this.$refs.popup.open();
 					}else{
 					}
 			       
@@ -123,17 +115,21 @@
 			
 		},
 		methods: {
+			coverOpen:function(){
+				this.coverShow=true;
+				this.bankListShow=true;
+			},
+			coverClose:function(){
+				this.coverShow=false;
+				this.bankListShow=false;
+			},
 			 open1:function(){
 			         this.$refs.popup1.open()
 			},
 			 closedia1:function(done){
 				  this.$refs.popup1.close()
 			},
-			nextFn:function(){
-				// uni.navigateTo({
-				// 	url:'./consume2?buyList='+ encodeURIComponent(JSON.stringify(this.buyList))+'&allGoodsjs='+this.allGoodsjs+'&allGoodscj='+this.allGoodscj
-				// })
-				
+			nextFn:function(){	
 				if(!this.tradable){
 					this.getTradable();
 				}else{
@@ -144,24 +140,23 @@
 								allGoodscj:this.allGoodscj,
 								credit:this.credit.id,
 								myRate:this.passageWay.myRate,
+								huan:this.huan,
 								consumptionRate:this.passageWay.singleAdditionalHandlingCharge
 							}})
 				}
 			},
 			addcredit:function(){
-				  this.$refs.popup1.close()
+				this.coverClose();
 				this.$Router.push({name:'addcredit'})
 			},
 			selectcredit:function(item){
 				this.credit=item;
 				this.getTradable();
-				this.$refs.popup1.close()
+				this.coverClose();
 			},
 			// 查询是否可交易
 			getTradable:function(){
-				uni.showLoading({
-					title:'加载中'
-				})
+			
 				uni.request({
 					method:'POST',
 				    url: this.$baseUrl+'/api/v1/pri/my/getTradable', 
@@ -174,10 +169,11 @@
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res)
+						// console.log(res)
 						if(res.data.code==0){
 							if(res.data.data=="Y"){
 								this.tradable=true;
+								this.getHuanData()
 							}else if(res.data.data=="N"){
 								this.tradable=false;
 								this.popupMessage='该信用卡不在交易日期内，请重新选择卡片';
@@ -191,21 +187,50 @@
 				    },
 					fail :()=> {
 						this.popupMessage = '请稍后重试';
-						this.$refs.popup.open();
+						
 					},
 					complete: () => {
-						uni.hideLoading()
+						// uni.hideLoading()
 					}
 				});	
 			},
+			getHuanData:function(){
+				let s= Number(new Date().getDate());
+				let z=Number(this.credit.billing_date);
+				let h=Number(this.credit.repayment_date);
+				// 当刷卡日>账单日，账单日+30-刷卡日=出账天数
+				if(s>z){
+					// 当还款日>账单日，还款日-账单日=间隔时间
+					if(h>z){
+						this.huan=(z+30-s)+30+(h-z);
+						this.huan=60+h-s;
+					}else{
+						// 当还款日<账单日，还款日+30-账单日=间隔时间
+						this.huan=(z+30-s)+30+(h+30-z);
+						this.huan=90+h-s;
+					}
+					// 当刷卡日<账单日，账单日-刷卡日=出账天数
+				}else{
+					if(h>z){
+						this.huan=(z-s)+30+(h-z);
+						this.huan=30+h-s;
+					}else{
+						this.huan=(z-s)+30+(h+30-z);
+						this.huan=60+h-s;
+					}
+				}
+				
+				
+				
+			}
 		
 		},
 		filters:{
 			showCard(val){
-				return val.slice(0,4)+'**********'+val.slice(-4)
+				return val.substring(0,4)+'****'+val.substring(val.length-4)
 			},
 			showbankCard(val){
-				return val.slice(-4)
+					return val.substring(val.length-4)
 			}
 		}
 	};
@@ -213,6 +238,16 @@
 </script>
 
 <style>
+	.cover{
+	    position:absolute;left:0px;top:0px;
+	    background:rgba(0, 0, 0, 0.4);
+	    width:100%;  /*宽度设置为100%，这样才能使隐藏背景层覆盖原页面*/
+	    height:100%;
+	    filter:alpha(opacity=60);  /*设置透明度为60%*/
+	    opacity:0.6;  /*非IE浏览器下设置透明度为60%*/
+	    display:block; 
+	    z-Index:99;  
+	}
 	.consume-box{
 		width: 100%;
 		min-height: 92vh;
@@ -224,6 +259,16 @@
 	.line-font{
 		text-decoration: line-through;
 		color: #ff0000;
+	}
+	#cover{
+	    position:absolute;left:0px;top:0px;
+	    background:rgba(0, 0, 0, 0.4);
+	    width:100%;  /*宽度设置为100%，这样才能使隐藏背景层覆盖原页面*/
+	    height:100%;
+	    filter:alpha(opacity=60);  /*设置透明度为60%*/
+	    opacity:0.6;  /*非IE浏览器下设置透明度为60%*/
+	    display:block; 
+	    z-Index:99;  
 	}
 	.consume-main{
 		background-color: #FFFFFF;
@@ -306,6 +351,7 @@
 		color: #3cb4f1;
 		line-height: 100upx;
 		vertical-align: bottom;
+		text-align: center;
 	}
 	.next-btn{
 		height: 80upx;
@@ -318,19 +364,9 @@
 		/* background-color: #d71518; */
 		color: #333333;
 	}
-	#cover{ 
-	    position:absolute;left:0px;top:0px;
-	    background:rgba(0, 0, 0, 0.4);
-	    width:100%;  /*宽度设置为100%，这样才能使隐藏背景层覆盖原页面*/
-	    height:100%;
-	    filter:alpha(opacity=60);  /*设置透明度为60%*/
-	    opacity:0.6;  /*非IE浏览器下设置透明度为60%*/
-	    display:block; 
-	    z-Index:99;  
-	}
+
 	.bank-card-list{
 		width: 710upx;
-		/* height: 200upx; */
 		background-color: #FFFFFF;
 		position: absolute;
 		bottom: 0;

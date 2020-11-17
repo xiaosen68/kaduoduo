@@ -30,7 +30,7 @@
 						</view>
 					</view>
 					<view class="card-item-box2">
-						{{item.cardNo}}
+						{{item.cardNo|cardFilters}}
 						<uni-icons type="trash" class="trash-icon"
 						 @click="deleteCardFn(item.id)" color="#ffffff"></uni-icons>
 					</view>
@@ -103,7 +103,6 @@ export default {
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
 					if(res.data.code==0){
 						this.popupMessage=res.data.data;
 					}else if(res.data.code==-1){
@@ -125,14 +124,11 @@ export default {
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
 					if(res.data.code==0){
 						this.creditlist=res.data.data
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
 						// this.$refs.popup.open();
-					}else{
-						console.log(res)
 					}
 			       
 			    }
@@ -150,15 +146,12 @@ export default {
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
 					if(res.data.code==0){
 						// 默认卡排序
 						this.depositlist=res.data.data.sort(function(a,b){return b.defaultCard-a.defaultCard})
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
 						// this.$refs.popup.open();
-					}else{
-						console.log(res)
 					}
 			       
 			    }
@@ -180,17 +173,13 @@ export default {
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res)
 						if(res.data.code==0){
-							
 							this.popupMessage=res.data.data;
 							this.$refs.popup.open();
 							this.refresh()
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
 							this.$refs.popup.open();
-						}else{
-							console.log(res)
 						}
 				       
 				    }
@@ -219,7 +208,6 @@ export default {
 			this.refresh();
 		},
 		loadMore() {
-        console.log('loadMore')
         // 请求新数据完成后调用 组件内loadOver()方法
         // 注意更新当前页码 currPage
         this.$refs.loadRefresh.loadOver()
@@ -239,6 +227,9 @@ export default {
 	filters:{
 		nameFilters(name){
 			return '*'+name.substring(1)
+		},
+		cardFilters(card){
+			return card.substring(0,4)+'****'+card.substring(12)
 		},
 		cardTypeFilters(cardType){
 			if(cardType=='SAVINGS_CARD'){

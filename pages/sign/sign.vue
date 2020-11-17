@@ -27,8 +27,8 @@
 				<button type="" class="sign-btn" @click="verifySign">注册</button>
 			</view>
 			<!-- <navigator url="../index/index" class="login-btn" hover-class="none">去登录</navigator> -->
-			<router-link to="{name:index}"class="login-btn" hover-class="none">去登录</router-link>
-			<router-link @click="goupload" class="login-btn-two" hover-class="none">去下载</router-link>
+			<router-link to="{name:index}" class="login-btn" hover-class="none">去登录</router-link>
+			<router-link to="{name:uploadapp}" class="login-btn-two" hover-class="none">去下载</router-link>
 			<uni-popup ref="popup"  type="center" class="popupstyle">
 				<view class="popupCenter-box">{{popupMessage}}</view>
 			</uni-popup>
@@ -250,6 +250,7 @@
 	}
 	.login-btn{
 		/* text-align: right; */
+		width: 140upx;
 		float: right;
 		font-size: 24upx;
 		color: #d71518;
@@ -257,6 +258,7 @@
 		margin-right: 80upx;
 	}
 	.login-btn-two{
+		width: 140upx;
 		float: left;
 		font-size: 24upx;
 		color: #d71518;

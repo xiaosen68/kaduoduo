@@ -8,32 +8,35 @@
 			  :pageNo="currPage"
 			  :totalPageNo="totalPage" 
 			  @loadMore="loadMore" 
-			  @refresh="refresh" class="">
+			  @refresh="refresh" >
 			  <view slot="content-list">
 			    <!-- 数据列表 -->
-				<view  class="roll-item" v-for="item in list" @click="rollmoneystatusFn(item.wId)">
+				<view  class="roll-item" v-for="item in list" @click="rollmoneystatusFn(item.turnoverOrder)">
 					<view class="roll-item-box1">
 						<view class="roll-title">
-							余额提现
+							营业额提现
 						</view>
 						<view class="roll-time">
 							{{item.createTime}}
 						</view>
 					</view>
 					<view class="roll-item-box2">
-						<view class="roll-bank">
+					<!-- 	<view class="roll-bank">
 							到账银行
 						</view>
 						<view class="roll-bank-card">
 							{{item.cashOutBank}}{{item.cashOutBankNo|cardFilter}}
-						</view>
+						</view> -->
 					</view>
 					<view class="roll-item-box3">
 						<view class="roll-title roll-money">
-							-{{item.frozenAmount}}
+							{{item.turnoverKouAmount}}
 						</view>
-						<view class="roll-state">
-							{{item.state| stateFilter}}
+						<view v-if="item.turnoverState=='NO_WITHDRAWAL'" class="roll-btns" @click.stop="turnoverWithdrawal(item)">
+							去提现
+						</view>
+						<view class="roll-state" v-else>
+							{{item.turnoverState| cashstateFilter}}
 						</view>
 					</view>
 					
@@ -42,6 +45,11 @@
 			  </view>
 			</load-refresh>
 		</view>
+		<uni-popup ref="popup" type="center">
+			<view class="popupCenter-box">
+				{{popupCenterMessage}}
+			</view>
+		</uni-popup>
 		
 	</view>
 	
@@ -60,12 +68,44 @@ export default {
 			list: [], // 数据集
 			currPage: 1, // 当前页码
 			totalPage: 1 ,// 总页数
+			cardItem:'',//默认银行卡
+			depositlist:'',//银行卡列表
+			popupCenterMessage:'',
 		}
 	},
 	onLoad() {
 		this.refresh();	
+		this.getdeposit();
 	},
 	methods:{
+		// 获取储蓄卡
+		getdeposit(){
+			uni.request({
+				method:'GET',
+			    url: this.$baseUrl+'/api/v1/pri/my/getUserSavingsCard', 
+			    data: {
+			    },
+			    header: {
+					'token': uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					if(res.data.code==0){
+						// 默认卡排序
+						this.depositlist=res.data.data.sort(function(a,b){return b.defaultCard-a.defaultCard});
+						this.cardItem=this.depositlist[0];
+					}else if(res.data.code==-1){
+						this.popupCenterMessage=res.data.msg;
+						this.$refs.popup.open();
+					}else{
+						console.log(res)
+					}
+			       
+			    }
+			});	
+		},
+		// 加载更多
 		loadMore() {
 			if(this.currPage<this.totalPage){
 				this.currPage++;
@@ -100,23 +140,33 @@ export default {
 		      success: (res) => {
 		  		console.log(res)
 		  		if(res.data.code==0){
-		  			 this.list.push.apply(this.list,res.data.data.list);
+					
+		  			 this.list=res.data.data.list;
+					 console.log(this.list)
 					 this.currPage=res.data.data.current_page;
 					 this.totalPage=res.data.data.total_page;
-		  		}
+		  		}else if(res.data.code==-1){
+					this.popupCenterMessage=res.data.msg;
+					   this.$refs.popup.open();
+				}
 		         
 		      }
 		  });
 	  },
 	  // 营业额提现
-	  turnoverWithdrawal:function(){
+	  turnoverWithdrawal:function(item){
+		  
+		  uni.showLoading({
+		  	title:'申请中',
+		  	mask:true
+		  })
 		  uni.request({
 		  	method:'POST',
 		      url: this.$baseUrl+'/api/v1/pri/my/turnoverWithdrawal', 
 		      data: {
-		  		orderId:'',
-		  		cardId:'',
-				orderNo:''
+		  		orderId:item.orderId,
+		  		cardId:this.cardItem.id,
+				orderNo:item.turnoverOrder,
 		      },
 		      header: {
 		  		'token': uni.getStorageSync('token'),
@@ -125,9 +175,15 @@ export default {
 		      success: (res) => {
 		  		console.log(res)
 		  		if(res.data.code==0){
-		  		}
-		         
-		      }
+					this.popupCenterMessage=res.data.data
+		  		}else if (res.data.code==-1){
+					this.popupCenterMessage=res.data.msg;
+				}
+		         this.$refs.popup.open();
+		      },
+			  complete: () => {
+			  	uni.hideLoading()
+			  }
 		  });
 	  },
 	  rollmoneystatusFn:function(id){
@@ -138,16 +194,17 @@ export default {
 		cardFilter:function (val){
 			return val.slice(-4)
 		},
-		stateFilter:function(val){
-			if(val==='REFUSE'){
-				return '拒绝'
-			}else if(val==='PAYMENT_FAILED'){
-				return '打款失败'
-			}else if(val==='SUCCESSFUL_PAY'){
-				return '打款成功'
-			}else if(val==='PAYMENT_IN_PROGRESS'){
-				return '打款中'
-			}else if(val==='ACCEPTED'){
+		// 是否可提现
+		cashstateFilter:function(val){
+			if(val==='NO_WITHDRAWAL'){
+				return '未提现'
+			}else if(val==='TO_WITHDRAW_CASH'){
+				return '已提现'
+			}else if(val==='UNABLE_TO_WITHDRAW_CASH'){
+				return '不可提现'
+			}else if(val==='REQUEST_FAILED'){
+				return '请求失败'
+			}else if(val==='PROCESSING'){
 				return '受理中'
 			}
 		}
@@ -196,4 +253,22 @@ export default {
 	font-size: 24upx;
 	color: #767676;
 }
+.roll-btns{
+	background-color: #ff0000;
+	color: #FFFFFF;
+	width: 100upx;
+	text-align: center;
+	border-radius: 10upx;
+	float: right;
+}
+	.popupCenter-box{
+		width: 400upx;
+		padding: 40upx ;
+		text-align: center;
+		border-radius: 20upx;
+	}
+	.shop-center-box{
+		min-height: 90vh;
+		background-color:#f4f8fb;
+	}
 </style>

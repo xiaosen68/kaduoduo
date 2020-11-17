@@ -1,6 +1,6 @@
 <template>
 	<view class="shop-center-box">
-		<router-link class="shop-center" to="{name:'shop'}">商城首页</router-link>
+		<router-link class="shop-center" to="{name:'shop'}" navType="pushTab">商城首页</router-link>
 		<view class="goods-pictures-box">
 			<image :src="goodsStatus.productUrl" mode="widthFix"></image>
 		</view>

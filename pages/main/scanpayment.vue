@@ -1,21 +1,28 @@
 <template>
 	<view class="scanpay-box">
-		<view class="scanpay-name-box" v-if="ifh5">
-			<view class="scanpay-tel">
-				<input type="number" class=" input-num card-input scanpay-name" maxlength="11" 
-				v-model="tel" value=""placeholder="请输入商家手机号" />
+		<!-- #ifdef H5 -->
+			<view class="scanpay-name-box">
+				<view class="scanpay-tel">
+					<input type="number" class=" input-num card-input scanpay-name" maxlength="11" 
+					v-model="tel" value=""placeholder="请输入商家手机号" @input="serchMerch()" />
+				</view>
+				<view class="scanpay-name">
+					{{name}}
+				</view>	
 			</view>
+		<!-- #endif -->
+		<!-- #ifndef H5 -->
+			<view class="scanpay-name-box" >
+				<view class="scanpay-name">
+					{{name}}
+				</view>	
+				<view class="scanpay-tel">
+					{{tel}}
+				</view>
 			
-		</view>
-		<view class="scanpay-name-box" else>
-			<view class="scanpay-name">
-				{{name}}
-			</view>	
-			<view class="scanpay-tel">
-				{{tel}}
 			</view>
-			
-		</view>
+		<!-- #endif -->
+	
 		<view class="money-box">
 			<view class="money-num-title">
 				支付金额：
@@ -78,31 +85,36 @@
 				creditCardList:[],
 				credit:'',
 				popupMessage:'',
-				ifh5:true,
+				// ifh5:true,
 				tradable:false,
+				isClick:true,
+				isMerch:false,
 			}
 		},
 		onLoad(option) {
 			this.scanVal=this.$Route.query.payname;
-			console.log(this.scanVal)
 			if(this.scanVal){
-				console.log(this.scanVal)
-				this.ifh5=false;
+				// this.ifh5=false;
 				this.tel=(this.scanVal.split('?')[1]).split('&')[0].split('=')[1];
 			this.name=(this.scanVal.split('?')[1]).split('&')[1].split('=')[1];
 			
 			}else{
-				console.log(this.scanVal)
-				this.ifh5=true;
+				// this.ifh5=true;
 				this.tel='';
 				this.name='';
 				// this.popupMessage="请扫描有效二维码";
 				// this.$refs.popup.open();
 			}
-			
+			this.selectPhoneMerch();
 			this.getcredit();
 		},
 		methods: {
+			serchMerch:function(e){
+				if(this.tel.length==11){
+					this.selectPhoneMerch()
+				}
+			
+			},
 			// 查询是否可交易
 			getTradable:function(){
 				uni.showLoading({
@@ -120,7 +132,6 @@
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res)
 						if(res.data.code==0){
 							if(res.data.data=="Y"){
 								this.tradable=true;
@@ -145,30 +156,33 @@
 				});	
 			},
 			// 查询是否为商家
-			selectPhoneMerch:function(phone){
+			selectPhoneMerch:function(){
 				uni.request({
 					method:'POST',
 				    url: this.$baseUrl+'/api/v1/pri/my/selectPhoneMerch', 
 				    data: {
-						phone:phone
+						phone:this.tel
 				    },
 				    header: {
 						'token': uni.getStorageSync('token'),
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res)
 						if(res.data.code==0){
-							
-							
+							if(res.data.data.merchType=='SHOP'){
+								this.name=res.data.data.merchName;
+								this.isMerch=true
+							}else{
+								this.isMerch=false;
+								this.popupMessage="未查询到商户信息，请重新扫码或输入";
+								this.$refs.popup.open();
+							}
 						}else if(res.data.code==-1){
+							this.isMerch=false;
 							this.popupMessage=res.data.msg;
 							this.$refs.popup.open();
 							
-						}else{
-							console.log(res)
 						}
-				       
 				    }
 				});	
 			},
@@ -184,7 +198,6 @@
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res)
 						if(res.data.code==0){
 							
 							this.creditCardList=res.data.data;
@@ -200,8 +213,6 @@
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
 							this.$refs.popup.open();
-						}else{
-							console.log(res)
 						}
 				       
 				    }
@@ -213,7 +224,11 @@
 				this.getTradable();
 				this.closedia1();
 			},
-			
+			ifClick:function(){
+				setTimeout(function(){
+					this.isClick=true;
+				},10000)
+			},
 			open1:function(){
 			         this.$refs.popup1.open()
 			},
@@ -222,82 +237,67 @@
 			},
 			addcredit:function(){
 				  this.$refs.popup1.close()
-				// uni.navigateTo({
-				// 	url:"../banking/addcredit"
-				// })
 				this.$Router.push({name:'addcredit'})
 			},
 			buyBtn:function(){
+				if(!this.isMerch){
+					this.popupMessage = "未查询到商户信息，请重新扫码或输入";
+					this.$refs.popup.open();
+					return false
+				}
+				if(this.isClick){
+					this.isClick=false;
+					this.ifClick();
+				}else{
+					this.popupMessage = "请稍等";
+					this.$refs.popup.open();
+					return false
+				}
+				
 				if(this.moneyNum>=100&&this.moneyNum<50000){
+				
 					uni.showLoading({
 						title:'加载中',
 						mask:true
 					})
 					
-					// 查询是否为商户
-					uni.request({
-						method:'POST',
-					    url: this.$baseUrl+'/api/v1/pri/my/selectPhoneMerch', 
-					    data: {
-							phone:phone
-					    },
-					    header: {
-							'token': uni.getStorageSync('token'),
-							'Content-Type':'application/json' //自定义请求头信息
-					    },
-					    success: (res) => {
-							console.log(res)
-							if(res.data.code==0){
-								// 判断是否为交易日
-								if(!this.tradable){
-									this.getTradable();
-								}else{
-									// 进行支付
-									uni.request({
-										method:'POST',
-									    url: this.$baseUrl+'/api/v1/pri/shop/customGeneralOrder', 
-									    data: {
-											userId:uni.getStorageSync('userId'),
-											store:this.tel,
-											creditId:this.credit.id,//信用卡id
-											totalTransactionPrice:this.moneyNum,
-									    },
-									    header: {
-											'token':uni.getStorageSync('token'),
-											'Content-Type':'application/json' //自定义请求头信息
-									    },
-									    success: (res) => {
-											console.log(res.data)
-											if(res.data.code==0){
-												console.log(res.data)
-													this.$Router.push({ name: 'scanstatus', params: { data: res.data.data}})
-											}else if(res.data.code==-1){
-												this.popupMessage=res.data.msg;
-												this.$refs.popup.open();
-											}
-									       
-									    },
-										complete: () => {
-											uni.hideLoading()
-											}
-									});
-									}
-							}else if(res.data.code==-1){
-								this.popupMessage=res.data.msg;
-								this.$refs.popup.open();
-								
-							}else{
-								console.log(res)
-							}
-					       
-					    },
-						complete: () => {
-							uni.hideLoading()
+					// 判断是否为交易日
+					if(!this.tradable){
+						this.getTradable();
+					}else{
+						// 进行支付
+						uni.request({
+							method:'POST',
+						    url: this.$baseUrl+'/api/v1/pri/shop/customGeneralOrder', 
+						    data: {
+								userId:uni.getStorageSync('userId'),
+								store:this.tel,
+								creditId:this.credit.id,//信用卡id
+								totalTransactionPrice:this.moneyNum,
+						    },
+						    header: {
+								'token':uni.getStorageSync('token'),
+								'Content-Type':'application/json' //自定义请求头信息
+						    },
+						    success: (res) => {
+								if(res.data.code==0){
+									this.isClick=true;
+									this.popupMessage=res.data.data;
+									this.$refs.popup.open();
+										
+									}else if(res.data.code==-1){
+									this.popupMessage=res.data.msg;
+									this.$refs.popup.open();
+								}
+						       
+						    },
+							complete: () => {
+								uni.hideLoading()
+								}
+						});
 						}
-					});	
 					
-					
-				}else if(this.moneyNum<100||this.moneyNum>50000){
+				}else if(this.moneyNum<10||this.moneyNum>50000){
 						this.popupMessage='消费金额需大于100，小于50000';
 						this.$refs.popup.open();
 					

@@ -103,7 +103,9 @@ export default {
 			if(this.zcmoney==''){
 				this.popupCenterMessage='请正确填写金额'
 					this.$refs.popupcenter.open();
-			}else if(this.zcmoney<30){
+					
+					// 大于20元
+			}else if(this.zcmoney<0){
 				this.popupCenterMessage='提现金额需不少于20元'
 					this.$refs.popupcenter.open();
 			}else{

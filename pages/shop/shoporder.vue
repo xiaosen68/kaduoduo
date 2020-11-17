@@ -173,7 +173,9 @@
 					this.$refs.popup.open();
 					return false;
 			}
-			
+			// 
+			//
+			 // 
 			if(this.allMoney>=100&&this.allMoney<=50000){
 				this.$Router.push({
 					path:'/pages/shop/selectpay',
@@ -187,7 +189,7 @@
 						totalTransactionPrice:this.allMoney,
 						addressId:this.locationId,
 					}})
-			}else if(this.allMoney<=100){
+			}else if(this.allMoney<100){
 					this.popupCenterMessage='请选择商品需大于100元'
 						this.$refs.popup.open()
 			}else if(this.allMoney>50000){

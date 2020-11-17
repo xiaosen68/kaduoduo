@@ -70,7 +70,6 @@
 	},
 	onLoad() {
 		this.id=this.$Route.query.id
-		console.log(this.id)
 		// 获取储蓄卡信息
 		if(this.$Route.query.id){
 			uni.request({
@@ -83,7 +82,6 @@
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
 					if(res.statusCode==200){
 						this.cardNo=res.data.data.card_no;
 						this.bank=res.data.data.bank;
@@ -124,11 +122,9 @@
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
 					
 					if(res.statusCode==200){
 						this.bank=res.data.data.bank;
-						console.log(this.bank)
 						// console.log(this.accountBalance)
 					}else{
 						// this.popupMessage='错误码：'+res.code+'信息：'+res.msg;
@@ -158,15 +154,12 @@
 				'Content-Type':'application/json' //自定义请求头信息
 		    },
 		    success: (res) => {
-				console.log(res)
 				if(res.data.code==0){
 					this.popupMessage=res.data.data;
 					this.$refs.popup.open();
 				}else if(res.data.code==-1){
 					this.popupMessage=res.data.msg;
 					this.$refs.popup.open();
-				}else{
-					console.log(res)
 				}
 		       
 		    }
@@ -223,7 +216,6 @@
 				this.termOfValidity=this.termOfValidity+'/'
 			}else if(e.detail.value.length==4){
 				if(Number(e.detail.value.charAt(3))>3){
-					console.log(this.termOfValidity)
 					this.termOfValidity=this.termOfValidity.substr (0,3);
 					this.termOfValidity=this.termOfValidity+'3';
 				}

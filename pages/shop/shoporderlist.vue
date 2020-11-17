@@ -9,7 +9,7 @@
 			  @loadMore="loadMore" 
 			  @refresh="refresh" class="">
 			<view slot="content-list">
-				<router-link class="shop-order-item" to="{name:'shoporderitem'}" v-for="item in showList">
+				<view class="shop-order-item"  v-for="item in showList" @click="goItem(item)">
 					<view class=" order-category-box">
 						<text class="order-category">{{item.passageWayName}}</text> 
 						<text class="order-date-box">{{item.orderTime}}</text>
@@ -23,7 +23,7 @@
 						</text>
 						
 					</view>
-				</router-link>
+				</view>
 			</view>
 			
 		</load-refresh>		  
@@ -82,6 +82,12 @@ export default {
 				      }
 				  });	
 		},
+		goItem:function(item){
+			this.$Router.push({path:'/pages/shop/shoporderitem',
+			query:{
+				item:JSON.stringify(item),
+			}})
+		}
 	},
 }
 </script>

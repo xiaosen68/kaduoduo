@@ -2,7 +2,7 @@
 	<view class="mycenter-box">
 		<view class="my-info-box">
 			<router-link to="{name:'myinfo'}"  class="my-info1-box">
-				<image src="../../static/img/NO.png" class="my-head" mode=""></image>
+				<image src="../../static/img/niubei.jpg" class="my-head" mode=""></image>
 				<view class="my-name-box">
 					<text>{{infodata.userName}}</text>
 					<view class="my-phone">
@@ -89,15 +89,15 @@
 			<view class="my-app-item">
 				<router-link to="{name:'feilv'}">
 					<image src="../../static/img/bank/feilv.png" class="my-app-item-pic" mode=""></image>
-					<text>我的费率</text>
+					<text>我的佣金</text>
 					<uni-icons type="arrowright" class="my-app-item-arrow"></uni-icons>
 				</router-link>
 			</view>
-			<view class="my-app-item">
+			<!-- <view class="my-app-item">
 					<image src="../../static/img/bank/jiaocheng.png" class="my-app-item-pic" mode=""></image>
 					<uni-link href="http://a.eqxiu.com/s/hkWWZ7Ca" text="操作教程" showUnderLine="none" fontSize="18" color="#000000"></uni-link>
 					<uni-icons type="arrowright" class="my-app-item-arrow"></uni-icons>
-			</view>
+			</view> -->
 			<view class="my-app-item" @click="opens">
 				<image src="../../static/img/bank/zaixiankefu.png" class="my-app-item-pic" mode=""></image>
 				<text>在线客服</text>
@@ -147,10 +147,10 @@
 				shimingtype:'',
 				infodata:{},
 				revenueAmount:{},
-				ifyue:true
+				ifyue:false
 			}
 		},
-		onShow(object){
+		onShow() {
 			let _this=this;
 			// 获取我的信息
 			uni.request({
@@ -163,7 +163,6 @@
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
 					if(res.data.code==0){
 						this.infodata=res.data.data;
 						this.infodata.score=Math.floor(this.infodata.score)
@@ -172,43 +171,44 @@
 						uni.setStorageSync('userPhone', res.data.data.phone);
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
-					}else{
-						console.log(res)
 					}
 			       
 			    },
 				complete: (data) => {
-					console.log(data)
 				}
 			});
 			// 是否为商家
-	if(uni.getStorageSync('role')=='BUSINESS'){
-	this.ifyue=true	
-	}else{
-		this.ifyue=false
-	}
-		// 查看是否实名；
-		uni.request({
-			method:'GET',
-		    url: this.$baseUrl+'/api/v1/pri/my/myInfoData', 
-		    data: {
-		    },
-		    header: {
-				'token': uni.getStorageSync('token'),
-				'Content-Type':'application/json' //自定义请求头信息
-		    },
-		    success: (res) => {
-				console.log(res)
-				if(res.data.code==0){
-					this.shimingtype=res.data.data.isRealName;
-				}
-		       
-		    },
-			complete: (data) => {
-				console.log(data)
+			if(uni.getStorageSync('role')=='BUSINESS'){
+			this.ifyue=true	
+			}else{
+				this.ifyue=false
 			}
-		});
-			
+			// 查看是否实名；
+			uni.request({
+				method:'GET',
+			    url: this.$baseUrl+'/api/v1/pri/my/myInfoData', 
+			    data: {
+			    },
+			    header: {
+					'token': uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					if(res.data.code==0){
+						this.shimingtype=res.data.data.isRealName;
+						if(this.shimingtype=='已实名'){
+							this.shimingIf=true;
+						}else{
+							this.shimingIf=false;
+						}
+					}
+			       
+			    },
+				complete: (data) => {
+				}
+			});
+		},
+		onLoad(object){
 		},
 		methods: {
 			opens:function(){
@@ -346,8 +346,8 @@
 .my-app-item{
 	position: relative;
 	padding: 20upx 40upx;
-	height: 90upx;
-	line-height: 90upx;
+	/* height: 90upx; */
+	/* line-height: 90upx; */
 	font-weight: 600;
 	border-bottom: 2upx solid #f4f8fb;
 }

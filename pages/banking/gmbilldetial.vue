@@ -1,21 +1,18 @@
 <template>
 	<view class="billdetial-box">
-		<view class="goods-list">
-			<view class="goods-item">
-				<image class="goods-pic" src="../../static/img/bank/feilv.png" mode=""></image>
+		<view class="goods-list"  v-if="datas.orderList">
+			<view class="goods-item" v-for="item in datas.orderList">
+				<image class="goods-pic" :src="item.productUrl"  mode=""></image>
 				<view class="goods-status">
 					<view class="">
-						哈哈哈提货卡
+						{{item.productName}}
 					</view>
 					<view class="">
 						成交价:23.0
 					</view>
-					<view class="">
-						挂牌价:123.0
-					</view>
 				</view>
 				<view class="goods-num">
-					X16
+					{{item.payamount}}
 				</view>
 			</view>
 		</view>
@@ -24,33 +21,28 @@
 				<view class="goods-ft">
 					商品总价
 				</view>
-				<text class="goos-ft-num">2309.00</text>
+				<text class="goos-ft-num">{{datas.totalTransactionPrice}}</text>
 			</view>
 			<view class="goods-price-item">
 				<view class="goods-ft">
-					寄售总价
+					支付金额
 				</view>
-				<text class="goos-ft-num">2400.00</text>
+				<text class="goos-ft-num">{{datas.totalTransactionPrice}}</text>
 			</view>
-			<view class="goods-price-item">
-				<view class="goods-ft">
-					寄售垫付
-				</view>
-				<text class="goos-ft-num">2280.00</text>
-			</view>
+			
 		</view>
 		<view class="bill-type">
 			<view class="deal-item">
 				<text>订单类型:</text>
-				<text class="bill-types">卡券购买</text>
+				<text class="bill-types">{{datas.orderType|typefilter}}</text>
 			</view>
 			<view class="deal-item">
 				<view class="deal-title">
 					订单编号
 				</view>
-				<view class="deal-detial">
-					213123123123
-				</view>
+			<view class="deal-detial" @click="copyFn(datas.orderNo)">
+				{{datas.orderNo}}
+			</view>
 			</view>
 		</view>
 		<view class="deal-box">
@@ -64,26 +56,10 @@
 			</view>
 			<view class="deal-item">
 				<view class="deal-title">
-					支付金额
-				</view>
-				<view class="deal-detial">
-					2309.00元
-				</view>
-			</view>
-			<view class="deal-item">
-				<view class="deal-title">
-					交易费率
-				</view>
-				<view class="deal-detial">
-					2.3%
-				</view>
-			</view>
-			<view class="deal-item">
-				<view class="deal-title">
 					预授权完成时间
 				</view>
 				<view class="deal-detial">
-					2020-03-02 28:12:12
+						{{datas.finishDate|datafilter}}
 				</view>
 			</view>
 			<view class="deal-item">
@@ -91,7 +67,7 @@
 					创建时间
 				</view>
 				<view class="deal-detial">
-					2020-02-02 28:12:12
+					{{datas.orderTime}}
 				</view>
 			</view>
 			
@@ -100,7 +76,7 @@
 					交易单号
 				</view>
 				<view class="deal-detial">
-					21312312312
+					{{datas.payNo}}
 				</view>
 			</view>
 			<view class="deal-item">
@@ -108,10 +84,15 @@
 					商户号
 				</view>
 				<view class="deal-detial">
-					213123123123
+					{{datas.merchId}}
 				</view>
 			</view>
 		</view>
+		<uni-popup ref="popup" type="center">
+			<view class="popupCenter-box">
+				{{popupCenterMessage}}
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
@@ -119,11 +100,43 @@
 export default {
 	data (){
 		return{
-			
+			datas:'',
+			popupCenterMessage:'',
 		}
 	},
+	onLoad:function() {
+		this.datas=JSON.parse(this.$Route.query.states);
+	},
 	methods:{
-		
+		copyFn:function(dd){
+			//#ifndef H5
+				uni.setClipboardData({
+				    data: dd,
+				    success: function () {
+						this.popupCenterMessage='复制成功'
+							this.$refs.popup.open()
+				    }
+				});
+			//#endif	
+			}
+	},
+	filters:{
+		datafilter:function(val){
+			return val.slice(0,4)+'-'+val.slice(4,6)+'-'+val.slice(6,8)
+		},
+		typefilter:function(val){
+			if(val=='MEMBER_PLUS'){
+				return '会员PLUS'
+			}else if(val=='EXPRESS_PAYMENT'){
+				return '快捷支付'
+			}else if(val=='CARD_COUPON_SPACE'){
+				return '卡券空间'
+			}else if(val=='CONSUMPTION_ZONE'){
+				return '消费专区'
+			}else if(val=='CUSTOM_ORDER'){
+				return '扫码支付'
+			}
+		}
 	}
 }
 </script>
@@ -193,5 +206,15 @@ export default {
 	}
 	.deal-title{
 		
+	}
+	.popupCenter-box{
+		width: 400upx;
+		padding: 40upx ;
+		text-align: center;
+		border-radius: 20upx;
+	}
+	.shop-center-box{
+		min-height: 90vh;
+		background-color:#f4f8fb;
 	}
 </style>

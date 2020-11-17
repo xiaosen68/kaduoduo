@@ -164,7 +164,7 @@ export default {
 	}
 	.shop-jifen-item{
 		/* line-height: 70upx; */
-		padding-top: 20upx;
+		/* padding-top: 20upx; */
 		height: 34upx;
 	}
 	.shop-jifen-icon{
@@ -183,7 +183,7 @@ export default {
 		font-size: 24upx;
 		line-height: 70upx;
 		padding: 0 20upx;
-		border-bottom: 2upx solid #d1d1d1;
+		/* border-bottom: 2upx solid #d1d1d1; */
 	}
 	.shop-deal-title-btn{
 		display: inline;
@@ -207,7 +207,7 @@ export default {
 	}
 	.shop-area-box{
 		width: 640upx;
-		line-height: 60upx;
+		line-height: 100upx;
 		background-color: #FFFFFF;
 		margin: 20upx auto;
 		font-size: 20upx;

@@ -61,14 +61,12 @@ export default {
 	},
 	methods:{
 		loadMore() {
-        console.log('loadMore')
         // 请求新数据完成后调用 组件内loadOver()方法
         // 注意更新当前页码 currPage
         this.$refs.loadRefresh.loadOver()
       },
       // 下拉刷新数据列表
       refresh() {
-        console.log('refresh')
       },
 	  typeclick(n){
 	  	if(n===1){
@@ -104,7 +102,6 @@ export default {
 		  		'Content-Type':'application/json' //自定义请求头信息
 		      },
 		      success: (res) => {
-		  		console.log(res)
 		  		if(res.data.code==0){
 					this.showList=res.data.data.list;
 					this.totalPage=res.data.total_page;
@@ -129,7 +126,6 @@ export default {
 		  		'Content-Type':'application/json' //自定义请求头信息
 		      },
 		      success: (res) => {
-		  		console.log(res)
 		  		if(res.data.code==0){
 		  					this.showList=res.data.data.list;
 		  					this.totalPage=res.data.total_page;

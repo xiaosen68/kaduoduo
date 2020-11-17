@@ -2,15 +2,18 @@
 	<view class="consume-box">
 		<view class="cosume2-money-num">
 			<view class="cosume2-money-df">
-				垫付金额
+				到账金额
 			</view>
 			<text class="money-df">{{dianfuMoney}}<text style="font-size: 30upx;">(元)</text></text>
 			<view class="cosume2-money-box">
 				<view class="cosume2-day">
 					<view >
-						还款倒计时
+						还款日倒计时
 					</view>
-					<text class="cos-num">74</text>(天)
+					<text class="cos-num">{{huan}}</text>(天)
+					<view class="xfont">
+						以实际还款日为准
+					</view>
 				</view>
 				<view class="cosume2-money">
 					<view >
@@ -19,12 +22,6 @@
 					<text class="cos-num">{{allGoodscj}}</text>(元)
 				</view>
 			</view>
-		</view>
-		<view class="cosume2-steps">
-			<view class="cosume2-title">
-				-具体时间以实际匹配为准-
-			</view>
-			<uni-steps :options="[{title: '今日加入',desc:'2020-02-3'}, {title: '正常还款',desc:'2020-02-3'}, {title: '延期还款',desc:'2020-02-3'}]" :active="2" ></uni-steps>
 		</view>
 		<view class="cosume2-back-select">
 			使用该通道需要验证储蓄卡
@@ -40,15 +37,6 @@
 					<uni-icons type="forward"></uni-icons>
 				</view>
 			</view>
-		<!-- 	<view class="back-select last">
-				<view class="arr-select-icon"  >
-					<text>开户行省市</text>
-				</view>
-				<view class="select-bank-box" @click="open2()">
-					<text>河南省-郑州市</text>
-					<uni-icons type="forward"></uni-icons>
-				</view>
-			</view> -->
 		</view>
 		<view class="safe-box">
 			<view class="safe-one">
@@ -110,6 +98,8 @@
 				myRate:'',
 				consumptionRate:'',
 				popupMessage:'',
+				isClick:true,
+				huan:'',
 			}
 		},
 		onLoad: function (option) {
@@ -118,12 +108,9 @@
 			this.allGoodscj=this.$Route.query.allGoodscj;
 			this.creditId=this.$Route.query.credit;
 			this.myRate=this.$Route.query.myRate;
+			this.huan=this.$Route.query.huan,
 			this.consumptionRate=this.$Route.query.consumptionRate;
 			this.dianfuMoney=Math.floor((this.allGoodscj*(1-this.myRate)-this.consumptionRate)*100)/100;
-			console.log(this.allGoodscj);
-			console.log(this.myRate);
-			console.log(this.consumptionRate);
-			console.log(this.dianfuMoney)
 			this.getdeposit();
 		},
 		methods: {
@@ -139,21 +126,26 @@
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res)
+						// console.log(res)
 						if(res.data.code==0){
 							// 默认卡排序
 							this.depositlist=res.data.data.sort(function(a,b){return b.defaultCard-a.defaultCard})
 							this.deposit=this.depositlist[0];
-							console.log(this.depositlist)
+							// console.log(this.depositlist)
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
 							// this.$refs.popup.open();
 						}else{
-							console.log(res)
+							// console.log(res)
 						}
 				       
 				    }
 				});	
+			},
+			ifClick:function(){
+				setTimeout(function(){
+					this.isClick=true;
+				},10000)
 			},
 			selectdeposit:function(item){
 				this.deposit=item;
@@ -183,9 +175,15 @@
 				done()
 			},
 			buyBtn:function(){
-				// uni.navigateTo({
-				// 	url:'../states/state?message='+'成功&type=waiting'
-				// })
+				if(this.isClick){
+					this.isClick=false;
+					this.ifClick();
+				}else{
+					this.popupMessage = "请稍等";
+					this.$refs.popup.open();
+					return false
+				}
+				
 				// 会员Plus支付接口
 				uni.showLoading({
 					title:'加载中',
@@ -210,12 +208,13 @@
 				    success: (res) => {
 						console.log(res)
 						if(res.data.code==0){
-							this.creditCardList=res.data.data.userCreditCardlist;
-							this.credit=this.creditCardList[0];
-							console.log(this.credit)
 							this.popupMessage = res.data.data;
 							this.$refs.popup.open();
-							
+							setTimeout(function(){
+								this.$Router.push({
+									path:'/pages/main/homepage'
+								})
+							},3000)
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
 							this.$refs.popup.open();
@@ -224,6 +223,9 @@
 				    },
 					complete: () => {
 						uni.hideLoading()
+						// this.$Router.push({
+						// 	path:'/pages/main/homepage'
+						// })
 					}
 				});					
 				// this.$Router.push({path:'/pages/states/state',
@@ -260,6 +262,9 @@
 	    display:block; 
 	    z-Index:99;  
 	}
+	.xfont{
+		font-size: 10px;
+	}
 	.consume-box{
 		width: 100%;
 		min-height: 92vh;
@@ -271,7 +276,7 @@
 	
 	.cosume2-money-num{
 		width: 750upx;
-		height: 300upx;
+		/* height: 300upx; */
 		background-color: #FFFFFF;
 		text-align: center;
 		padding-top: 30upx;
@@ -370,7 +375,7 @@
 .back-head-box{
 	width: 40upx;
 	height: 40upx;
-	vertical-align: bottom;
+	vertical-align: middle;
 }
 .select-bank-box{
 	display: inline-block;

@@ -2,7 +2,7 @@
 	<view class="aboutme-box">
 		<view class="niubei-heand">
 			<image class="niubei-icon" src="../../static/img/niubei.jpg" mode=""></image>
-			<view class="niubei">牛贝</view>
+			<view class="niubei">有粒糖</view>
 			<view class="niubei-banben">
 				2.0.1
 			</view>

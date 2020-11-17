@@ -1,25 +1,25 @@
 <template>
 	<view class="billdetial-box">
-		<view class="goods-list">
-			<view class="goods-item">
-				<image class="goods-pic" src="../../static/img/bank/feilv.png" mode=""></image>
+		<view class="goods-list" v-if="items.orderList">
+			<view class="goods-item" v-for="item in items.orderList">
+				<image class="goods-pic" :src="item.productUrl" mode=""></image>
 				<view class="goods-status">
 					<view class="">
-						哈哈哈提货卡
+						{{item.productName}}
 					</view>
 					<view class="">
-						单价:23.0
+						单价:{{item.transactionPrice}}
 					</view>
 					<view class="zhekou">
-						成交价:23.0
+						成交价:{{item.transactionPrice*item.discount}}
 					</view>
 				</view>
 				<view class="goods-num">
 					<view class="">
-						X16
+						X{{item.payamount}}
 					</view>
 					<view class="goods-all-price">
-						总价格：2309.00
+						总价格：{{item.payamount*item.transactionPrice*item.discount}}
 					</view>
 				</view>
 			</view>
@@ -28,14 +28,14 @@
 		<view class="bill-type">
 			<view class="deal-item">
 				<text>订单类型:</text>
-				<text class="bill-types">商城消费</text>
+				<text class="bill-types">{{items.orderType|typefilter}}</text>
 			</view>
 			<view class="deal-item">
 				<view class="deal-title">
 					订单编号
 				</view>
 				<view class="deal-detial">
-					213123123123
+					{{items.orderNo}}
 				</view>
 			</view>
 			<view class="deal-item">
@@ -43,63 +43,34 @@
 					订单状态
 				</view>
 				<view class="deal-detial take-delivery-status">
-					未收货
-				</view>
-			</view>
-		</view>
-		<view class="bill-type">
-			<view class="deal-item">
-				<view class="deal-title">
-					快递编号
-				</view>
-				<view class="deal-detial">
-					<text>213123122131231233123</text>
-					<view class="copy-btn">
-						复制
-					</view>
+					{{items.stateMsg}}
 				</view>
 			</view>
 		</view>
 		<view class="deal-box">
-			<view class="deal-item">
+			<!-- <view class="deal-item">
 				<view class="deal-title">
 					支付状态
 				</view>
 				<view class="deal-detial">
-					已支付
+					{{items.stateMsg}}
 				</view>
-			</view>
+			</view> -->
 			<view class="deal-item">
 				<view class="deal-title">
 					支付金额
 				</view>
 				<view class="deal-detial">
-					2309.00元
-				</view>
-			</view>
-			<view class="deal-item">
-				<view class="deal-title">
-					交易费率
-				</view>
-				<view class="deal-detial">
-					2.3%
-				</view>
-			</view>
-			<view class="deal-item">
-				<view class="deal-title">
-					创建时间
-				</view>
-				<view class="deal-detial">
-					2020-02-02 28:12:12
+					{{items.totalTransactionPrice}}元
 				</view>
 			</view>
 			
 			<view class="deal-item">
 				<view class="deal-title">
-					交易单号
+					创建时间
 				</view>
 				<view class="deal-detial">
-					21312312312
+					{{items.orderTime}}
 				</view>
 			</view>
 			<view class="deal-item">
@@ -107,13 +78,27 @@
 					商户号
 				</view>
 				<view class="deal-detial">
-					213123123123
+					{{items.merchId}}
+				</view>
+			</view>
+			<view class="deal-item" v-if="items.region" @click="copyFn(items)">
+				<view class="deal-title">
+					收货地址
+				</view>
+				<view class="deal-detial">
+					{{items.region}}{{items.addressDetails}}
+				</view>
+			</view>
+			<view class="deal-item" v-if="items.customerName">
+				<view class="deal-title">
+					收货人
+				</view>
+				<view class="deal-detial">
+					{{items.customerName}} {{items.customerPhone}}
 				</view>
 			</view>
 		</view>
-		<view class="take-delivery-btn">
-			确认收货
-		</view>
+	
 	</view>
 </template>
 
@@ -121,11 +106,41 @@
 export default {
 	data (){
 		return{
-			
+				items:'',
 		}
 	},
+	onLoad() {
+		console.log(this.$Route.query.item);
+		this.items=JSON.parse(this.$Route.query.item);
+		console.log(this.items)
+	},
 	methods:{
-		
+		copyFn:function(dd){
+			//#ifndef H5
+				uni.setClipboardData({
+				    data: dd.region+dd.addressDetails+dd.customerName+dd.customerPhone,
+				    success: function () {
+						this.popupCenterMessage='复制收货人信息成功'
+							this.$refs.popup.open()
+				    }
+				});
+			//#endif	
+			}
+	},
+	filters:{
+		typefilter:function(val){
+			if(val=='MEMBER_PLUS'){
+				return '会员PLUS'
+			}else if(val=='EXPRESS_PAYMENT'){
+				return '快捷支付'
+			}else if(val=='CARD_COUPON_SPACE'){
+				return '卡券空间'
+			}else if(val=='CONSUMPTION_ZONE'){
+				return '消费专区'
+			}else if(val=='CUSTOM_ORDER'){
+				return '扫码支付'
+			}
+		}
 	}
 }
 </script>

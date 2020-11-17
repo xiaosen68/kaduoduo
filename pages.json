@@ -154,7 +154,7 @@
 	{
 		"path": "pages/shop/alterlocation",
 		"style": {
-			"navigationBarTitleText": "修改地址"
+			"navigationBarTitleText": "设置地址"
 		}
 	},
 	{

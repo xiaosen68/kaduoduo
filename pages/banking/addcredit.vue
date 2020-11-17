@@ -12,6 +12,7 @@
 				<uni-icons type="camera" class="card-icons" size="20" @click="getcardFn"></uni-icons>
 			</view><view class="input-box">
 				<text>预留手机:</text>
+				<!-- <text class="card-text">{{reservePhone}}</text> -->
 				<input type="number" class="input-num"  maxlength="11" @blur="iftel" v-model="reservePhone" value=""placeholder="请输入预留手机号" />
 			</view>
 			<view class="input-box">
@@ -84,7 +85,6 @@
 			    count: 1, //默认9
 			    success: function (res) {
 					let str = res.tempFilePaths[0];
-					console.log(res)
 					var reader = new FileReader()
 						reader.onloadend = function() {
 							_this.cardPic= reader.result;
@@ -113,10 +113,8 @@
 			    },
 			    success: (res) => {
 					if(res.statusCode==200){
-						console.log(res.data)
 						this.cardNo=res.data.data.card_number;
 						this.bank=res.data.data.bank_name;
-						console.log(this.cardNo)
 						// console.log(this.accountBalance)
 					}else{
 					}
@@ -139,15 +137,9 @@
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
-					
 					if(res.statusCode==200){
 						this.bank=res.data.data.bank;
-						console.log(this.bank)
-						// console.log(this.accountBalance)
 					}else{
-						// this.popupMessage='错误码：'+res.code+'信息：'+res.msg;
-						// this.$refs.popup.open();
 					}
 			       
 			    }
@@ -181,7 +173,6 @@
 				'Content-Type':'application/json' //自定义请求头信息
 		    },
 		    success: (res) => {
-				console.log(res)
 				if(res.data.code==0){
 					this.popupMessage=res.data.data;
 					this.$refs.popup.open();
@@ -190,7 +181,6 @@
 					this.popupMessage=res.data.msg;
 					this.$refs.popup.open();
 				}else{
-					console.log(res)
 				}
 		       
 		    },
@@ -200,7 +190,7 @@
 		});	
 		},
 		ifcredit (n){
-			let p =/^\d{16}$/;
+			let p =/^\d{15,16}$/;
 			return p.test(n)
 		},
 		iftel(){
@@ -250,7 +240,6 @@
 				this.termOfValidity=this.termOfValidity+'/'
 			}else if(e.detail.value.length==4){
 				if(Number(e.detail.value.charAt(3))>3){
-					console.log(this.termOfValidity)
 					this.termOfValidity=this.termOfValidity.substr (0,3);
 					this.termOfValidity=this.termOfValidity+'3';
 				}

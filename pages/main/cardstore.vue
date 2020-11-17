@@ -104,7 +104,8 @@
 				],
 				buyList:[],
 				allGoodsjs:0,
-				allGoodscj:0
+				allGoodscj:0,
+				size:40,
 			}
 		},
 		onLoad() {
@@ -117,21 +118,19 @@
 			    url: this.$baseUrl+'/api/v1/pri/shop/mailingProduct', 
 			    data: {
 					page:1,
-					size:5
+					size:this.size
 			    },
 			    header: {
 					'token':uni.getStorageSync('token'),
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
 					if(res.data.code==0){
 						this.goodsList=res.data.data.list;
 						this.goodsList.map((item)=>{
 							item.amount=0
 							return item
 						})
-						console.log(this.goodsList)
 						
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
@@ -156,7 +155,6 @@
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res)
 						if(res.data.code==0){
 							if(res.data.data.length=0){
 								this.popupCenterMessage='请绑定信用卡';
@@ -180,7 +178,6 @@
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res)
 						if(res.data.code==0){
 							if(res.data.data.length=0){
 								this.popupCenterMessage='请绑定储蓄卡';
@@ -203,7 +200,6 @@
 				if(e.detail.value<0){
 					e.detail.value=0
 				}
-				console.log(e.detail.value)
 				this.addbuyCar();
 			},
 			// 减少
@@ -213,7 +209,6 @@
 				}else{
 					this.goodsList[n].amount=0;
 				}
-				console.log(this.goodsList[n].amount);
 				this.addbuyCar();
 			},
 			// 增加
@@ -226,7 +221,6 @@
 				}else if(Math.floor(this.goodsList[n].amount)>=99){
 					this.goodsList[n].amount=99;
 				}
-				console.log(this.goodsList[n].amount);
 				this.addbuyCar();
 			},
 			// 判断商品个数，设置列表布局
@@ -320,9 +314,7 @@
 				this.buyList=this.buycarList.filter((item)=>{
 					return item.select;
 				})
-				console.log(this.buyList)
-				console.log(uni.getStorageSync('pageType'))
-				if(this.buyList.length>0&&this.allGoodscj>100&&this.allGoodscj<50000){
+				if(this.buyList.length>0&&this.allGoodscj>=100&&this.allGoodscj<50000){
 					if(uni.getStorageSync('pageType')==='1'){
 						this.$Router.push({path:'/pages/jishou/consume1',
 						query:{

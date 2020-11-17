@@ -20,7 +20,7 @@
 					<router-link :to="{name:'goodsstatus',params: {id: item.id}}" class="store-item" v-for="(item,index) in goodsList"  v-if="!iflast(index)">
 						<image class="good-pic" :src="item.productUrl" mode="aspectFit"></image>
 						<view class="goods-name">
-							{{item.productName}}
+							{{item.productName}}-{{item.merchName}}
 						</view>
 						<view class="goods-prices">
 							<view class="goods-cj-pri">
@@ -38,7 +38,7 @@
 					<router-link :to="{name:'goodsstatus',params: {id: item.id}}" class="store-item" v-for="(item,index) in goodsList"  v-if="iflast(index)">
 						<image class="good-pic" :src="item.productUrl" mode="aspectFit"></image>
 						<view class="goods-name">
-							{{item.productName}}
+							{{item.productName}}-{{item.merchName}}
 						</view>
 						<view class="goods-prices">
 							<view class="goods-cj-pri">
@@ -83,6 +83,10 @@ export default {
 					url:'../../static/img/3.jpg'
 				}],
 			current: 0,
+			currentPage:1,
+			totalSize:0,
+			size:20,
+			totalPage:0,
 			mode: 'default',
 			popupCenterMessage:'',
 			goodsList:[
@@ -97,26 +101,7 @@ export default {
 		}
 	},
 	onLoad() {
-		uni.request({
-			method:'POST',
-		    url: this.$baseUrl+'/api/v1/pri/shop/generalProduct', 
-		    data: {
-				"page":1,
-				"size":20
-
-		    },
-		    header: {
-				'token': uni.getStorageSync('token'),
-				'Content-Type':'application/json' //自定义请求头信息
-		    },
-		    success: (res) => {
-				console.log(res)
-				if(res.data.code==0){
-					this.goodsList=res.data.data.list;
-				}
-		       
-		    }
-		});
+		this.getPruductList();
 	},
 	methods:{
 		   change:function(e) {
@@ -124,6 +109,31 @@ export default {
 		        },
 		trigger:function(e){
 			console.log(e)
+		},
+		getPruductList:function(){
+			uni.request({
+				method:'POST',
+			    url: this.$baseUrl+'/api/v1/pri/shop/generalProduct', 
+			    data: {
+					"page":this.currentPage,
+					"size":this.size
+			
+			    },
+			    header: {
+					'token': uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					if(res.data.code==0){
+						this.goodsList=res.data.data.list;
+						this.totalSize=res.data.data.total_size;
+						this.currentPage=res.data.data.current_page;
+						this.totalPage=res.data.data.total_page;
+					}
+			       
+			    }
+			});
 		},
 		// 判断商品个数，设置列表布局
 		iflast:function(n){
@@ -133,6 +143,13 @@ export default {
 				return false
 			}
 		},
+	},
+	onReachBottom:function(){
+		if(this.totalPage>this.currentPage){
+			this.currentPage++;
+			this.getPruductList();
+			this.this.goodsList.push(res.data.data.list)
+		}
 	},
 	filters:{
 		numberFilters:function(val){

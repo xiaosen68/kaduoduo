@@ -42,13 +42,13 @@
 		<view class="bill-type">
 			<view class="deal-item">
 				<text>订单类型:</text>
-				<text class="bill-types">{{datas.passageWayName}}</text>
+				<text class="bill-types">{{datas.orderType|typefilter}}</text>
 			</view>
 			<view class="deal-item">
 				<view class="deal-title">
 					订单编号
 				</view>
-				<view class="deal-detial">
+				<view class="deal-detial" @click="copyFn(datas.orderNo)">
 					{{datas.orderNo}}
 				</view>
 			</view>
@@ -104,6 +104,11 @@
 				</view>
 			</view>
 		</view>
+		<uni-popup ref="popup" type="center">
+			<view class="popupCenter-box">
+				{{popupCenterMessage}}
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
@@ -112,17 +117,41 @@ export default {
 	data (){
 		return{
 			datas:'',
+			popupCenterMessage:''
 		}
 	},
 	onLoad:function() {
 		this.datas=JSON.parse(this.$Route.query.states);
 	},
 	methods:{
-		
+		copyFn:function(dd){
+			//#ifndef H5
+				uni.setClipboardData({
+				    data: dd,
+				    success: function () {
+						this.popupCenterMessage='复制成功'
+							this.$refs.popup.open()
+				    }
+				});
+			//#endif	
+			}
 	},
 	filters:{
 		datafilter:function(val){
 			return val.slice(0,4)+'-'+val.slice(4,6)+'-'+val.slice(6,8)
+		},
+		typefilter:function(val){
+			if(val=='MEMBER_PLUS'){
+				return '会员PLUS'
+			}else if(val=='EXPRESS_PAYMENT'){
+				return '快捷支付'
+			}else if(val=='CARD_COUPON_SPACE'){
+				return '卡券空间'
+			}else if(val=='CONSUMPTION_ZONE'){
+				return '消费专区'
+			}else if(val=='CUSTOM_ORDER'){
+				return '扫码支付'
+			}
 		}
 	}
 }
@@ -193,5 +222,15 @@ export default {
 	}
 	.deal-title{
 		
+	}
+	.popupCenter-box{
+		width: 400upx;
+		padding: 40upx ;
+		text-align: center;
+		border-radius: 20upx;
+	}
+	.shop-center-box{
+		min-height: 90vh;
+		background-color:#f4f8fb;
 	}
 </style>

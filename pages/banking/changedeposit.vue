@@ -54,7 +54,6 @@ export default {
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
 					if(res.statusCode==200){
 						this.accountOpeningProvince=res.data.data.account_opening_province;
 						this.cardNo=res.data.data.card_no;
@@ -62,8 +61,6 @@ export default {
 						this.cardholder=res.data.data.cardholder;
 						this.reservePhone=res.data.data.reserve_phone;
 					}else{
-						// this.popupMessage='错误码：'+res.code+'信息：'+res.msg;
-						// this.$refs.popup.open();
 					}
 			       
 			    }
@@ -95,7 +92,6 @@ export default {
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
 					if(res.statusCode==200){
 						this.accountOpeningProvince=res.data.data.account_opening_province;
 						this.cardNo=res.data.data.card_no;
@@ -103,8 +99,6 @@ export default {
 						this.cardholder=res.data.data.cardholder;
 						this.reservePhone=res.data.data.reserve_phone;
 					}else{
-						// this.popupMessage='错误码：'+res.code+'信息：'+res.msg;
-						// this.$refs.popup.open();
 					}
 			       
 			    }

@@ -2,17 +2,17 @@
 	<view class="seting-box">
 		<view class="">
 			<!-- #ifndef H5 -->
-				<view class="seting-item">
+				<view class="seting-item" @click="goversion()">
 					<image src="../../static/img/gengxin.png" class="seting-item-icon" mode=""></image>
 					<view class="seting-item-title">
 						版本更新
 					</view>
-					<view class="seting-item-value">
+					<view class="seting-item-value" >
 						{{version}}
 					</view>
 				</view>
 			
-				<view class="seting-item"  @click="clear">
+				<view class="seting-item"  @click="clear()">
 					<image src="../../static/img/qingli.png" class="seting-item-icon" mode=""></image>
 					<view class="seting-item-title">
 						清理缓存
@@ -33,6 +33,11 @@
 			</navigator>
 		</view>
 		<button type="" class="login-btn" @click="logOut">退出</button>
+		<uni-popup ref="popupcenter" type="center">
+			<view class="popupCenter-box">
+					{{popupCenterMessage}}
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
@@ -43,20 +48,72 @@
 		data() {
 			return {
 				huancun:'0',
-				version:'1.1.1.0'
+				version:'1.1.1.0',
+				newVersion:'',
+				gouploadApp:false,
+				verList:[],
+				newVerList:[],
+				popupCenterMessage:'',
 			}
 		},
+		onShow() {
+		// #ifndef H5  
+		this.getVersion()	
+		// #endif
+		},
+			
 		methods: {
-			outfn:function(){
-				// #ifdef APP-PLUS  
-				plus.runtime.quit();  
-				// #endif
-			},
+		
 			logOut:function(){
 				uni.removeStorageSync('token');
-				// uni.removeStorageSync('userName');
-				// uni.removeStorageSync('userPhone');
-				this.$Router.push({name:'index'})
+				uni.removeStorageSync('userName');
+				uni.removeStorageSync('userPhone');
+				this.$Router.push({name:'index'});
+			},
+			// 获取版本号，检查更新
+			getVersion:function(){
+				this.version=plus.runtime.version;
+				this.verList=this.version.split('.');
+				uni.request({
+					method:'GET',
+				    url: this.$baseUrl+'/api/v1/pri/my/androidApk', 
+				    data: {
+				    },
+				    header: {
+						'token':uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						if(res.data.code==0){
+							this.newVersion=res.data.data.versionName;
+							 this.newVerList=this.newVersion.split('.');
+							if(this.newVerList[0]>this.verList[0]){
+								this.gouploadApp=true;
+								this.version="更新新版本";
+							}else if(this.newVerList[0]==this.verList[0]&&this.newVerList[1]>this.verList[1]){
+								this.gouploadApp=true;
+								this.version="更新新版本";
+							}else if(this.newVerList[0]==this.verList[0]&&this.newVerList[1]==this.verList[1]&&this.newVerList[2]>this.verList[2]){
+								this.gouploadApp=true;
+								this.version="更新新版本";
+							}
+						}else if(res.data.code==-1){
+							this.popupCenterMessage='获取新版本失败'
+							this.$refs.popupcenter.open()
+						}
+				       
+				    },
+					complete(res) {
+					}
+				});
+			},
+			goversion:function(){
+				if(this.gouploadApp){
+					this.$Router.push({name:'uploadapp'})
+				}else{
+					this.popupCenterMessage='已是最新版本'
+					this.$refs.popupcenter.open()
+				}
 			},
 			clear:function(){	
 				//可以询问用户是否删除
@@ -147,5 +204,11 @@
 		background-color: #d71518;
 		color: #FFFFFF;
 		margin-top: 40upx;
+	}
+	.popupCenter-box{
+		width: 400upx;
+		padding: 40upx ;
+		text-align: center;
+		border-radius: 20upx;
 	}
 </style>

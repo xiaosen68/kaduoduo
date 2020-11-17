@@ -5,26 +5,59 @@
 		</view>
 		<view class="status-item">
 			<view class="status-item-title">
-				提现金额:
+				提现订单号:
 			</view>
 			<view class="status-item-status">
-				{{rollStatus.frozen_amount}} 元
+				{{rollStatus.turnover_order}} 
 			</view>
 		</view>
 		<view class="status-item">
+			<view class="status-item-title">
+				提现金额:
+			</view>
+			<view class="status-item-status">
+				{{rollStatus.turnover_kou_amount}} 元
+			</view>
+		</view>
+		<view class="status-item">
+			<view class="status-item-title">
+				消费金额:
+			</view>
+			<view class="status-item-status">
+				{{rollStatus.turnover_amount}} 元
+			</view>
+		</view>
+		<view class="status-item">
+			<view class="status-item-title">
+				消费费率:
+			</view>
+			<view class="status-item-status">
+				{{rollStatus.rate}} 
+			</view>
+		</view>
+		<view class="status-item">
+			<view class="status-item-title">
+				营业额来源:
+			</view>
+			<view class="status-item-status">
+				{{rollStatus.turnover_reason}} 
+			</view>
+		</view>
+		<!-- <view class="status-item">
 			<view class="status-item-title">
 				提现手续费:
 			</view>
 			<view class="status-item-status">
-				{{rollStatus.fee}}.00元/笔
+				3.00元/笔
 			</view>
-		</view>
+		</view> -->
+		
 		<view class="status-item">
 			<view class="status-item-title">
-				剩余余额
+				消费时间
 			</view>
 			<view class="status-item-status">
-				{{rollStatus.amount}} 元
+				{{rollStatus.turnover_time}}
 			</view>
 		</view>
 		<view class="status-item">
@@ -32,37 +65,24 @@
 				提现时间
 			</view>
 			<view class="status-item-status">
-				{{rollStatus.create_time}}
-			</view>
-		</view><view class="status-item">
-			<view class="status-item-title">
-				提现银行卡
-			</view>
-			<view class="status-item-status">
-				{{rollStatus.cash_out_bank}}
+				{{rollStatus.withdrawn_time}}
 			</view>
 		</view>
 		<view class="status-item">
 			<view class="status-item-title">
-				提现银行卡号
+				更新时间
 			</view>
 			<view class="status-item-status">
-				{{rollStatus.cash_out_bank_no|cardFilters}}
+				{{rollStatus.update_time}}
 			</view>
 		</view>
+		
 		<view class="status-item">
 			<view class="status-item-title">
 				提现状态
 			</view>
 			<view class="status-item-status">
-				{{rollStatus.state|stateFilter}}
-			</view>
-		</view><view class="status-item">
-			<view class="status-item-title">
-				状态更新时间
-			</view>
-			<view class="status-item-status">
-				{{rollStatus.update_time}}
+				{{rollStatus.turnover_state|stateFilter}}
 			</view>
 		</view>
 		
@@ -75,17 +95,17 @@ export default {
   },
 	data (){
 		return{
-			rollId:'',
+			turnoverOrder:'',
 			rollStatus:'',
 		}
 	},
 	onLoad() {
-		this.rollId=this.$Route.query.id;
+		this.turnoverOrder=this.$Route.query.id;
 		uni.request({
 			method:'POST',
-		    url: this.$baseUrl+'/api/v1/pri/my/getWithdrawalAmountById', 
+		    url: this.$baseUrl+'/api/v1/pri/my/getUserTurnoverByOrderNo', 
 		    data: {
-				id:this.rollId
+				orderNo:this.turnoverOrder
 		    },
 		    header: {
 				'token': uni.getStorageSync('token'),
@@ -108,17 +128,17 @@ export default {
 			return val.slice(0,4)+'*********'+val.slice(-4);
 		},
 		stateFilter:function(val){
-			if(val==='REFUSE'){
-				return '拒绝'
-			}else if(val==='PAYMENT_FAILED'){
-				return '打款失败'
-			}else if(val==='SUCCESSFUL_PAY'){
-				return '打款成功'
-			}else if(val==='PAYMENT_IN_PROGRESS'){
-				return '打款中'
-			}else if(val==='ACCEPTED'){
-				return '受理中'
-			}
+		if(val==='NO_WITHDRAWAL'){
+			return '未提现'
+		}else if(val==='TO_WITHDRAW_CASH'){
+			return '已提现'
+		}else if(val==='UNABLE_TO_WITHDRAW_CASH'){
+			return '不可提现'
+		}else if(val==='REQUEST_FAILED'){
+			return '请求失败'
+		}else if(val==='PROCESSING'){
+			return '受理中'
+		}
 		}
 	}
 }

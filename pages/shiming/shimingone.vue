@@ -176,9 +176,13 @@ export default {
 							console.log(res)
 							let ress=JSON.parse((res.data));
 							_this.$set(_this.picuploadName,n,JSON.parse((res.data)).data.url);
-							this.popupMessage=ress.data.url;
-							this.$refs.popup.open()
-							console.log(_this.picuploadName)
+							if(ress.data.url){
+								this.popupMessage='上传图片成功';
+								this.$refs.popup.open()
+							}else{
+								this.popupMessage='上传图片失败，请重新上传';
+								this.$refs.popup.open()
+							}
 						}
 					})
 		},

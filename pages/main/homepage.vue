@@ -2,13 +2,16 @@
 	<view class="home-box">
 		<view class="home-box1">
 			<view  class="home-nav">
-				<uni-icons type="phone" @click="goleft" color="#ffffff" size="24"></uni-icons>
-				<view class=""style="font-size: 24;">
-					卡商城
+				<!-- <uni-icons type="phone" @click="goleft" color="#ffffff" size="24"></uni-icons> -->
+				<image src="../../static/img/saoma.png" class="leicon" @click="scanFn"  mode=""></image>
+				<view class="home-title">
+					有粒糖
 				</view>
-				<view class="">
-					<uni-icons type="scan" class="scan-icon" @click="scanFn" color="#ffffff" size="24"></uni-icons>
-					<uni-icons type="chat" @click="gomessage" color="#ffffff" size="24"></uni-icons>
+				<view class="riicon-box">
+					<image class="riicon" src="../../static/img/xinxi.png" @click="gomessage" mode=""></image>
+					<image class="riicon" src="../../static/img/kefu.png" @click="goleft" mode=""></image>
+					<!-- <uni-icons type="scan" class="scan-icon" @click="scanFn" color="#ffffff" size="24"></uni-icons> -->
+					<!-- <uni-icons type="chat"  color="#ffffff" size="24"></uni-icons> -->
 				</view>
 			</view>
 			<view class="home-main-box">
@@ -48,14 +51,30 @@
 				</view>
 			</view>
 		</uni-popup>
+		<!--下载安装包-->
+		<uni-popup ref="popupDialog" type="center">
+		    <!-- <uni-popup-dialog type="success" mode="base" message="请下载更新" :duration="0" :before-close="true" @close="dialogClose" @confirm="dialogConfirm"></uni-popup-dialog> -->
+			<view class="popupcenter">
+				<view class="upload-box">
+					请下载并更新安装包
+				</view>
+				<router-link class="upload-btns" to="{name:uploadapp}">
+					去下载
+				</router-link>
+			</view>
+		</uni-popup>
+		
+		
 	</view>
 </template>
 
 <script>
 	import uniPopup from '@/components/uni-popup/uni-popup.vue'
+	import uniPopupDialog from '@/components/uni-popup/uni-popup-dialog.vue'
 	export default{
 		components:{
 			uniPopup,
+			uniPopupDialog
 		},
 		data() {
 			return {
@@ -110,7 +129,7 @@
 						name:'酒店票务',
 						icon:'../../static/img/model11.png',
 						url:'',
-						url1:'http://m.ctrip.com/html5/'
+						url1:'https://m.ctrip.com/webapp/hotel/?secondwakeup=true&dpclickjump=true&allianceid=66672&sid=1693366&from=http%3A%2F%2Fm.ctrip.com%2Fhtml5%2F'
 					},{
 						name:'钱包',
 						icon:'../../static/img/model4.png',
@@ -122,7 +141,8 @@
 					},{
 						name:'积分兑换',
 						icon:'../../static/img/model9.png',
-						url:'waiting'
+						url:'',
+						url1:'https://m.ctrip.com/webapp/lipin/money?secondwakeup=true&dpclickjump=true&allianceid=66672&sid=1693366&from=http%3A%2F%2Fm.ctrip.com%2Fhtml5%2F'
 					},{
 						name:'订单',
 						icon:'../../static/img/model8.png',
@@ -130,7 +150,8 @@
 					},{
 						name:'更多',
 						icon:'../../static/img/model12.png',
-						url:'waiting',
+						url:'',
+						url1:'https://m.ctrip.com/webapp/cw/gs/onsale/boomHome.html?sct=h5-ggrk&secondwakeup=true&dpclickjump=true&allianceid=4897&sid=155952&ouid=index&from=https%3A%2F%2Fm.ctrip.com%2Fhtml5%2F'
 						}										
 				],
 				info:[
@@ -154,6 +175,10 @@
 					bottom:10
 				},
 				ifyue:true,
+				version:'',//版本号
+				newVersion:'',//新版本号
+				verList:[],
+				newVerList:[],
 			}
 		},onReady() {
 			// 获取平台推送
@@ -185,8 +210,12 @@
 				}
 			});
 		},
-		onLoad() {
+		onShow(){
+			uni.setStorageSync('role','');
 			this.getUserRole();
+			},
+		onLoad() {
+			
 			// 获取最近一条信息
 			uni.request({
 				method:'GET',
@@ -198,20 +227,20 @@
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
 					if(res.data.code==0){
-						console.log(uni.getStorageSync('token'))
 						this.naticeText=res.data.data.content;
-						console.log(res.data)
 					}else if(res.data.code==-1){
 					}
 			       
 			    },
 				complete(res) {
-					console.log(res)
 				}
 			});
-			
+			// 查询版本号
+			//#ifndef H5
+			// 获取版本号
+			this.getVersion();
+			//#endif			
 			
 		},
 		methods: {
@@ -236,7 +265,6 @@
 							}else{
 								this.ifyue=false
 							}
-							console.log(res.data)
 						}else if(res.data.code==-1){
 						}
 				       
@@ -245,8 +273,52 @@
 					}
 				});
 			},
-			
-			
+			// 获取版本号，检查更新
+			getVersion:function(){
+				this.version=plus.runtime.version;
+				this.verList=this.version.split('.');
+				uni.request({
+					method:'GET',
+				    url: this.$baseUrl+'/api/v1/pri/my/androidApk', 
+				    data: {
+				    },
+				    header: {
+						'token':uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						if(res.data.code==0){
+							this.newVersion=res.data.data.versionName;
+							this.newVerList=this.newVersion.split('.');
+							if(this.newVerList[0]>this.verList[0]){
+								// 打开下载弹框
+								this.$refs.popupDialog.open();
+							}else if(this.newVerList[0]==this.verList[0]&&this.newVerList[1]>this.verList[1]){
+								// 打开下载弹框
+								this.$refs.popupDialog.open();
+							}else if(this.newVerList[0]==this.verList[0]&&this.newVerList[1]==this.verList[1]&&this.newVerList[2]>this.verList[2]){
+								// 打开下载弹框
+								this.$refs.popupDialog.open();
+							}
+						}else if(res.data.code==-1){
+							
+						}
+				       
+				    },
+					complete(res) {
+					}
+				});
+			},
+			// 获取安装包；
+			getandroidApk:function(){
+				uni.downloadFile({
+				    url: this.$baseUrl+'/apkUrl/youlitang.apk', //仅为示例，并非真实的资源
+				    success: (res) => {
+				        if (res.statusCode === 200) {
+				        }
+				    }
+				});
+			},
 			change(e) {
 				this.current = e.detail.current;
 			},
@@ -272,14 +344,20 @@
 					}
 					
 				}else{
-					if(process.env.NODE_ENV === 'development'){
-						// uni.navigateTo({
-						// 	url:item.url1
-						// })
+					
+					//#ifndef H5
+					void plus.runtime.openWeb(item.url1)
+					//#endif	
+					
+					//#ifdef H5
 						window.location.href=item.url1;
-					}else{
-						void plus.runtime.openWeb(item.url1)
-					}
+					//#endif
+					// if(process.env.NODE_ENV === 'development'){
+					
+					// 	window.location.href=item.url1;
+					// }else{
+					// 	void plus.runtime.openWeb(item.url1)
+					// }
 				}
 			},
 			// 扫描二维码
@@ -332,6 +410,32 @@
 	padding-top: var(--status-bar-height);
 	background-color:#d41c26;
 }
+.leicon,.riicon{
+	width: 20px;
+	height: 20px;
+	margin: 0 10upx;
+}
+.riicon-box,.leicon{
+	line-height: 1em;
+}
+.home-title{
+	font-size: 20px;
+}
+.upload-box{
+	/* width: 200upx; */
+	padding: 20upx;
+	text-align: center;
+	font-size: 32upx;
+}
+.upload-btns{
+	display: inline-block;
+	margin: 0 auto;
+	width: 120upx;
+	background-color: #ff5500;
+	color: #fff;
+	padding: 10upx;
+	text-align: center;
+}
 .home-box{
 	width: 100%;
 	font-size: 28upx;
@@ -343,7 +447,7 @@
 	color:#ffffff;
 	background-color:#d41c26;
 	display: flex;
-	line-height: 40upx;
+	line-height: 1em;
 	justify-content: space-between;
 }
 .unilink{

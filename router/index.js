@@ -12,7 +12,7 @@ const router = new Router({
 
 //全局路由前置守卫
 router.beforeEach((to, from, next) => {
-	if(to.name==='index'||to.name==='sign'||to.name==='forgetpassword'){
+	if(to.name==='index'||to.name==='sign'||to.name==='forgetpassword'||to.name==='uploadapp'){
 		next()
 	}else{
 		if(uni.getStorageSync('token')!==''){

@@ -12,14 +12,14 @@
 		</view>
 		<view class="dengji-box2">
 			<view class="dengji-box2-title">
-				当前费率
+				当前佣金比率
 			</view>
 			<view class="dengji-title-list">
 				<view class="dengji-title-one">
 					通道名称
 				</view>
 				<view class="">
-					费率
+					佣金比率
 				</view>
 				<view class="">
 					单笔手续费

@@ -13,7 +13,7 @@
 				</view>
 				<view class="my-team-phone-box">
 					<view class="">
-						{{item.phone}}
+						{{item.phone|telfilter}}
 					</view>
 					<view class="">
 						注册日期:{{item.createTime|timefilter}}
@@ -64,6 +64,9 @@ export default {
 		timefilter:function(val){
 			let b=val.split(' ');
 			return b[0]
+		},
+		telfilter:function(val){
+			return val.substring(0,3)+'****'+val.substring(8)
 		}
 	}
 	

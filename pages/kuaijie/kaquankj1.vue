@@ -12,7 +12,7 @@
 					<text class="kq-title">支付信用卡：</text>
 					<image class="bank-head-img" :src="credit.bank_logo"></image>
 					<text class="con-bank-name">{{credit.bank}}{{credit.card_no|showbankCard}}</text>
-					<view class="loop-btn" @click="open1">
+					<view class="loop-btn" @click="coverXinOpen()">
 						更换
 					</view>
 					
@@ -21,51 +21,53 @@
 					<text class="kq-title">结算储蓄卡：</text>
 					<image class="bank-head-img" src="deposit"></image>
 					<text class="con-bank-name">{{deposit.bank}}{{deposit.card_no|showbankCard}}</text>
-					<view class="loop-btn" @click="open2">
+					<view class="loop-btn" @click="coverCuOpen()">
 						更换
 					</view>
 					
 				</view>
-				<button type="" class="next-btn" @click="nextFn">下一步</button>
+				<button type="" class="next-btn" @click="coverPayTrueOpen()">下一步</button>
 			</view>
 		</view>
 	
-		 <uni-popup ref="popup1" type="bottom">
-		 	<view class="bank-card-list">
-		 	<view class="esc-btn">
-		 			<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="closedia1"></uni-icons>
-		 				选择信用卡
-		 			<text class="add-card"@click="addcredit">添加</text>
-		 		</view>
-		 		<view class="bank-card-item" v-for="item in creditCardList" @click="selectCredit(item)">
-		 			<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
-		 			<view class="bank-card-name">
-		 				<text>{{item.bank}}</text>
-		 				<text>\n</text>
-		 				<text>{{item.card_no|showCard}}</text>
-		 			</view>
-		 		</view>
-		 		</view>
-		 </uni-popup>
-		 <uni-popup ref="popup2" type="bottom">
-		 	<view class="bank-card-list">
-		 	<view class="esc-btn">
-		 			<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="closedia2"></uni-icons>
-		 				选择储蓄卡
-		 			<text class="add-card"@click="adddeposit">添加</text>
-		 		</view>
-		 		<view class="bank-card-item" v-for=" item in depositList" @click="selectDeposit(item)">
-		 			<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
-		 			<view class="bank-card-name">
-						<text>{{item.bank}}</text>
-		 				<text>\n</text>
-		 				<text>{{item.card_no|showCard}}</text>
-		 			</view>
-		 		</view>
-		 		</view>
-		 </uni-popup>
-		 <uni-popup ref="popupcenter2" type="center">
-		 	<view class="popupCenter-box">
+		<!-- 遮罩层 -->
+		<view class="cover" v-if="coverShow" @click="coverClose()">
+		</view>
+		
+<!-- 弹出选择信用卡列表 -->
+		<view class="bank-card-list" v-if="xinkaListShow">
+			<view class="esc-btn">
+				<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="coverXinClose()"></uni-icons>
+					选择信用卡
+				<text class="add-card"@click="addcredit()">添加</text>
+			</view>
+			<view class="bank-card-item" v-for="item in creditCardList" @click="selectCredit(item)">
+				<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
+				<view class="bank-card-name">
+					<text>{{item.bank}}</text>
+					<text>\n</text>
+					<text>{{item.card_no|showCard}}</text>
+				</view>
+			</view>
+		</view>
+		 <!-- 储蓄卡列表弹框 -->
+		<view class="bank-card-list" v-if="cuxvkaListShow">
+			<view class="esc-btn">
+					<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="coverCuClose()"></uni-icons>
+						选择储蓄卡
+					<text class="add-card"@click="adddeposit()">添加</text>
+			</view>
+			<view class="bank-card-item" v-for=" item in depositList" @click="selectDeposit(item)">
+				<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
+				<view class="bank-card-name">
+					<text>{{item.bank}}</text>
+					<text>\n</text>
+					<text>{{item.card_no|showCard}}</text>
+				</view>
+			</view>
+		</view>
+		<!-- 支付确认弹框 -->
+		 	<view class="pay-true-box" v-if="payTrueShow">
 		 		<view class="popup-title">
 		 			请选择支付通道
 		 		</view>
@@ -89,17 +91,17 @@
 						<text>交易时间：</text><text>07:00:00-23:00:00</text>
 					</view>
 					<view class="popup-td-item">
-						<text>交易费率：</text><text>{{passageWay.myRate}}</text>
+						<text>佣金比率：</text><text>{{passageWay.myRate}}</text>
 					</view>
 					<view class="popup-td-item">
-						<text>手续费用：</text>{{allGoodscj*passageWay.myRate}}<text></text>
+						<text>手续费用：</text>{{allGoodscj*passageWay.myRate|ceilfilters}}<text></text>
 					</view>
 					<view class="popup-td-item">
-						<text>实际到账：</text><text>{{allGoodscj*(1-passageWay.myRate)}}</text>
+						<text>实际到账：</text><text>{{allGoodscj*(1-passageWay.myRate)|floorfilters}}</text>
 					</view>
 				</view>
 				<view class="popup-btn-box">
-					<view class="popup-btn-one" @click="changetdFN">
+					<view class="popup-btn-one" @click="coverPaySeOpen()">
 						更换通道
 					</view>
 					<view class="popup-btn-two" @click="payFn">
@@ -107,11 +109,11 @@
 					</view>
 				</view>
 		 	</view>		
-		 </uni-popup>
-		 <uni-popup ref="popup3" type="bottom">
-		 	<view class="bank-card-list">
-		 	<view class="esc-btn">
-		 			<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="closedia2"></uni-icons>
+		
+	<!-- 选择支付通道弹框 -->
+		 	<view class="bank-card-list" v-if="paySelectShow">
+				<view class="esc-btn">
+		 			<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="coverPaySeClose()"></uni-icons>
 		 				选择通道
 		 		</view>
 		 		<view class="pay-item" v-for="item in passageWayList" @click="selectPay(item)" >
@@ -135,26 +137,32 @@
 		 					<text>交易时间：</text><text>07:00:00-23:00:00</text>
 		 				</view>
 		 				<view class="popup-td-item">
-		 					<text>交易费率：</text><text>{{item.myRate}}</text>
+		 					<text>佣金比率：</text><text>{{item.myRate}}</text>
 		 				</view>
 		 				<view class="popup-td-item">
-		 					<text>手续费用：</text>{{allGoodscj*item.myRate}}<text></text>
+		 					<text>手续费用：</text>{{allGoodscj*item.myRate|ceilfilters}}<text></text>
 		 				</view>
 		 				<view class="popup-td-item">
-		 					<text>实际到账：</text><text>{{allGoodscj*(item.myRate)}}</text>
+		 					<text>实际到账：</text><text>{{allGoodscj*(item.myRate)|floorfilters}}</text>
 		 				</view>
 		 			</view>
 		 		</view>
-		 		</view>
-		 </uni-popup>
+		 	</view>
+		 
 		 <uni-popup ref="popup" type="center" class="popupstyle">
-		 	<view class="popupCenter-box">{{popupMessage}}</view>
+		 	<view class="popupCenter-boxs">{{popupMessage}}</view>
 		 </uni-popup>
 	</view>
 </template>
 
 <script>
+	import uniPopup from '@/components/uni-popup/uni-popup.vue'
+	import uniPopupDialog from '@/components/uni-popup/uni-popup-dialog.vue'
 	export default{
+		components: {
+		    uniPopup,
+		    uniPopupDialog
+		},
 		data() {
 			return {
 				buyList:[],
@@ -170,6 +178,12 @@
 				popupMessage:'',
 				orderTypeCode:'',//交易类型
 				tradable:false,
+					isClick:true,
+					xinkaListShow:false,//信用卡弹框
+					cuxvkaListShow:false,//储蓄卡弹框
+					coverShow:false,//遮罩层弹框
+					paySelectShow:false,//支付方式选择弹框
+					payTrueShow:false,//支付确认弹框
 			}
 		},
 		onLoad: function () {
@@ -188,6 +202,50 @@
 			}
 		},
 		methods: {
+			coverClose:function(){
+				this.coverShow=false;
+				this.xinkaListShow=false;
+				this.cuxvkaListShow=false;
+				this.paySelectShow=false;
+				this.payTrueShow=false;
+			},
+			coverXinOpen:function(){
+				this.coverShow=true;
+				this.xinkaListShow=true;
+			},
+			coverCuOpen:function(){
+				this.coverShow=true;
+				this.cuxvkaListShow=true;
+			},
+			coverXinClose:function(){
+				this.coverShow=false;
+				this.xinkaListShow=false;
+			},
+			coverCuClose:function(){
+				this.coverShow=false;
+				this.cuxvkaListShow=false;
+			},
+			coverPayTrueOpen:function(){
+				this.coverShow=true;
+				this.payTrueShow=true;
+			},
+			coverPayTrueClose:function(){
+				this.coverShow=false;
+				this.payTrueShow=false;
+			},
+			coverPaySeOpen:function(){
+				this.coverShow=true;
+				this.paySelectShow=true;
+			},
+			coverPaySeClose:function(){
+				this.coverShow=false;
+				this.paySelectShow=false;
+			},
+			ifClick:function(){
+				setTimeout(function(){
+					this.isClick=true;
+				},10000)
+			},
 			// 查询是否可交易
 			getTradable:function(){
 				uni.showLoading({
@@ -206,7 +264,7 @@
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res)
+						// console.log(res)
 						if(res.data.code==0){
 							if(res.data.data=="Y"){
 								this.tradable=true;
@@ -246,7 +304,7 @@
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
+					// console.log(res)
 					if(res.data.code==0){
 						this.creditCardList=res.data.data.userCreditCardlist;
 						this.credit=this.creditCardList[0];
@@ -255,13 +313,13 @@
 						this.passageWayList=res.data.data.passageWayList;
 						this.passageWay=this.passageWayList[0];
 						this.getTradable();
-						console.log(this.credit)
-						console.log(this.passageWayList)
+						// console.log(this.credit)
+						// console.log(this.passageWayList)
 					}else if(res.data.code==-1){
-						console.log(res.data.code)
+						// console.log(res.data.code)
 						this.popupMessage=res.data.msg;
 						this.$refs.popup.open();
-						console.log(res.data.code)
+						// console.log(res.data.code)
 					}else{
 					}
 			       
@@ -277,7 +335,7 @@
 			chusikaquan:function(){
 				uni.request({
 					method:'POST',
-				    url: this.$baseUrl+'/api/v1/pri/shop//initCardCouponSpace', 
+				    url: this.$baseUrl+'/api/v1/pri/shop/initCardCouponSpace', 
 				    data: {
 						orderType:"CARD_COUPON_SPACE",
 						totalTransactionPrice:this.allGoodscj,
@@ -289,7 +347,7 @@
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res)
+						// console.log(res)
 						if(res.data.code==0){
 							this.creditCardList=res.data.data.userCreditCardlist;
 							this.credit=this.creditCardList[0];
@@ -298,7 +356,7 @@
 							this.passageWayList=res.data.data.passageWayList;
 							this.passageWay=this.passageWayList[0];
 							this.getTradable();
-							console.log(this.passageWayList)
+							// console.log(this.passageWayList)
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
 							this.$refs.popup.open();
@@ -310,22 +368,31 @@
 			},
 			selectPay:function(item){
 				this.passageWay=item;
-				this.closedia3();
+				this.coverPaySeClose();
 			},
 			selectDeposit:function(item){
 				this.deposit=item;
-				this.closedia2();
+				this.coverCuClose();
 			},
 			selectCredit:function(item){
 				this.credit=item;
-				this.closedia1();
-			},
-			changetdFN:function(){
-				this.$refs.popup3.open()
-				
+				this.coverXinClose();
 			},
 			payFn:function(){
-				// 
+				// 关闭支付通道弹框
+				this.coverPayTrueClose()
+				
+				if(this.isClick){
+					this.isClick=false;
+					this.ifClick();
+				}else{
+					this.popupMessage = "请稍等";
+					this.$refs.popup.open();
+					return false
+				}
+				
+				
+				
 				// 卡券空间
 				if(uni.getStorageSync('pageType')==5){
 					this.orderTypeCode='CARD_COUPON_SPACE'
@@ -334,9 +401,11 @@
 						// 快捷收卡
 						this.orderTypeCode='EXPRESS_PAYMENT'
 					}
+					console.log(this.tradable)
 				// 判断是否可以消费
 				if(!this.tradable){
 					this.getTradable();
+					this.isClick=true;
 				}else{
 					uni.request({
 						method:'POST',
@@ -357,41 +426,29 @@
 					    success: (res) => {
 							console.log(res)
 							if(res.data.code==0){
+								this.popupMessage=res.data.data;
+								this.$refs.popup.open();
+								// this.isClick=true;
+								setTimeout(function(){
+									this.$Router.push({
+										path:'/pages/main/homepage'
+									})
+								},3000)
+								
 							}else if(res.data.code==-1){
 								this.popupMessage=res.data.msg;
 								this.$refs.popup.open();
-							}else{
 							}
-					       
-					    }
+					    },
+						complete:function() {
+							this.coverPayTrueClose()
+						}
 					});	
 				}
 				
 				
 			},
-			 open1:function(){
-			         this.$refs.popup1.open()
-			},
-			open2:function(){
-				this.$refs.popup2.open()
-			},
-			 closedia1:function(done){
-				  this.$refs.popup1.close()
-			},
-			closedia2:function(done){
-				  this.$refs.popup2.close()
-			},
-			closedia3:function(done){
-				  this.$refs.popup3.close()
-			},
-			nextFn:function(){
-				this.$refs.popupcenter2.open();
-			},
 			addcredit:function(){
-				  this.$refs.popup1.close()
-				// uni.navigateTo({
-				// 	url:"../banking/addcredit"
-				// })
 				this.$Router.push({name:'addcredit'})
 			},
 			adddeposit:function(){
@@ -400,10 +457,16 @@
 		},
 		filters:{
 			showCard(val){
-				return val.slice(0,4)+'**********'+val.slice(-4)
+				return val.substring(0,4)+'****'+val.substring(val.length-4)
 			},
 			showbankCard(val){
-				return val.slice(-4)
+				return val.substring(val.length-4)
+			},
+			ceilfilters(n){
+				return Math.ceil(n*100)/100
+			},
+			floorfilters(n){
+				return Math.floor(n*100)/100
 			}
 		}
 	};
@@ -518,7 +581,17 @@
 		/* background-color: #d71518; */
 		color: #333333;
 	}
-	#cover{ 
+	.cover{ 
+	    position:absolute;left:0px;top:0px;
+	    background:rgba(0, 0, 0, 0.4);
+	    width:100%;  /*宽度设置为100%，这样才能使隐藏背景层覆盖原页面*/
+	    height:100%;
+	    filter:alpha(opacity=60);  /*设置透明度为60%*/
+	    opacity:0.6;  /*非IE浏览器下设置透明度为60%*/
+	    display:block; 
+	    z-Index:99;  
+	}
+	#cover{
 	    position:absolute;left:0px;top:0px;
 	    background:rgba(0, 0, 0, 0.4);
 	    width:100%;  /*宽度设置为100%，这样才能使隐藏背景层覆盖原页面*/
@@ -535,7 +608,7 @@
 		position: absolute;
 		bottom: 0;
 		padding: 20upx;
-		z-index: 100;
+		z-index: 105;
 	}
 	.esc-btn{
 		text-align: center;
@@ -583,6 +656,19 @@
 		border-radius: 10upx;
 		padding: 20upx;
 	}
+	.pay-true-box{
+		position: absolute;
+		left: 0;
+		right: 0;
+		width: 600upx;
+		margin-left: auto; 
+		  margin-right: auto; 
+		background-color: #FFFFFF;
+		border-radius: 10upx;
+		padding: 20upx;
+		z-index: 100;
+	}
+	
 	.popup-title{
 		text-align: center;
 		font-size: 24upx;
@@ -627,6 +713,18 @@
 	}
 	.popup-btn-box{
 		padding: 10upx 0;
+	}
+	.popupstyle {
+		background-color: #FFFFFF;
+		padding: 20upx 20upx;
+	}
+	
+	.popupCenter-boxs {
+		width: 400upx;
+		padding: 40upx;
+		text-align: center;
+		border-radius: 20upx;
+		
 	}
 /* 	.popupCenter-box {
 		width: 400upx;
