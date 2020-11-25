@@ -69,7 +69,7 @@
 }
 .scanpay-box{
 	width: 660upx;
-	height: 800upx;
+	height: 720upx;
 	margin:0 auto 0 auto;
 	padding: 20upx 0;
 	border-radius: 20upx;

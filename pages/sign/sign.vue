@@ -51,7 +51,6 @@
 				popupMessage:""
 			}
 		},
-	
 		onLoad:function(option) {
 		if(((window.location.href.split('?')[1]).split('&')[0]).split('=')[1]){
 			this.superiorUserPhone=((window.location.href.split('?')[1]).split('&')[0]).split('=')[1]
@@ -60,6 +59,7 @@
 			
 		},
 		methods: {
+		
 			getyanzhengFn:function(){
 				uni.request({
 					method:'POST',

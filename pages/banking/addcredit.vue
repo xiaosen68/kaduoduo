@@ -101,6 +101,11 @@
 		},
 		// 上传图片，获取卡号；
 		getCardBase:function(){
+			uni.showLoading({
+				title:'识别中',
+					mask:true
+			})
+			
 			uni.request({
 				method:'POST',
 			    url: 'http://bankocrb.shumaidata.com/getbankocrb', 
@@ -115,10 +120,15 @@
 					if(res.statusCode==200){
 						this.cardNo=res.data.data.card_number;
 						this.bank=res.data.data.bank_name;
-						// console.log(this.accountBalance)
 					}else{
+						this.popupMessage="识别失败";
+						this.$refs.popup.open();
 					}
-			    }
+					uni.hideLoading()
+			    },
+				complete: () => {
+					uni.hideLoading()
+				}
 			});	
 		},
 		// 填写卡号后，获取发卡行

@@ -3,30 +3,30 @@
 		<view class="home-box1">
 			<view  class="home-nav">
 				<uni-icons type="back" class="home-nav-item home-nav-item1" @click="backFn" color="#ffffff" size="24"></uni-icons>
-				<view >
-					收益
+				<view class="home-title">
+					佣金
 				</view>
 				<view class=" home-nav-item"  @click="lookList">
-					收益明细
+					佣金明细
 				</view>
 			</view>
 			<view class="fenrun-num-box">
 				<view class="yesterday-fenrun">
 					<text class="fenrun-money">{{revenueAmount.theDayBeforeRevenueAmount}}</text>
 					<view class="">
-						昨日收益(元)
+						昨日佣金(元)
 					</view>
 				</view>
 				<view class="today-fenrun">
 					<text class="fenrun-money">{{revenueAmount.sameDayRevenueAmount}}</text>
 					<view class="">
-						今日收益(元)
+						今日佣金(元)
 					</view>
 				</view>
 			</view>
 		</view>
 		<view class="kzfenrun-box">
-			<text>当前可提现收益(元)</text>
+			<text>未提现佣金(元)</text>
 			<view class="kzfr-num">{{revenueAmount.revenue}}</view>
 			<!-- <router-link to="{name:'rolloutmoney'}" class="roll-out-btn">提现</router-link> -->
 			<!-- 	<navigator url="./rollout"  class="roll-out-btn">
@@ -37,9 +37,9 @@
 			</view>
 		</view>
 		<view class="all-fenrun-box">
-			<text class="all-fenrun-num">{{revenueAmount.totalRevenue}}</text>
+			<text class="all-fenrun-num">{{revenueAmount.sumRevenue}}</text>
 			<view class="">
-				共累计收益(元)
+				共累计佣金(元)
 			</view>
 		</view>
 	</view>
@@ -121,9 +121,14 @@ export default {
 	width: 140upx;
 	text-align: center;
 	font-size: 24upx;
+	line-height: 1em;
 }
 .home-nav-item1{
 	text-align: left;
+}
+.home-title{
+	font-size: 20px;
+	line-height: 1em;
 }
 
 .fenrun-num-box{

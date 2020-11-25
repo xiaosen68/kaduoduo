@@ -20,7 +20,7 @@
 		<view class="btn-box">
 			<view type="" class="next-btn" @click="changedeposit">确认修改</view>
 		</view>
-		<selectAddress ref='selectAddress' @selectAddress="successSelectAddress"></selectAddress>
+		<selectAddress ref='selectAddress' @selectAddress="successSelectAddress" :jiji='3'></selectAddress>
 	</view>
 </template>
 
@@ -72,7 +72,7 @@ export default {
 		        this.$refs.selectAddress.show()
 		    },
 		    successSelectAddress(address){ //选择成功回调
-					this.bankaddress=address
+					this.accountOpeningProvince=address
 		        },  
 				// 修改储蓄卡
 		changedeposit(){

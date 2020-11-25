@@ -59,7 +59,7 @@
 				code:'',//二维码
 				bj:'../../static/img/share1.jpg',//海报背景
 				codeVal:'',//生成二维码内容
-				size:200,//二维码大小
+				size:150,//二维码大小
 				unit:'upx',//二维码大小单位
 				show:true,//
 				loadMake:true,//加载成功后自动生成二维码
@@ -74,7 +74,8 @@
 				canvashow:false,//设置canvas的z-index，
 				popupCenterMessage:'',//弹框信息
 				bjListWidth:'',
-				imgList:[]
+				imgList:[],
+				sharePic:'',
 			}
 		},
 		onLoad(){
@@ -162,7 +163,8 @@
 							canvasId:'firstCanvas',
 							fileType:'jpg',
 							success:function(res){
-								console.log(res.tempFilePath)
+								console.log(res.tempFilePath);
+								this.sharePic=res.tempFilePath;
 								_this.canvashow=true;
 								// 判断h5时长按保存
 								//#ifdef H5
@@ -195,7 +197,21 @@
 			});
 			},
 			open:function (){
-				this.$refs.popup.open()
+				// 打开分享页面
+				// this.$refs.popup.open()
+				
+				//#ifndef H5
+					 plus.share.sendWithSystem({
+						 type:'image',
+						 content:'我在使用有粒糖，您也来注册吧',
+						 href:this.codeVal,
+						 pictures:this.sharePic,
+						 }, function(){
+					        console.log('分享成功');
+					    }, function(e){
+					        console.log('分享失败：'+JSON.stringify(e));
+					    });
+				//#endif
 			},
 			opencenter:function (){
 				this.$refs.popupcenter.open()
@@ -356,7 +372,7 @@
 	.bj-box{
 		/* width: 100%;*/
 		padding: 20upx 40upx;
-		height: 200upx;
+		/* height: 200upx; */
 		overflow-x: auto;
 	}
 	.bj-list{

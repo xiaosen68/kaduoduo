@@ -20,7 +20,7 @@
 					<router-link :to="{name:'goodsstatus',params: {id: item.id}}" class="store-item" v-for="(item,index) in goodsList"  v-if="!iflast(index)">
 						<image class="good-pic" :src="item.productUrl" mode="aspectFit"></image>
 						<view class="goods-name">
-							{{item.productName}}-{{item.merchName}}
+							{{item.productName}}
 						</view>
 						<view class="goods-prices">
 							<view class="goods-cj-pri">
@@ -38,7 +38,7 @@
 					<router-link :to="{name:'goodsstatus',params: {id: item.id}}" class="store-item" v-for="(item,index) in goodsList"  v-if="iflast(index)">
 						<image class="good-pic" :src="item.productUrl" mode="aspectFit"></image>
 						<view class="goods-name">
-							{{item.productName}}-{{item.merchName}}
+							{{item.productName}}
 						</view>
 						<view class="goods-prices">
 							<view class="goods-cj-pri">

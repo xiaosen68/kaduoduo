@@ -6,7 +6,12 @@ import Router, {RouterMount} from '../js_sdk/hhyang-uni-simple-router/index.js'
 Vue.use(Router)
 //初始化
 const router = new Router({
-	encodeURI:true, 
+	//#ifndef H5
+	encodeURI:true,
+	//#endif
+	//#ifdef H5
+	encodeURI:false,
+	//#endif
     routes: [...modules]//路由表
 });
 

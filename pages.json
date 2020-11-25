@@ -243,7 +243,7 @@
 	},{
 		"path": "pages/banking/fenrunlist",
 		"style": {
-			"navigationBarTitleText": "分润明细"
+			"navigationBarTitleText": "佣金明细"
 		}
 	},{
 		"path": "pages/banking/shoukuan",
@@ -254,7 +254,7 @@
 	},{
 		"path": "pages/banking/fenrunstatus",
 		"style": {
-			"navigationBarTitleText": "分润详情"
+			"navigationBarTitleText": "佣金详情"
 		}
 	},
 	{

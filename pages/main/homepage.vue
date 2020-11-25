@@ -85,7 +85,7 @@
 				main :[
 				
 					{
-						name:'会员PLus',
+						name:'收款',
 						icon:'../../static/img/main1.png',
 						url:'cardstore',
 						pageType:'1',
@@ -103,9 +103,9 @@
 					// 	pageType:'2'
 					// },
 					{
-						name:'快捷收卡',
+						name:'购物',
 						icon:'../../static/img/main3.png',
-						url:'cardstore',
+						url:'shop',
 						pageType:'3'
 					},
 					// {
@@ -117,7 +117,7 @@
 				],
 				model:[
 					{
-						name:'分润',
+						name:'佣金',
 						icon:'../../static/img/model1.png',
 						url:'fenrun'
 					},{
@@ -277,6 +277,7 @@
 			getVersion:function(){
 				this.version=plus.runtime.version;
 				this.verList=this.version.split('.');
+				this.verList=this.verList.map(Number);
 				uni.request({
 					method:'GET',
 				    url: this.$baseUrl+'/api/v1/pri/my/androidApk', 
@@ -290,6 +291,7 @@
 						if(res.data.code==0){
 							this.newVersion=res.data.data.versionName;
 							this.newVerList=this.newVersion.split('.');
+							 this.newVerList=this.newVerList.map(Number);
 							if(this.newVerList[0]>this.verList[0]){
 								// 打开下载弹框
 								this.$refs.popupDialog.open();
@@ -338,7 +340,11 @@
 			goweb(item){
 				if(item.url){
 					if(item.pageType){
-						this.$Router.push({name:item.url, params:{pageType:item.pageType}})
+						if(item.pageType=='3'){
+							this.$Router.pushTab({name:item.url})
+						}else{
+							this.$Router.push({name:item.url, params:{pageType:item.pageType}})
+						}
 					}else{
 						this.$Router.push({name:item.url})
 					}
@@ -420,6 +426,7 @@
 }
 .home-title{
 	font-size: 20px;
+	line-height: 1em;
 }
 .upload-box{
 	/* width: 200upx; */

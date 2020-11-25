@@ -15,7 +15,7 @@
 				<router-link to="{name:'fenrun'}" class="my-fr-box">
 					<image class="my-info2-item-pic" src="../../static/img/bank/fenrun.png" mode=""></image>
 					<view class="">
-					分润
+					佣金
 					</view>
 				</router-link>
 				<router-link to="{name:'yue'}" class="my-ye-box">
@@ -89,7 +89,7 @@
 			<view class="my-app-item">
 				<router-link to="{name:'feilv'}">
 					<image src="../../static/img/bank/feilv.png" class="my-app-item-pic" mode=""></image>
-					<text>我的佣金</text>
+					<text>会员权益</text>
 					<uni-icons type="arrowright" class="my-app-item-arrow"></uni-icons>
 				</router-link>
 			</view>
@@ -170,7 +170,8 @@
 						uni.setStorageSync('userName', res.data.data.userName);
 						uni.setStorageSync('userPhone', res.data.data.phone);
 					}else if(res.data.code==-1){
-						this.popupMessage=res.data.msg;
+						this.popupCenterMessage=res.data.msg;
+						this.$refs.popupcenter2.open();
 					}
 			       
 			    },
@@ -341,6 +342,7 @@
 	position: relative;
 	/* top: 460upx; */
 	margin-bottom: 40upx;
+	padding-top: 20upx;
 	z-index: 1;
 }
 .my-app-item{

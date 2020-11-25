@@ -1,6 +1,6 @@
 <template>
 	<view class="billdetial-box">
-		<view class="goods-list"  v-if="datas.orderList">
+		<view class="goods-list"  v-if="datas.orderType!=='CUSTOM_ORDER'">
 			<view class="goods-item" v-for="item in datas.orderList">
 				<image class="goods-pic" :src="item.productUrl"  mode=""></image>
 				<view class="goods-status">
@@ -8,7 +8,7 @@
 						{{item.productName}}
 					</view>
 					<view class="">
-						成交价:23.0
+						成交价:{{item.transactionPrice*item.discount}}
 					</view>
 				</view>
 				<view class="goods-num">

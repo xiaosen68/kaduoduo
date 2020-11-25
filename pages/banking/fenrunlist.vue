@@ -93,7 +93,7 @@ export default {
 	margin-top: 14upx;
 }
 .date1{
-	font-size: 46upx;
+	font-size: 40upx;
 	font-weight: 600;
 }
 .date-box{
@@ -103,6 +103,7 @@ export default {
 .fen-state{
 	display: inline-block;
 	width: 440upx;
+	vertical-align: top;
 }
 .fen1{
 	font-size: 46upx;

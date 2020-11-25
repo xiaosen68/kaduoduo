@@ -74,6 +74,7 @@
 			getVersion:function(){
 				this.version=plus.runtime.version;
 				this.verList=this.version.split('.');
+				this.verList=this.verList.map(Number);
 				uni.request({
 					method:'GET',
 				    url: this.$baseUrl+'/api/v1/pri/my/androidApk', 
@@ -87,9 +88,11 @@
 						if(res.data.code==0){
 							this.newVersion=res.data.data.versionName;
 							 this.newVerList=this.newVersion.split('.');
+							 this.newVerList=this.newVerList.map(Number);
 							if(this.newVerList[0]>this.verList[0]){
 								this.gouploadApp=true;
 								this.version="更新新版本";
+								
 							}else if(this.newVerList[0]==this.verList[0]&&this.newVerList[1]>this.verList[1]){
 								this.gouploadApp=true;
 								this.version="更新新版本";

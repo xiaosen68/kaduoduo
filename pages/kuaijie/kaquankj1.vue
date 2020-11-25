@@ -19,7 +19,7 @@
 				</view>
 				<view class="kq-select kq-select1">
 					<text class="kq-title">结算储蓄卡：</text>
-					<image class="bank-head-img" src="deposit"></image>
+					<image class="bank-head-img" :src="deposit.bank_logo"></image>
 					<text class="con-bank-name">{{deposit.bank}}{{deposit.card_no|showbankCard}}</text>
 					<view class="loop-btn" @click="coverCuOpen()">
 						更换
@@ -42,7 +42,7 @@
 				<text class="add-card"@click="addcredit()">添加</text>
 			</view>
 			<view class="bank-card-item" v-for="item in creditCardList" @click="selectCredit(item)">
-				<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
+				<image class="bank-item-head" :src="item.bank_logo" mode=""></image>
 				<view class="bank-card-name">
 					<text>{{item.bank}}</text>
 					<text>\n</text>
@@ -58,7 +58,7 @@
 					<text class="add-card"@click="adddeposit()">添加</text>
 			</view>
 			<view class="bank-card-item" v-for=" item in depositList" @click="selectDeposit(item)">
-				<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
+				<image class="bank-item-head" :src="item.bank_logo" mode=""></image>
 				<view class="bank-card-name">
 					<text>{{item.bank}}</text>
 					<text>\n</text>
@@ -270,18 +270,33 @@
 								this.tradable=true;
 							}else if(res.data.data=="N"){
 								this.tradable=false;
-								this.popupMessage='该信用卡不在交易日期内，请重新选择卡片';
-								this.$refs.popup.open();
+								this.popupMessage='此卡非交易日';
+								uni.showToast({
+								    title: this.popupMessage,
+									mask:true,
+									icon:'none',
+								    duration: 2000
+								});
 							}
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
-							this.$refs.popup.open();
+							uni.showToast({
+							    title: this.popupMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 							this.tradable=false;
 						}
 				    },
 					fail :()=> {
 						this.popupMessage = '请稍后重试';
-						this.$refs.popup.open();
+						uni.showToast({
+						    title: this.popupMessage,
+							mask:true,
+							icon:'none',
+						    duration: 2000
+						});
 					},
 					complete: () => {
 						uni.hideLoading()
@@ -292,7 +307,7 @@
 			chusikuaijie:function(){
 			uni.request({
 				method:'POST',
-			    url: this.$baseUrl+'/api/v1/pri/shop//initExpressPayment', 
+			    url: this.$baseUrl+'/api/v1/pri/shop/initExpressPayment', 
 			    data: {
 					orderType:"EXPRESS_PAYMENT",
 					totalTransactionPrice:this.allGoodscj,
@@ -316,9 +331,15 @@
 						// console.log(this.credit)
 						// console.log(this.passageWayList)
 					}else if(res.data.code==-1){
+						
 						// console.log(res.data.code)
 						this.popupMessage=res.data.msg;
-						this.$refs.popup.open();
+						uni.showToast({
+						    title: this.popupMessage,
+							mask:true,
+							icon:'none',
+						    duration: 2000
+						});
 						// console.log(res.data.code)
 					}else{
 					}
@@ -326,7 +347,12 @@
 			    },
 				fail :()=> {
 					this.popupMessage = '初始化订单失败，请稍后重试';
-					this.$refs.popup.open();
+					uni.showToast({
+					    title: this.popupMessage,
+						mask:true,
+						icon:'none',
+					    duration: 2000
+					});
 				}
 			});	
 				
@@ -359,8 +385,12 @@
 							// console.log(this.passageWayList)
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
-							this.$refs.popup.open();
-						}else{
+							uni.showToast({
+							    title: this.popupMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 						}
 				       
 				    }

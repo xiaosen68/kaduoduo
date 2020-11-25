@@ -8,7 +8,7 @@
 			<view class="cosume2-money-box">
 				<view class="cosume2-day">
 					<view >
-						还款日倒计时
+						距还款日
 					</view>
 					<text class="cos-num">{{huan}}</text>(天)
 					<view class="xfont">
@@ -32,7 +32,7 @@
 					<text>到账储蓄卡</text>
 				</view>
 				<view class="select-bank-box" @click="open1()">
-					<image class="back-head-box" src="../../static/img/bank/gongshang.png" mode=""></image>
+					<image class="back-head-box" :src="deposit.bankLogo" mode=""></image>
 					<text>{{deposit.bank}}</text>
 					<uni-icons type="forward"></uni-icons>
 				</view>
@@ -59,7 +59,7 @@
 					<text class="add-card" @click="adddeposit">添加</text>
 				</view>
 				<view class="bank-card-item" v-for="item in depositlist" @click="selectdeposit(item)">
-					<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
+					<image class="bank-item-head" :src="item.bankLogo" mode=""></image>
 					<view class="bank-card-name">
 						<text>{{item.bank}}</text>
 						<text>\n</text>
@@ -300,6 +300,7 @@
 	width: 190upx;
 	text-align: center;
 	padding: 0 80upx;
+	vertical-align: top;
 }
 .cosume2-money{
 	display: inline-block;
@@ -307,6 +308,7 @@
 	text-align: center;
 	padding: 0 76upx;
 	border-left: solid 2upx #e4e1e1;
+	vertical-align: top;
 }
 .cos-num{
 	font-size: 36upx;

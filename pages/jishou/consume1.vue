@@ -78,43 +78,53 @@
 			console.log(this.buyList)
 			this.allGoodsjs=this.$Route.query.allGoodsjs
 			this.allGoodscj=this.$Route.query.allGoodscj;
+			
 			// 初始化订单；
-			uni.request({
-				method:'POST',
-			    url: this.$baseUrl+'/api/v1/pri/shop/initMemberPlus', 
-			    data: {
-					orderType:"MEMBER_PLUS",
-					totalTransactionPrice:this.allGoodscj,
-					totalMailingPrice:this.allGoodsjs,
-					productList:this.buyList,
-			    },
-			    header: {
-					'token':uni.getStorageSync('token'),
-					'Content-Type':'application/json' //自定义请求头信息
-			    },
-			    success: (res) => {
-					// console.log(res)
-					if(res.data.code==0){
-						this.creditCardList=res.data.data.userCreditCardlist;
-						this.credit=this.creditCardList[0];
-						this.passageWay=res.data.data.passageWay;
-						this.getTradable();
-						// console.log(this.credit)
-					}else if(res.data.code==-1){
-						this.popupMessage=res.data.msg;
-						this.$refs.popup.open();
-					}else{
-					}
-			       
-			    },
-				fail :()=> {
-					this.popupMessage = '请稍后重试';
-					this.$refs.popup.open();
-				}
-			});	
+			this.inieMeFn();
+			
 			
 		},
 		methods: {
+			// 初始化订单
+			inieMeFn:function(){
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+'/api/v1/pri/shop/initMemberPlus', 
+				    data: {
+						orderType:"MEMBER_PLUS",
+						totalTransactionPrice:this.allGoodscj,
+						totalMailingPrice:this.allGoodsjs,
+						productList:this.buyList,
+				    },
+				    header: {
+						'token':uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						console.log(res)
+						if(res.data.code==0){
+							this.creditCardList=res.data.data.userCreditCardlist;
+							this.credit=this.creditCardList[0];
+							this.passageWay=res.data.data.passageWay;
+							this.getTradable();
+							// console.log(this.credit)
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+							uni.showToast({
+							    title: this.popupMessage,
+								icon:'none',
+								mask:true,
+							    duration: 2000
+							});
+						}
+				       
+				    },
+					fail :()=> {
+						this.popupMessage = '请稍后重试';
+						this.$refs.popup.open();
+					}
+				});
+			},
 			coverOpen:function(){
 				this.coverShow=true;
 				this.bankListShow=true;
@@ -122,12 +132,6 @@
 			coverClose:function(){
 				this.coverShow=false;
 				this.bankListShow=false;
-			},
-			 open1:function(){
-			         this.$refs.popup1.open()
-			},
-			 closedia1:function(done){
-				  this.$refs.popup1.close()
 			},
 			nextFn:function(){	
 				if(!this.tradable){
@@ -176,18 +180,28 @@
 								this.getHuanData()
 							}else if(res.data.data=="N"){
 								this.tradable=false;
-								this.popupMessage='该信用卡不在交易日期内，请重新选择卡片';
-								this.$refs.popup.open();
+								this.popupMessage='此卡非交易日';
+								uni.showToast({
+								    title: this.popupMessage,
+									mask:true,
+									icon:'none',
+								    duration: 2000
+								});
 							}
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
-							this.$refs.popup.open();
+							uni.showToast({
+							    title: this.popupMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 							this.tradable=false;
 						}
 				    },
 					fail :()=> {
 						this.popupMessage = '请稍后重试';
-						
+						this.$refs.popup.open();
 					},
 					complete: () => {
 						// uni.hideLoading()
@@ -227,10 +241,14 @@
 		},
 		filters:{
 			showCard(val){
-				return val.substring(0,4)+'****'+val.substring(val.length-4)
+				if(val){
+					return val.substring(0,4)+'****'+val.substring(val.length-4)
+				}
 			},
 			showbankCard(val){
+				if(val){
 					return val.substring(val.length-4)
+				}
 			}
 		}
 	};

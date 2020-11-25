@@ -124,6 +124,7 @@ export default {
 				    success: (res) => {
 						
 						if(res.statusCode==200){
+							// 
 							this.accountOpeningProvince=res.data.data.province+res.data.data.city
 							this.bank=res.data.data.bank;
 						}

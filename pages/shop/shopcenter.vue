@@ -93,7 +93,7 @@ export default {
 	},
 	data (){
 		return{
-		score:0,
+		score:'',
 		yishouif:false,
 		}
 	},

@@ -188,14 +188,18 @@ import uniPopup from '@/components/uni-popup/uni-popup.vue'
 						this.getTradable();
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
-						this.$refs.popup.open();
+						uni.showToast({
+						    title: this.popupMessage,
+							mask:true,
+							icon:'none',
+						    duration: 2000
+						});
 					}
 			       
 			    }
 			});	
 			
 			
-			// console.log(this.product)
 		},
 		methods: {
 			coverOpen:function(){
@@ -245,22 +249,35 @@ import uniPopup from '@/components/uni-popup/uni-popup.vue'
 						if(res.data.code==0){
 							if(res.data.data=="Y"){
 								this.tradable=true;
-								this.popupMessage='该信用卡在交易日期内，请继续交易';
-								this.$refs.popup.open();
 							}else if(res.data.data=="N"){
 								this.tradable=false;
-								this.popupMessage='该信用卡不在交易日期内，请重新选择卡片';
-								this.$refs.popup.open();
+								this.popupMessage='该信用卡不在交易日期内';
+								uni.showToast({
+								    title: this.popupMessage,
+									mask:true,
+									icon:'none',
+								    duration: 2000
+								});
 							}
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
-							this.$refs.popup.open();
+							uni.showToast({
+							    title: this.popupMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 							this.tradable=false;
 						}
 				    },
 					fail :()=> {
 						this.popupMessage = '请稍后重试';
-						this.$refs.popup.open();
+						uni.showToast({
+						    title: this.popupMessage,
+							mask:true,
+							icon:'none',
+						    duration: 2000
+						});
 					},
 					complete: () => {
 						uni.hideLoading()
@@ -337,7 +354,6 @@ import uniPopup from '@/components/uni-popup/uni-popup.vue'
 						
 					});	
 					}
-					// this.$Router.push({name:'selectpay2'})
 			},
 		
 			

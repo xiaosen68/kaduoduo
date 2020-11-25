@@ -1,6 +1,6 @@
 <template>
 	<view class="rollout-box">
-		<view class="deposit-list" @click="open1">
+		<view class="deposit-list" @click="opencuxv">
 			<image class="deposit-icon" :src="defaultCard.bankLogo" mode=""></image>
 			<view class="deposit-sttus">
 				<view class="deposit-name">
@@ -10,7 +10,9 @@
 					尾号{{defaultCard.cardNo|bankCardFilter}}
 				</view>
 			</view>
-			<uni-icons class="forward-icon" type="forward" size="30"></uni-icons>
+			<view class="loop-btn" @click="opencuxv">
+				更换
+			</view>
 		</view>
 		<view class="rollout-num-box">
 			<text>提现金额</text>
@@ -31,23 +33,29 @@
 				{{popupCenterMessage}}
 			</view>		
 		</uni-popup>
-		<uni-popup ref="popup1" type="bottom">
-			<view class="bank-card-list">
+		<!-- 遮罩层 -->
+		<view class="cover" v-if="coverShow" @click="coverClose()">
+		</view>
+		
+	
+		<view class="bank-card-list" v-if="cuxvkaListShow">
 			<view class="esc-btn">
-					<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="closedia1"></uni-icons>
+					<uni-icons type="closeempty" class="close-btn" style="font-size: 50upx;" @click="coverClose"></uni-icons>
 						选择储蓄卡
 					<text class="add-card" @click="adddeposit">添加</text>
+			</view>
+			<view class="bank-card-item" v-for="item in cardList" @click="changeCard(item)">
+				<image class="bank-item-head" :src="item.bankLogo" mode=""></image>
+				<view class="bank-card-name">
+					<text>{{item.bank}}</text>
+					<text>\n</text>
+					<text>{{item.cardNo|cardFilter}}</text>
 				</view>
-				<view class="bank-card-item" v-for="item in cardList" @click="changeCard(item)">
-					<image class="bank-item-head" :src="item.bankLogo" mode=""></image>
-					<view class="bank-card-name">
-						<text>{{item.bank}}</text>
-						<text>\n</text>
-						<text>{{item.cardNo|cardFilter}}</text>
-					</view>
-				</view>
-				</view>
-		</uni-popup>
+			</view>
+		</view>
+		
+		
+		
 	</view>
 </template>
 
@@ -60,7 +68,9 @@ export default {
 			zcmoney:'',//转出金额
 			popupCenterMessage:'',//弹框信息
 			defaultCard:'',
-			cardList:[]
+			cardList:[],
+			cuxvkaListShow:false,//储蓄卡弹框
+			coverShow:false,//遮罩层弹框
 		}
 	},
 	onLoad() {
@@ -98,7 +108,14 @@ export default {
 		});	
 	},
 	methods:{
-	
+	coverClose:function(){
+		this.coverShow=false;
+		this.cuxvkaListShow=false;
+	},
+	opencuxv:function(){
+		this.cuxvkaListShow=true;
+		this.coverShow=true;
+	},
 		rolloutFn:function(){
 			if(this.zcmoney==''){
 				this.popupCenterMessage='请正确填写金额'
@@ -140,20 +157,12 @@ export default {
 		},
 		changeCard:function(item){
 			this.defaultCard =item;
-			this.$refs.popup1.close();
+			this.coverClose();
 		},
 		adddeposit:function(){
-			this.$refs.popup1.close();
-			// uni.navigateTo({
-			// 	url:"../banking/adddeposit"
-			// })
+			this.coverClose();
 			this.$Router.push({name:'adddeposit'})
 		}, 
-		open1:function(){
-			         this.$refs.popup1.open()
-			}, closedia1:function(done){
-				  this.$refs.popup1.close()
-			},
 	},
 	filters:{
 		bankCardFilter:function(str){
@@ -182,6 +191,17 @@ export default {
 		color: #000000;
 		padding-bottom: 20upx;
 		border-bottom: 2upx solid #e5e5e5;
+	}
+	.loop-btn{
+		display: inline-block;
+		float: right;
+		width: 120upx;
+		text-align: left;
+		font-size: 30upx;
+		color: #3cb4f1;
+		line-height: 100upx;
+		vertical-align: bottom;
+		text-align: center;
 	}
 	.close-btn{
 		position: absolute;

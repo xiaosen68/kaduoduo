@@ -1,17 +1,17 @@
 <template>
-	<view class="">
+	<view class="home-box1">
 		<view  class="home-nav">
-			<uni-icons type="back" class="home-nav-item home-nav-item1" @click="backFn" color="#ffffff" size="14"></uni-icons>
-			<view >
+			<uni-icons type="back" class="home-nav-item home-nav-item1" @click="backFn" color="#ffffff" size="22"></uni-icons>
+			<view class="home-title">
 				余额
 			</view>
-			<view class=" home-nav-item"  @click="looktixianList">
+			<view class="home-nav-item"  @click="looktixianList">
 				提现明细
 			</view>
 		</view>
 		<view class="yue-box">
 			<view class="kzfenrun-box">
-				<text>当前可提现收益(元)</text>
+				<text>当前可提现佣金(元)</text>
 				<view class="kzfr-num">{{revenueAmount}}</view>
 					<view @click="gorollout" class="roll-out-btn">
 					我要结算
@@ -44,8 +44,9 @@ export default {
 		return{
 			cardtype:true, 
 			accountBalance:{},
-			revenueAmount:'',//可提现金额
+			revenueAmount:'',//可提现分润
 			ifyue:false,
+			withdrawableAmount:'',//可提现金额
 		}
 	},
 	onLoad() {
@@ -63,6 +64,7 @@ export default {
 					console.log(res)
 					if(res.data.code==0){
 						this.accountBalance=res.data.data;
+						this.withdrawableAmount=res.data.data.withdrawableAmount;
 						console.log(this.accountBalance)
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
@@ -86,8 +88,7 @@ export default {
 			    success: (res) => {
 					console.log(res)
 					if(res.data.code==0){
-						this.revenueAmount=res.data.revenueAmount;
-						console.log(this.revenueAmount)
+						this.revenueAmount=res.data.data.revenueAmount;
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
 						// this.$refs.popup.open();
@@ -107,9 +108,6 @@ export default {
 	},
 	methods:{
 		backFn(){
-			// uni.navigateBack({
-			// 	delta:1
-			// })
 			this.$Router.back(1)
 		},
 		gorollout(){
@@ -124,7 +122,10 @@ export default {
 </script>
 
 <style>
-	
+	.home-box1{
+		padding-top: var(--status-bar-height);
+		/* background-color:#d41c26; */
+	}
 	.home-nav{
 			border: none;
 			/* padding-top: var(--status-bar-height); */
@@ -139,9 +140,14 @@ export default {
 		width: 140upx;
 		text-align: center;
 		font-size: 24upx;
+		line-height: 1em;
 	}
 	.home-nav-item1{
 		text-align: left;
+	}
+	.home-title{
+		font-size: 20px;
+		line-height: 1em;
 	}
 .kzfenrun-box{
 	background-color: #d91829;
