@@ -153,7 +153,12 @@ export default {
 						console.log(res)
 						if(res.data.code==0){
 						this.popupMessage=res.data.data;
-						this.$refs.popup.open();
+						uni.showToast({
+						    title:this.popupMessage,
+							mask:true,
+							icon:'none',
+						    duration: 2000
+						});
 						this.$Router.push({name:'selectlocation'})
 						}else{
 							console.log(res)
@@ -181,7 +186,12 @@ export default {
 						console.log(res)
 						if(res.data.code==0){
 						this.popupMessage=res.data.data;
-						this.$refs.popup.open();
+						uni.showToast({
+						    title:this.popupMessage,
+							mask:true,
+							icon:'none',
+						    duration: 2000
+						});
 						
 						this.$Router.push({name:'selectlocation'})
 						}else{

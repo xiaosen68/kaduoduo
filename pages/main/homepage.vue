@@ -117,11 +117,11 @@
 				],
 				model:[
 					{
-						name:'佣金',
+						name:'收益',
 						icon:'../../static/img/model1.png',
 						url:'fenrun'
 					},{
-						name:'卡券空间',
+						name:'汽车租赁',
 						icon:'../../static/img/model7.png',
 						url:'cardstore',
 						pageType:'5'
@@ -379,12 +379,22 @@
 				uni.scanCode({
 					scanType:['qrCode'],
 					success:function(res){
-						_this.$Router.push({
-							path:'/pages/main/scanpayment',
-							query:{
-								payname:res.result
-							}
-						})
+						if(res.result){
+							_this.$Router.push({
+								path:'/pages/main/scanpayment',
+								query:{
+									payname:res.result
+								}
+							})
+						}else{
+							uni.showToast({
+							    title: '请重新扫描有效二维码',
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
+						}
+						
 						
 					},fail:function(){
 						_this.$Router.push({

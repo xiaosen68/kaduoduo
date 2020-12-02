@@ -19,7 +19,7 @@
 				<view class="scanpay-tel">
 					{{tel}}
 				</view>
-			
+				
 			</view>
 		<!-- #endif -->
 	
@@ -85,7 +85,6 @@
 				creditCardList:[],
 				credit:'',
 				popupMessage:'',
-				// ifh5:true,
 				tradable:false,
 				isClick:true,
 				isMerch:false,
@@ -94,16 +93,20 @@
 		onLoad(option) {
 			this.scanVal=this.$Route.query.payname;
 			if(this.scanVal){
-				// this.ifh5=false;
 				this.tel=(this.scanVal.split('?')[1]).split('&')[0].split('=')[1];
-			this.name=(this.scanVal.split('?')[1]).split('&')[1].split('=')[1];
+				this.name=(this.scanVal.split('?')[1]).split('&')[1].split('=')[1];
+				if(!this.tel){
+					uni.showToast({
+					    title: '请重新扫描二维码',
+						mask:true,
+						icon:'none',
+					    duration: 2000
+					});
+				}
 			
 			}else{
-				// this.ifh5=true;
 				this.tel='';
 				this.name='';
-				// this.popupMessage="请扫描有效二维码";
-				// this.$refs.popup.open();
 			}
 			this.selectPhoneMerch();
 			this.getcredit();
@@ -137,18 +140,31 @@
 								this.tradable=true;
 							}else if(res.data.data=="N"){
 								this.tradable=false;
-								this.popupMessage='该信用卡不在交易日期内，请重新选择卡片';
-								this.$refs.popup.open();
+								uni.showToast({
+								    title: '卡片不在交易日内',
+									mask:true,
+									icon:'none',
+								    duration: 2000
+								});
 							}
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
-							this.$refs.popup.open();
+							uni.showToast({
+							    title: this.popupMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 							this.tradable=false;
 						}
 				    },
 					fail :()=> {
-						this.popupMessage = '请稍后重试';
-						this.$refs.popup.open();
+						uni.showToast({
+						    title:'请稍后重试',
+							mask:true,
+							icon:'none',
+						    duration: 2000
+						});
 					},
 					complete: () => {
 						uni.hideLoading()
@@ -175,12 +191,22 @@
 							}else{
 								this.isMerch=false;
 								this.popupMessage="未查询到商户信息，请重新扫码或输入";
-								this.$refs.popup.open();
+								uni.showToast({
+								    title:this.popupMessage,
+									mask:true,
+									icon:'none',
+								    duration: 2000
+								});
 							}
 						}else if(res.data.code==-1){
 							this.isMerch=false;
 							this.popupMessage=res.data.msg;
-							this.$refs.popup.open();
+							uni.showToast({
+							    title:this.popupMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 							
 						}
 				    }
@@ -204,15 +230,25 @@
 							// this.credit=this.creditCardList[0];
 							if(!this.creditCardList[0]){
 								this.popupMessage="未绑定信用卡"
-								this.$refs.popup.open();
-								this.$Router.push({ name: 'myteam',})
+								uni.showToast({
+								    title:this.popupMessage,
+									mask:true,
+									icon:'none',
+								    duration: 2000
+								});
+								this.$Router.push({ name: 'addcredit',})
 							}else{
 								this.credit=this.creditCardList[0];	
 								this.getTradable();
 							}
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
-							this.$refs.popup.open();
+							uni.showToast({
+							    title:this.popupMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 						}
 				       
 				    }
@@ -241,16 +277,26 @@
 			},
 			buyBtn:function(){
 				if(!this.isMerch){
-					this.popupMessage = "未查询到商户信息，请重新扫码或输入";
-					this.$refs.popup.open();
+					this.popupMessage = "未查询到商户信息";
+					uni.showToast({
+					    title:this.popupMessage,
+						mask:true,
+						icon:'none',
+					    duration: 2000
+					});
 					return false
 				}
 				if(this.isClick){
 					this.isClick=false;
 					this.ifClick();
 				}else{
-					this.popupMessage = "请稍等";
-					this.$refs.popup.open();
+					this.popupMessage = "重复点击,请稍等";
+					uni.showToast({
+					    title:this.popupMessage,
+						mask:true,
+						icon:'none',
+					    duration: 2000
+					});
 					return false
 				}
 				
@@ -283,21 +329,34 @@
 								if(res.data.code==0){
 									this.isClick=true;
 									this.popupMessage=res.data.data;
-									this.$refs.popup.open();
+									uni.showToast({
+									    title:this.popupMessage,
+										mask:true,
+										icon:'none',
+									    duration: 2000
+									});
 										
 									}else if(res.data.code==-1){
+										this.isClick=true;
 									this.popupMessage=res.data.msg;
-									this.$refs.popup.open();
+									uni.showToast({
+									    title:this.popupMessage,
+										mask:true,
+										icon:'none',
+									    duration: 2000
+									});
 								}
 						       
 						    },
 							complete: () => {
 								uni.hideLoading()
+								this.isClick=true;
 								}
 						});
 						}
 					
 				}else if(this.moneyNum<10||this.moneyNum>50000){
+						this.isClick=true;
 						this.popupMessage='消费金额需大于100，小于50000';
 						this.$refs.popup.open();
 					

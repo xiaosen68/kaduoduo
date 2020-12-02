@@ -9,10 +9,10 @@
 				</view>
 				<view class="goods-prices">
 					<view class="goods-cj-pri">
-						成交价：{{item.transactionPrice}} 
+						价格：{{item.transactionPrice}} 
 					</view>
 					<view class="goods-js-pri">
-						寄售价：{{item.mailingPrice}}
+						团购：{{item.mailingPrice}}
 					</view>
 				</view>
 				<view class="input-box-wrap">
@@ -32,10 +32,10 @@
 				</view>
 				<view class="goods-prices">
 					<view class="goods-cj-pri">
-						成交价：{{item.transactionPrice}} 
+						价格：{{item.transactionPrice}} 
 					</view>
 					<view class="goods-js-pri">
-						寄售价：{{item.mailingPrice}}
+						团购：{{item.mailingPrice}}
 					</view>
 				</view>
 				<view class="input-box-wrap">
@@ -62,8 +62,8 @@
 						{{item.productName}}
 					</view>
 					<view class="product-pri">
-						<text class="product-cj">成交价:￥{{item.transactionPrice*item.amount}} </text>
-						<text>挂牌价:￥{{item.mailingPrice*item.amount}}</text>
+						<text class="product-cj">价格:￥{{item.transactionPrice*item.amount}} </text>
+						<text>团购:￥{{item.mailingPrice*item.amount}}</text>
 					</view>
 				</view>
 			</view>
@@ -74,8 +74,8 @@
 				<uni-icons type="circle"style="font-size: 40upx" class="circle-filled-icon" v-else @click="circleClick"></uni-icons>
 				<text>全选</text>
 				<view class="statistic-pri">
-					<text class="statistic-cj">成交价:￥{{allGoodscj}} </text>
-					<text> 挂牌价:￥{{allGoodsjs}}</text>
+					<text class="statistic-cj">价格:￥{{allGoodscj}} </text>
+					<text> 团购:￥{{allGoodsjs}}</text>
 				</view>
 				<view @click="nevTo()" class="buy-button">购买并寄售</view>
 				
@@ -134,6 +134,12 @@
 						
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
+						uni.showToast({
+						    title:this.popupMessage,
+							mask:true,
+							icon:'none',
+						    duration: 2000
+						});
 					}else{
 					}
 			       
@@ -158,7 +164,12 @@
 						if(res.data.code==0){
 							if(res.data.data.length=0){
 								this.popupCenterMessage='请绑定信用卡';
-								this.$refs.popup.open()
+								uni.showToast({
+								    title: this.popupCenterMessage,
+									mask:true,
+									icon:'none',
+								    duration: 2000
+								});
 								this.$Router.push({ name: 'addcredit'})
 							}
 						}
@@ -181,7 +192,12 @@
 						if(res.data.code==0){
 							if(res.data.data.length=0){
 								this.popupCenterMessage='请绑定储蓄卡';
-								this.$refs.popup.open();
+								uni.showToast({
+								    title: this.popupCenterMessage,
+									mask:true,
+									icon:'none',
+								    duration: 2000
+								});
 									this.$Router.push({ name: 'adddeposit'})
 							}
 						}
@@ -346,7 +362,12 @@
 					}else{
 							this.popupCenterMessage='请选择商品'
 					}
-					this.$refs.popup.open()
+					uni.showToast({
+					    title: this.popupCenterMessage,
+						mask:true,
+						icon:'none',
+					    duration: 2000
+					});
 				}
 			
 			}

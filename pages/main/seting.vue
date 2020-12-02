@@ -102,7 +102,12 @@
 							}
 						}else if(res.data.code==-1){
 							this.popupCenterMessage='获取新版本失败'
-							this.$refs.popupcenter.open()
+							uni.showToast({
+							    title:this.popupCenterMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 						}
 				       
 				    },
@@ -115,7 +120,12 @@
 					this.$Router.push({name:'uploadapp'})
 				}else{
 					this.popupCenterMessage='已是最新版本'
-					this.$refs.popupcenter.open()
+					uni.showToast({
+					    title:this.popupCenterMessage,
+						mask:true,
+						icon:'none',
+					    duration: 2000
+					});
 				}
 			},
 			clear:function(){	

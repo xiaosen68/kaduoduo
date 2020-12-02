@@ -171,7 +171,12 @@
 						uni.setStorageSync('userPhone', res.data.data.phone);
 					}else if(res.data.code==-1){
 						this.popupCenterMessage=res.data.msg;
-						this.$refs.popupcenter2.open();
+						uni.showToast({
+						    title: this.popupCenterMessage,
+							mask:true,
+							icon:'none',
+						    duration: 2000
+						});
 					}
 			       
 			    },
@@ -233,7 +238,12 @@
 						}
 					this.popupCenterMessage="请保存图片，添加好友";
 					this.popuppic="../../static/img/weixin.jpg"
-					this.$refs.popupcenter.open()
+					uni.showToast({
+					    title:this.popupCenterMessage,
+						mask:true,
+						icon:'none',
+					    duration: 2000
+					});
 				}else if(item.item.name==="qq"){
 					if(process.env.NODE_ENV===!'development'){
 						uni.saveFile({
@@ -246,7 +256,12 @@
 					}
 					this.popupCenterMessage="请保存图片，添加好友";
 					this.popuppic="../../static/img/qq.jpg"
-					this.$refs.popupcenter.open()
+					uni.showToast({
+					    title:this.popupCenterMessage,
+						mask:true,
+						icon:'none',
+					    duration: 2000
+					});
 				}
 			},
 			closePopCen:function(){
@@ -262,7 +277,12 @@
 					this.$Router.push({name:'cardlist'})
 				}else{
 					this.popupCenterMessage="请先进行实名认证"
-					this.$refs.popupcenter2.open();
+					uni.showToast({
+					    title:this.popupCenterMessage,
+						mask:true,
+						icon:'none',
+					    duration: 2000
+					});
 				}
 			},
 			shimingFn:function(){
@@ -274,7 +294,12 @@
 					this.$Router.push({name:'shimingone'})
 				}else {
 					this.popupCenterMessage="已实名"
-					this.$refs.popupcenter2.open();
+					uni.showToast({
+					    title:this.popupCenterMessage,
+						mask:true,
+						icon:'none',
+					    duration: 2000
+					});
 				}
 			}
 		}

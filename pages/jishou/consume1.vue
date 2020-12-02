@@ -4,8 +4,8 @@
 			<view class="consume-money">
 				<view class="">
 					<image src="../../static/img/yinlian.png" mode="" class="consume-yinlain"></image>
-					<text class="cm-gm">购买金额:￥{{allGoodscj}}</text>
-					<text class="cm-gp">挂牌金额:￥{{allGoodsjs}}</text>
+					<text class="cm-gm">价格:￥{{allGoodscj}}</text>
+					<text class="cm-gp">团购:￥{{allGoodsjs}}</text>
 				</view>
 				<view class="cm-feilv">
 					<text class="fl">佣金比率:{{passageWay.myRate}}</text>
@@ -121,7 +121,12 @@
 				    },
 					fail :()=> {
 						this.popupMessage = '请稍后重试';
-						this.$refs.popup.open();
+						uni.showToast({
+						    title: this.popupMessage,
+							icon:'none',
+							mask:true,
+						    duration: 2000
+						});
 					}
 				});
 			},
@@ -201,7 +206,12 @@
 				    },
 					fail :()=> {
 						this.popupMessage = '请稍后重试';
-						this.$refs.popup.open();
+						uni.showToast({
+						    title: this.popupMessage,
+							icon:'none',
+							mask:true,
+						    duration: 2000
+						});
 					},
 					complete: () => {
 						// uni.hideLoading()

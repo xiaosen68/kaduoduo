@@ -60,9 +60,7 @@ export default {
 						this.bank=res.data.data.bank;
 						this.cardholder=res.data.data.cardholder;
 						this.reservePhone=res.data.data.reserve_phone;
-					}else{
 					}
-			       
 			    }
 			});	
 		}
@@ -98,16 +96,22 @@ export default {
 						this.bank=res.data.data.bank;
 						this.cardholder=res.data.data.cardholder;
 						this.reservePhone=res.data.data.reserve_phone;
-					}else{
 					}
+					if(res.data.code==0){
+						this.popupMessage=res.data.data;	
+					}else if(res.data.code==-1){
+						this.popupMessage=res.data.msg;
+					}
+					uni.showToast({
+					    title:this.popupMessage,
+						mask:true,
+						icon:'none',
+					    duration: 2000
+					});
 			       
 			    }
 			});	
-			
-			
-			
-			
-			this.$Router.back(1)
+			// this.$Router.back(1)
 		}
 	},
 	

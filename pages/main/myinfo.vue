@@ -54,6 +54,13 @@ export default {
 				console.log(res)
 				if(res.data.code==0){
 					this.infoData=res.data.data;
+				}else{
+					uni.showToast({
+					    title:'获取信息失败',
+						mask:true,
+						icon:'none',
+					    duration: 2000
+					});
 				}
 		       
 		    },

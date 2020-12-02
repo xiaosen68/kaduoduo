@@ -80,7 +80,8 @@
 		},
 		onLoad(){
 			// this.codeVal='sss'+'?phone='+uni.getStorageSync('userPhone')+'&storeName='+uni.getStorageSync('userName')
-			this.codeVal=this.$shareUrl+'?phone='+uni.getStorageSync('userPhone')+'&storeName='+uni.getStorageSync('userName')
+			// this.codeVal=this.$shareUrl+'?phone='+uni.getStorageSync('userPhone')+'&storeName='+uni.getStorageSync('userName')
+			this.codeVal=this.$shareUrl+'?phone='+uni.getStorageSync('userPhone')
 			this.getShareList();
 			console.log(this.codeVal)
 		},
@@ -169,21 +170,36 @@
 								// 判断h5时长按保存
 								//#ifdef H5
 								_this.popupCenterMessage='长按保存并分享'
-								_this.opencenter();
+								uni.showToast({
+								    title:_this.popupCenterMessage,
+									mask:true,
+									icon:'none',
+								    duration: 2000
+								});
 								
 								//#endif
 								//#ifndef H5
-								_this.popupCenterMessage=res.tempFilePath;
-								_this.opencenter();
+								// _this.popupCenterMessage=res.tempFilePath;
+								// _this.opencenter();
 								uni.saveImageToPhotosAlbum({
 									filePath:res.tempFilePath,
 									success:function(e){
 										_this.popupCenterMessage='已保存相册前去分享'	
-										_this.opencenter();
+										uni.showToast({
+										    title:_this.popupCenterMessage,
+											mask:true,
+											icon:'none',
+										    duration: 2000
+										});
 										}
 								})
 								_this.popupCenterMessage='已保前去分享'
-								_this.opencenter();
+								uni.showToast({
+								    title:_this.popupCenterMessage,
+									mask:true,
+									icon:'none',
+								    duration: 2000
+								});
 								//#endif
 								_this.bjj=res.tempFilePath
 							}
@@ -192,7 +208,7 @@
 							
 				},
 				complete(ww) {
-					console.log(ww)
+					
 				}
 			});
 			},
@@ -218,8 +234,13 @@
 			},
 			select:function(e){
 				//#ifdef H5
-				this.popupCenterMessage='请长按图片，保存相册后分享';
-				this.opencenter();
+				this.popupCenterMessage='请长按保存相册';
+				uni.showToast({
+				    title:this.popupCenterMessage,
+					mask:true,
+					icon:'none',
+				    duration: 2000
+				});
 				//#endif
 				//#ifndef H5
 				if(e.item.name==='wx'){
@@ -290,8 +311,13 @@
 								this.opencenter();
 							},
 							fail:function(){
-								this.popupCenterMessage='保存相册失败，请重试，或长按保存'
-								this.opencenter();
+								this.popupCenterMessage='保存失败，请重试'
+								uni.showToast({
+								    title:this.popupCenterMessage,
+									mask:true,
+									icon:'none',
+								    duration: 2000
+								});
 							}
 						})
 					},

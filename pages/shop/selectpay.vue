@@ -31,7 +31,7 @@
 				<text class="add-card"@click="addcredit()">添加</text>
 			</view>
 			<view class="bank-card-item" v-for="item in creditCardList" @click="selectCredit(item)">
-				<image class="bank-item-head" src="../../static/img/bank/guangfa.png" mode=""></image>
+				<image class="bank-item-head" :src="item.bank_logo" mode=""></image>
 				<view class="bank-card-name">
 					<text>{{item.bank}}</text>
 					<text>\n</text>

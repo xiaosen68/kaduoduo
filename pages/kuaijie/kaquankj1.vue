@@ -4,8 +4,8 @@
 			<view class="consume-money">
 				<view class="">
 					<image src="../../static/img/yinlian.png" mode="" class="consume-yinlain"></image>
-					<text class="cm-gm">购买金额:￥{{allGoodscj}}</text>
-					<text class="cm-gp">挂牌金额:￥{{allGoodsjs}}</text>
+					<text class="cm-gm">价格:￥{{allGoodscj}}</text>
+					<text class="cm-gp">团购:￥{{allGoodsjs}}</text>
 				</view>
 
 				<view class="kq-select">

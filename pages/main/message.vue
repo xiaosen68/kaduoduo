@@ -86,7 +86,12 @@
 									
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
-							// this.$refs.popup.open();
+							uni.showToast({
+							    title:this.popupMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 						}
 				       
 				    }
@@ -109,6 +114,12 @@
 									
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
+							uni.showToast({
+							    title:this.popupMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 							// this.$refs.popup.open();
 						}
 				       

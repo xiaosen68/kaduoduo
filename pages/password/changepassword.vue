@@ -106,7 +106,7 @@
 							// },2000)
 							// console.log(res.data)
 							// this.$store.commit("setToken",res.data.data);
-									// this.$Router.pushTab('/pages/index/index')
+							// this.$Router.pushTab('/pages/index/index')
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
 							this.$refs.popup.open();

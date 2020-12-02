@@ -92,9 +92,14 @@
 						this.billingDate=res.data.data.billing_date;
 						this.repaymentDate=res.data.data.repayment_date;
 						this.quota=res.data.data.quota;
-					}else{
-						// this.popupMessage='错误码：'+res.code+'信息：'+res.msg;
-						// this.$refs.popup.open();
+					}
+					if(res.data.code==-1){
+						uni.showToast({
+						    title:res.data.msg,
+							mask:true,
+							icon:'none',
+						    duration: 2000
+						});
 					}
 			       
 			    }
@@ -155,12 +160,16 @@
 		    },
 		    success: (res) => {
 				if(res.data.code==0){
-					this.popupMessage=res.data.data;
-					this.$refs.popup.open();
+					this.popupMessage=res.data.data;	
 				}else if(res.data.code==-1){
 					this.popupMessage=res.data.msg;
-					this.$refs.popup.open();
 				}
+				uni.showToast({
+				    title:this.popupMessage,
+					mask:true,
+					icon:'none',
+				    duration: 2000
+				});
 		       
 		    }
 		});	
