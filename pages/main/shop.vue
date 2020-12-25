@@ -24,12 +24,12 @@
 						</view>
 						<view class="goods-prices">
 							<view class="goods-cj-pri">
-								市场价：{{item.transactionPrice}} 
+								价格：{{item.transactionPrice}} 
 							</view>
 						</view>
 						<view class="goods-prices">
 							<view class="goods-cj-pri">
-								折扣价：{{item.transactionPrice*item.discount |numberFilters}} 
+								团购：{{item.transactionPrice*item.discount |numberFilters}} 
 							</view>
 						</view>
 					</router-link>
