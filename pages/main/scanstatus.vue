@@ -16,14 +16,14 @@
 					{{datas.statusMsg}}
 				</view>
 			</view>
-			<view class="scanstatus-item">
+			<!-- <view class="scanstatus-item">
 				<view class="scanstatus-title">
 					收款商户：
 				</view>
 				<view class="scanstatus-value">
 					小黑
 				</view>
-			</view>
+			</view> -->
 			<view class="scanstatus-item">
 				<view class="scanstatus-title">
 					支付时间：

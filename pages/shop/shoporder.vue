@@ -77,7 +77,7 @@
 				'Content-Type':'application/json' //自定义请求头信息
 		    },
 		    success: (res) => {
-				console.log(res)
+				// console.log(res)
 				if(res.data.code==0){
 					this.product=res.data.data
 				}
@@ -98,7 +98,7 @@
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
+					// console.log(res)
 					if(res.data.code==0){
 					this.locationStatus=res.data.data;	
 					}
@@ -117,7 +117,7 @@
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
+					// console.log(res)
 					if(res.data.code==0){
 					this.locationStatus=res.data.data.list[0];
 					this.locationId=res.data.data.list[0].id;

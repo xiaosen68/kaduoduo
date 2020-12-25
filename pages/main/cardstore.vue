@@ -1,18 +1,17 @@
 <template>
 	<view class="cardstore">
 		<view class="store-box" >
-		<view class="store-list1"  >
-			<view class="store-item" v-for="(item,index) in goodsList" v-if="!iflast(index)" >
+			<view class="store-item " v-for="(item,index) in goodsList"  >
 				<image class="good-pic" :src="item.productUrl" mode="aspectFit"></image>
 				<view class="goods-name">
 					{{item.productName}}
 				</view>
 				<view class="goods-prices">
-					<view class="goods-cj-pri">
-						价格：{{item.transactionPrice}} 
-					</view>
 					<view class="goods-js-pri">
-						团购：{{item.mailingPrice}}
+						价格：{{item.mailingPrice}}
+					</view>
+					<view class="goods-cj-pri">
+						团购：{{item.transactionPrice}} 
 					</view>
 				</view>
 				<view class="input-box-wrap">
@@ -23,30 +22,10 @@
 						</view>
 				</view>
 			</view>
+			
 		</view>
-		<view class="store-list2" >
-			<view class="store-item" v-for="(item,index) in goodsList"  v-if="iflast(index)">
-				<image class="good-pic" :src="item.productUrl" mode="aspectFit"></image>
-				<view class="goods-name">
-					{{item.productName}}
-				</view>
-				<view class="goods-prices">
-					<view class="goods-cj-pri">
-						价格：{{item.transactionPrice}} 
-					</view>
-					<view class="goods-js-pri">
-						团购：{{item.mailingPrice}}
-					</view>
-				</view>
-				<view class="input-box-wrap">
-						<view class="input-btn">
-							<uni-icons class="in-btn" size="24" type="minus" color="#8a8a8a" @click="minus(index)"></uni-icons>
-							<input class="input-btn-box" type="number" min="0" v-model="item.amount" maxlength="2" @input="outinput" />
-							<uni-icons class="in-btn" size="24" type="plus" color="#fb2e03" @click="plus(index)"></uni-icons>
-						</view>
-				</view>
-			</view>
-		</view>
+		<view class="get-more" @click="getmoreFn">
+			{{getMoretext}}
 		</view>
 		<view class="buy-car">
 			<view class="car-but" @click="arrowClick">
@@ -62,8 +41,8 @@
 						{{item.productName}}
 					</view>
 					<view class="product-pri">
-						<text class="product-cj">价格:￥{{item.transactionPrice*item.amount}} </text>
-						<text>团购:￥{{item.mailingPrice*item.amount}}</text>
+						<text>价格:￥{{item.mailingPrice*item.amount}}</text>
+						<text class="product-cj">团购:￥{{item.transactionPrice*item.amount}} </text>
 					</view>
 				</view>
 			</view>
@@ -74,11 +53,10 @@
 				<uni-icons type="circle"style="font-size: 40upx" class="circle-filled-icon" v-else @click="circleClick"></uni-icons>
 				<text>全选</text>
 				<view class="statistic-pri">
-					<text class="statistic-cj">价格:￥{{allGoodscj}} </text>
-					<text> 团购:￥{{allGoodsjs}}</text>
+					<text> 价格:￥{{allGoodsjs}}</text>
+					<text class="statistic-cj">团购:￥{{allGoodscj}} </text>
 				</view>
 				<view @click="nevTo()" class="buy-button">购买并寄售</view>
-				
 				
 			</view>
 		</view>
@@ -105,50 +83,74 @@
 				buyList:[],
 				allGoodsjs:0,
 				allGoodscj:0,
-				size:40,
+				size:20,
+				getMoretext:'点击加载更多',
+				currentPage:1,
+				totalSize:0,
 			}
 		},
 		onLoad() {
-			console.log(uni.getStorageSync('token'))
+			// console.log(uni.getStorageSync('token'))
 			if(this.$Route.query.pageType){
 				uni.setStorageSync('pageType',this.$Route.query.pageType)//从哪里跳转来的。
 			}
-			uni.request({
-				method:'POST',
-			    url: this.$baseUrl+'/api/v1/pri/shop/mailingProduct', 
-			    data: {
-					page:1,
-					size:this.size
-			    },
-			    header: {
-					'token':uni.getStorageSync('token'),
-					'Content-Type':'application/json' //自定义请求头信息
-			    },
-			    success: (res) => {
-					if(res.data.code==0){
-						this.goodsList=res.data.data.list;
-						this.goodsList.map((item)=>{
-							item.amount=0
-							return item
-						})
-						
-					}else if(res.data.code==-1){
-						this.popupMessage=res.data.msg;
-						uni.showToast({
-						    title:this.popupMessage,
-							mask:true,
-							icon:'none',
-						    duration: 2000
-						});
-					}else{
-					}
-			       
-			    }
-			});	
+			
 			this.getdeposit();
 			this.getcredit();
+			this.getgoodsList();
 		},
 		methods: {
+			// 获取产品列表
+			getgoodsList:function(){
+				uni.request({
+					method:'POST',
+				    url: this.$baseUrl+'/api/v1/pri/shop/mailingProduct', 
+				    data: {
+						page:this.currentPage,
+						size:this.size
+				    },
+				    header: {
+						'token':uni.getStorageSync('token'),
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						if(res.data.code==0){
+							if(res.data.data.current_page==1){
+								this.goodsList=res.data.data.list;
+							}else{
+								this.goodsList=this.goodsList.concat(res.data.data.list);
+							}
+							this.currentPage=res.data.data.current_page;
+							this.totalPage=res.data.data.total_page;
+							this.goodsList.map((item)=>{
+								item.amount=0
+								return item
+							})
+							
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+							uni.showToast({
+							    title:this.popupMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
+						}else{
+						}
+				       
+				    }
+				});	
+			},
+			// 加载更多
+			getmoreFn:function(){
+				if(this.currentPage<this.totalPage){
+					this.currentPage++;
+					this.getgoodsList();
+				}else{
+					this.getMoretext="没有更多数据了"
+				}
+				
+			},
 			// 获取信用卡
 			getcredit(){
 				uni.request({
@@ -395,15 +397,13 @@
 	}
 	.store-box{
 		display: flex;
-		flex-direction: row;
 		flex-wrap: wrap;
-		justify-content: center;
+		justify-content: space-around;
 		box-sizing: border-box;
 		width: 750upx;
-		padding: 20upx;
-		/* text-align: left; */
+		padding: 28upx ;
 		text-align: center;
-		margin-bottom: 200upx;
+		/* margin-bottom: 200upx; */
 	}
 	.store-item{
 		border: solid 10upx #f4f8fb;
@@ -612,5 +612,12 @@
 		width: 160upx;
 		text-align: left;
 		/* padding-left: 20upx; */
+	}
+	.get-more{
+		text-align: center;
+		line-height: 40upx;
+		margin-top: 20upx;
+		color: #D41C26;
+		margin-bottom: 200upx;
 	}
 </style>

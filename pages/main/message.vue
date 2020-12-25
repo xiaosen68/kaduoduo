@@ -46,7 +46,7 @@
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
+					// console.log(res)
 					if(res.data.code==0){
 								this.messageList=res.data.data;
 								
@@ -80,7 +80,7 @@
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res)
+						// console.log(res)
 						if(res.data.code==0){
 									this.messageList=res.data.data;
 									
@@ -108,7 +108,7 @@
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res)
+						// console.log(res)
 						if(res.data.code==0){
 									this.messageList=res.data.data;
 									
@@ -120,7 +120,6 @@
 								icon:'none',
 							    duration: 2000
 							});
-							// this.$refs.popup.open();
 						}
 				       
 				    }

@@ -33,11 +33,7 @@
 			</navigator>
 		</view>
 		<button type="" class="login-btn" @click="logOut">退出</button>
-		<uni-popup ref="popupcenter" type="center">
-			<view class="popupCenter-box">
-					{{popupCenterMessage}}
-			</view>
-		</uni-popup>
+	
 	</view>
 </template>
 

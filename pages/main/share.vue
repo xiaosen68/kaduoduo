@@ -63,8 +63,8 @@
 				unit:'upx',//二维码大小单位
 				show:true,//
 				loadMake:true,//加载成功后自动生成二维码
-			    x: 0,
-				y: 0,
+			    x: 84,//二维码位置
+				y: 200,
 				old: {
 					x: 0,
 					y: 0
@@ -79,11 +79,9 @@
 			}
 		},
 		onLoad(){
-			// this.codeVal='sss'+'?phone='+uni.getStorageSync('userPhone')+'&storeName='+uni.getStorageSync('userName')
-			// this.codeVal=this.$shareUrl+'?phone='+uni.getStorageSync('userPhone')+'&storeName='+uni.getStorageSync('userName')
 			this.codeVal=this.$shareUrl+'?phone='+uni.getStorageSync('userPhone')
 			this.getShareList();
-			console.log(this.codeVal)
+			// console.log(this.codeVal)
 		},
 		methods: {
 			getShareList:function(){
@@ -101,7 +99,14 @@
 						if(res.data.code==0){
 						this.imgList=res.data.data
 						this.getListWidth();
+						this.selectImg(this.imgList[0])
 						}else if(res.data.code==-1){
+							uni.showToast({
+							    title: res.data.msg,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 						}
 				       
 				    },
@@ -138,11 +143,11 @@
 				let codeicon=uni.createSelectorQuery().select('.code-pic');//获取二维码节点信息
 				codeicon.boundingClientRect(data =>{
 					codeStatus=data;
-					console.log(codeStatus)
+					// console.log(codeStatus)
 				}).exec();
 				can.boundingClientRect(data =>{
 					canStatus=data;
-					console.log(canStatus)
+					// console.log(canStatus)
 				}).exec();
 				// 获取背景图
 				console.log(_this.bj)

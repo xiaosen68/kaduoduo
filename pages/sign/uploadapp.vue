@@ -37,9 +37,31 @@
 								this.$refs.popup.open()
 					    }
 					});
-				//#endif	
+					//#endif
+					//#ifdef H5
+						 this.$copyText('http://47.96.91.58:8088/huqing/apkUrl/youlitang.apk').then(
+						                    res => {
+						                        uni.showToast({
+						                            title: '复制成功,去浏览器下载'
+						                        })
+						                    }
+						                )
+					//#endif
 				},
 			checkVersionToLoadUpdate:function(){
+					//#ifdef H5
+						 this.$copyText('http://47.96.91.58:8088/huqing/apkUrl/youlitang.apk').then(
+						                    res => {
+						                        uni.showToast({
+						                            title: '复制成功,去浏览器下载'
+						                        })
+						                    }
+						                )
+										
+										return false;
+					//#endif
+				
+				
 					//TODO 此处判断是否为 WIFI连接状态
 					if(plus.networkinfo.getCurrentType()!=3){
 						uni.showModal({

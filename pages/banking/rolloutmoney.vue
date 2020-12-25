@@ -85,7 +85,7 @@ export default {
 				'Content-Type':'application/json' //自定义请求头信息
 		    },
 		    success: (res) => {
-				console.log(res)
+				// console.log(res)
 				if(res.data.code==0){
 					this.cardList=res.data.data;
 					this.defaultCard=res.data.data.filter((item)=>{
@@ -96,12 +96,12 @@ export default {
 					if(!this.defaultCard){
 						this.defaultCard=this.cardList[0];
 					}
-					console.log(this.defaultCard)
+					// console.log(this.defaultCard)
 				}else if(res.data.code==-1){
 					// this.popupMessage=res.data.msg;
 					// this.$refs.popup.open();
 				}else{
-					console.log(res)
+					// console.log(res)
 				}
 		       
 		    }
@@ -126,8 +126,8 @@ export default {
 				this.popupCenterMessage='提现金额需不少于20元'
 					this.$refs.popupcenter.open();
 			}else{
-				console.log(this.zcmoney)
-				console.log(this.defaultCard.id)
+				// console.log(this.zcmoney)
+				// console.log(this.defaultCard.id)
 				uni.request({
 					method:'POST',
 				    url: this.$baseUrl+'/api/v1/pri/my/withdrawalAmount', 
@@ -140,10 +140,10 @@ export default {
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res)
+						// console.log(res)
 						if(res.data.code==0){
 							this.revenueAmount=res.data.data;
-							console.log(this.revenueAmount)
+							// console.log(this.revenueAmount)
 						}else if(res.data.code==-1){
 							this.popupMessage=res.data.msg;
 							this.$refs.popupcenter.open();

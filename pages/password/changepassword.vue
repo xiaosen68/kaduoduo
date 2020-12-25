@@ -83,7 +83,7 @@
 				}else{
 					this.urlStatu='/api/v1/pri/my/withdrawalPwd'
 				}
-				console.log(this.type)
+				// console.log(this.type)
 				uni.request({
 					method:'POST',
 				    url: this.$baseUrl+this.urlStatu, 
@@ -96,7 +96,7 @@
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res.data)
+						// console.log(res.data)
 						let _this =this;
 						if(res.data.code==0){
 							this.popupMessage=res.data.data

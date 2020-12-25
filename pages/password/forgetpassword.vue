@@ -2,19 +2,23 @@
 	<view class="sign-box">
 		<view class="login-input">
 			<view class="sign-title sign-title-one">
-				<uni-icons type="phone-filled" class="locked-icon" size="30"></uni-icons>
+				<!-- <uni-icons type="phone-filled" class="locked-icon" size="30"></uni-icons> -->
+				<image src="../../static/img/sign/zhuce_1.png" class="sign-icon" mode=""></image>
 				<input type="number" number placeholder="请输入手机号" class=" sign-input" value="" v-model="phone" />
 			</view>
 			<view class="sign-title">
-				<uni-icons type="locked" class="locked-icon" size="30"></uni-icons>
+				<!-- <uni-icons type="locked" class="locked-icon" size="30"></uni-icons> -->
+				<image src="../../static/img/sign/mima.png" class="sign-icon" mode=""></image>
 				<input type="text" password maxlength="12" placeholder="请输入密码" class=" sign-input" v-model="inputPwd" />
 			</view>
 			<view class="sign-title">
-				<uni-icons type="locked" class="locked-icon" size="30"></uni-icons>
+				<!-- <uni-icons type="locked" class="locked-icon" size="30"></uni-icons> -->
+				<image src="../../static/img/sign/verify.png" class="sign-icon" mode=""></image>
 				<input type="text" password maxlength="12" placeholder="请确认密码" class=" sign-input" v-model="confirmPwd" />
 			</view>
 			<view class="sign-title">
-				<uni-icons type="compose" class="locked-icon" size="30"></uni-icons>
+				<!-- <uni-icons type="compose" class="locked-icon" size="30"></uni-icons> -->
+				<image src="../../static/img/sign/yanzhengma.png" class="sign-icon" mode=""></image>
 				<input type="number" number maxlength="6" 
 				placeholder="输入验证码" class=" sign-input yanz-input"
 				 v-model="code" />
@@ -57,7 +61,7 @@
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res)
+						// console.log(res)
 						if(res.data.code==0){
 							this.popupMessage=res.data.data.Message;
 							this.$refs.popup.open();
@@ -187,6 +191,7 @@
 	}
 	.sign-icon{
 		height: 60upx;
+		width: 60upx;
 		vertical-align: middle;
 	}
 	.sign-input{
@@ -199,12 +204,12 @@
 		
 	}
 	.yanz-input{
-		width: 300upx;
+		width: 280upx;
 	}
 	.yanz-btn{
 		display: inline-block;
 		vertical-align: bottom;
-		width: 160upx;
+		width: 180upx;
 		margin-left: 40upx;
 		height: 76upx;
 		line-height: 76upx;

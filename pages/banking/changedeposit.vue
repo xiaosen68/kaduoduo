@@ -91,24 +91,30 @@ export default {
 			    },
 			    success: (res) => {
 					if(res.statusCode==200){
-						this.accountOpeningProvince=res.data.data.account_opening_province;
-						this.cardNo=res.data.data.card_no;
-						this.bank=res.data.data.bank;
-						this.cardholder=res.data.data.cardholder;
-						this.reservePhone=res.data.data.reserve_phone;
+						if(res.data.code==0){
+							this.accountOpeningProvince=res.data.data.account_opening_province;
+							this.cardNo=res.data.data.card_no;
+							this.bank=res.data.data.bank;
+							this.cardholder=res.data.data.cardholder;
+							this.reservePhone=res.data.data.reserve_phone;
+							this.popupMessage=res.data.data;	
+						}else if(res.data.code==-1){
+							this.popupMessage=res.data.msg;
+						}
+						uni.showToast({
+						    title:this.popupMessage,
+							mask:true,
+							icon:'none',
+						    duration: 2000
+						});
+					}else{
+						uni.showToast({
+						    title:'请求失败请稍后重试',
+							mask:true,
+							icon:'none',
+						    duration: 2000
+						});
 					}
-					if(res.data.code==0){
-						this.popupMessage=res.data.data;	
-					}else if(res.data.code==-1){
-						this.popupMessage=res.data.msg;
-					}
-					uni.showToast({
-					    title:this.popupMessage,
-						mask:true,
-						icon:'none',
-					    duration: 2000
-					});
-			       
 			    }
 			});	
 			// this.$Router.back(1)

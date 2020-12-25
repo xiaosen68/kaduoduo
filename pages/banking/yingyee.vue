@@ -90,7 +90,7 @@ export default {
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
+					// console.log(res)
 					if(res.data.code==0){
 						// 默认卡排序
 						this.depositlist=res.data.data.sort(function(a,b){return b.defaultCard-a.defaultCard});
@@ -99,7 +99,7 @@ export default {
 						this.popupCenterMessage=res.data.msg;
 						this.$refs.popup.open();
 					}else{
-						console.log(res)
+						// console.log(res)
 					}
 			       
 			    }
@@ -113,7 +113,7 @@ export default {
 			}else{
 				return false;
 			}
-        console.log('loadMore')
+        // console.log('loadMore')
         // 请求新数据完成后调用 组件内loadOver()方法
         // 注意更新当前页码 currPage
         this.$refs.loadRefresh.loadOver()
@@ -138,11 +138,11 @@ export default {
 		  		'Content-Type':'application/json' //自定义请求头信息
 		      },
 		      success: (res) => {
-		  		console.log(res)
+		  		// console.log(res)
 		  		if(res.data.code==0){
 					
 		  			 this.list=res.data.data.list;
-					 console.log(this.list)
+					 // console.log(this.list)
 					 this.currPage=res.data.data.current_page;
 					 this.totalPage=res.data.data.total_page;
 		  		}else if(res.data.code==-1){
@@ -173,7 +173,7 @@ export default {
 		  		'Content-Type':'application/json' //自定义请求头信息
 		      },
 		      success: (res) => {
-		  		console.log(res)
+		  		// console.log(res)
 		  		if(res.data.code==0){
 					this.popupCenterMessage=res.data.data
 		  		}else if (res.data.code==-1){

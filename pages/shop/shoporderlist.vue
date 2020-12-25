@@ -1,62 +1,38 @@
 <template>
 	<view class="shop-order-list-box">
-		<load-refresh
-			  ref="loadRefresh"
-			  :heightReduce="10"
-			  :backgroundCover="'#F3F5F5'"
-			  :pageNo="currPage"
-			  :totalPageNo="totalPage" 
-			  @loadMore="loadMore" 
-			  @refresh="refresh" class="">
-			<view slot="content-list">
-				<view class="shop-order-item"  v-for="item in showList" @click="goItem(item)">
-					<view class=" order-category-box">
-						<text class="order-category">{{item.passageWayName}}</text> 
-						<text class="order-date-box">{{item.orderTime}}</text>
-					</view>
-					<view class="order-status-box">
-						<text class="order-money">
-							{{item.totalTransactionPrice}}
-						</text>
-						<text class="order-status">
-							已支付
-						</text>
-						
-					</view>
-				</view>
+		<view class="shop-order-item"  v-for="item in showList" @click="goItem(item)">
+			<view class=" order-category-box">
+				<text class="order-category">{{item.passageWayName}}</text> 
+				<text class="order-date-box">{{item.orderTime}}</text>
 			</view>
-			
-		</load-refresh>		  
+			<view class="order-status-box">
+				<text class="order-money">
+					{{item.totalTransactionPrice}}
+				</text>
+				<text class="order-status">
+					已支付
+				</text>
+				
+			</view>
+		</view>
+				  
 	</view>
 </template>
 
 <script>
-import loadRefresh from '@/components/load-refresh/load-refresh.vue'
 export default {
-	components: {
-	  loadRefresh
-	},
 	data (){
 		return{
 				showList: [], // 数据集
 				currPage: 1, // 当前页码
-				totalPage: 1 ,// 总页数
+				totalPage: 0 ,// 总页数
+				size:10,
 		}
 	},
 	onLoad() {
-	this.getxiaofei();	
+	uni.startPullDownRefresh();
 	},
 	methods:{
-		loadMore() {
-		  console.log('loadMore')
-		  // 请求新数据完成后调用 组件内loadOver()方法
-		  // 注意更新当前页码 currPage
-		  this.$refs.loadRefresh.loadOver()
-		},
-		// 下拉刷新数据列表
-		refresh() {
-		  console.log('refresh')
-		},
 		getxiaofei:function(){
 				  uni.request({
 				  	method:'POST',
@@ -70,16 +46,30 @@ export default {
 				  		'Content-Type':'application/json' //自定义请求头信息
 				      },
 				      success: (res) => {
-				  		console.log(res)
+				  		// console.log(res)
 				  		if(res.data.code==0){
-							this.showList=res.data.data.list;
-							this.totalPage=res.data.total_page;
+							if(res.data.data.current_page==1){
+								this.showList=res.data.data.list;
+							}else{
+								this.showList=this.showList.concat(res.data.data.list);
+							}
+							
+							this.totalPage=res.data.data.total_page;
+							this.currPage=res.data.data.current_page;
 				  		}else if(res.data.code==-1){
 				  			this.popupMessage=res.data.msg;
-				  		}else{
+							uni.showToast({
+							    title: this.popupMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 				  		}
 				         
-				      }
+				      },
+					  complete() {
+					  	uni.stopPullDownRefresh();
+					  }
 				  });	
 		},
 		goItem:function(item){
@@ -89,6 +79,24 @@ export default {
 			}})
 		}
 	},
+	onPullDownRefresh(){
+		this.currPage==1;
+		this.getxiaofei()
+	},
+	onReachBottom(){
+		if(this.currPage<this.totalPage){
+			this.currPage++;
+			this.getxiaofei();
+		}else{
+			uni.showToast({
+			    title: '没有更多数据了',
+				mask:true,
+				icon:'none',
+			    duration: 2000
+			});
+		}
+		
+	}
 }
 </script>
 

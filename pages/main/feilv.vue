@@ -2,12 +2,12 @@
 	<view class="dengji-box">
 		<view class="dengji-box1" @click="open">
 			<view class="dengji-head-box">
-				<image class="dengji-head" src="../../static/img/vhead/V4.png" mode=""></image>
-				<text>联合创始人</text>
+				<image class="dengji-head" :src="headerPic" mode=""></image>
+				<text>{{infoData.userLevelName}}</text>
 			</view>
 			<view class="dengji-status">
-				<text>您当前是联合创始人</text>
-				<text class="pinpai">牛贝</text>
+				<text>您当前是{{infoData.userLevelName}}</text>
+				<text class="pinpai">有粒糖</text>
 			</view>
 		</view>
 		<view class="dengji-box2">
@@ -64,6 +64,8 @@ export default {
 	data (){
 		return{
 		myRate:[],
+		infoData:'',
+		headerPic:'',
 		}
 	},
 	onLoad() {
@@ -77,24 +79,71 @@ export default {
 					// 'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
+					// console.log(res)
 					if(res.data.code==0){
 						this.myRate=res.data.data;
-						// console.log()
-						// console.log(this.myRate)
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
-						// this.$refs.popup.open();
+						uni.showToast({
+						    title:this.popupMessage,
+							mask:true,
+							icon:'none',
+						    duration: 2000
+						});
 					}else{
-						// console.log(res)
 					}
 			       
 			    }
 			});	
+			// 获取我的信息
+			uni.request({
+				method:'GET',
+			    url: this.$baseUrl+'/api/v1/pri/my/myInfoData', 
+			    data: {
+			    },
+			    header: {
+					'token': uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					if(res.data.code==0){
+						this.infoData=res.data.data;
+						this.getHeader();
+					}else{
+						uni.showToast({
+						    title:'获取信息失败',
+							mask:true,
+							icon:'none',
+						    duration: 2000
+						});
+					}
+			       
+			    },
+				complete: (data) => {
+				}
+			});
+				
 	},
 	methods:{
 		open (){
 			this.$refs.popup.open()
+		},
+		getHeader:function(){
+			if(this.infoData.userLevel=='CO_FOUNDER'){
+				this.headerPic='../../static/img/vhead/V6.png';
+			}else if(this.infoData.userLevel=='SENIOR_PARTNER'){
+				this.headerPic='../../static/img/vhead/V5.png';
+			}else if(this.infoData.userLevel=='BUSINESS_PARTER'){
+				this.headerPic='../../static/img/vhead/V4.png';
+			}else if(this.infoData.userLevel=='VIP_MEMBERS'){
+				this.headerPic='../../static/img/vhead/V3.png';
+			}else if(this.infoData.userLevel=='MEMBERS'){
+				this.headerPic='../../static/img/vhead/V2.png';
+			}else if(this.infoData.userLevel=='ORDINARY_USERS'){
+				this.headerPic='../../static/img/vhead/V1.png';
+			}else{
+				this.headerPic='../../static/img/vhead/V1.png';
+			}
 		}
 	},
 	filters:{

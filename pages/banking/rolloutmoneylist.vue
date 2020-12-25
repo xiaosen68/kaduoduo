@@ -1,112 +1,107 @@
 <template>
 	<view class="fenrun-box">
 		<view class="card-list">
-			<load-refresh
-			  ref="loadRefresh"
-			  :heightReduce="10"
-			  :backgroundCover="'#F3F5F5'"
-			  :pageNo="currPage"
-			  :totalPageNo="totalPage" 
-			  @loadMore="loadMore" 
-			  @refresh="refresh" class="">
-			  <view slot="content-list">
-			    <!-- 数据列表 -->
-				<view  class="roll-item" v-for="item in list" @click="rollmoneystatusFn(item.wId)">
-					<view class="roll-item-box1">
-						<view class="roll-title">
-							余额提现
-						</view>
-						<view class="roll-time">
-							{{item.createTime}}
-						</view>
+			<!-- 数据列表 -->
+			<view  class="roll-item" v-for="item in list" @click="rollmoneystatusFn(item.wId)">
+				<view class="roll-item-box1">
+					<view class="roll-title">
+						余额提现
 					</view>
-					<view class="roll-item-box2">
-						<view class="roll-bank">
-							到账银行
-						</view>
-						<view class="roll-bank-card">
-							{{item.cashOutBank}}{{item.cashOutBankNo|cardFilter}}
-						</view>
+					<view class="roll-time">
+						{{item.createTime}}
 					</view>
-					<view class="roll-item-box3">
-						<view class="roll-title roll-money">
-							-{{item.frozenAmount}}
-						</view>
-						<view class="roll-state">
-							{{item.state| stateFilter}}
-						</view>
-					</view>
-					
-					
 				</view>
-			  </view>
-			</load-refresh>
+				<view class="roll-item-box2">
+					<view class="roll-bank">
+						到账银行
+					</view>
+					<view class="roll-bank-card">
+						{{item.cashOutBank}}{{item.cashOutBankNo|cardFilter}}
+					</view>
+				</view>
+				<view class="roll-item-box3">
+					<view class="roll-title roll-money">
+						-{{item.frozenAmount}}
+					</view>
+					<view class="roll-state">
+						{{item.state| stateFilter}}
+					</view>
+				</view>
+			</view>
 		</view>
-		
 	</view>
 </template>
 
 <script>	
-import loadRefresh from '@/components/load-refresh/load-refresh.vue'
 export default {
-  components: {
-    loadRefresh
-  },
 	data (){
 		return{
 			list: [], // 数据集
 			currPage: 1, // 当前页码
 			totalPage: 1 ,// 总页数
+			size:20,
 		}
 	},
 	onLoad() {
-		this.refresh();	
+	 uni.startPullDownRefresh();
 	},
 	methods:{
-		loadMore() {
-			if(this.currPage<this.totalPage){
-				this.currPage++;
-				this.getrollmoneyList();
-			}else{
-				return false;
-			}
-        console.log('loadMore')
-        // 请求新数据完成后调用 组件内loadOver()方法
-        // 注意更新当前页码 currPage
-        this.$refs.loadRefresh.loadOver()
-      },
-      // 下拉刷新数据列表
-      refresh() {
-		  this.list=[];
-		this.currPage=1;
-		this.getrollmoneyList();
-      },
 	  getrollmoneyList:function(){
 		  uni.request({
 		  	method:'POST',
 		      url: this.$baseUrl+'/api/v1/pri/my/getWithdrawalAmountByUserIdAll', 
 		      data: {
 		  		page:this.currPage,
-		  		size:20
+		  		size:this.size
 		      },
 		      header: {
 		  		'token': uni.getStorageSync('token'),
 		  		'Content-Type':'application/json' //自定义请求头信息
 		      },
 		      success: (res) => {
-		  		console.log(res)
+		  		// console.log(res)
 		  		if(res.data.code==0){
-		  			 this.list.push.apply(this.list,res.data.data.list);
+					if(res.data.data.current_page==1){
+						this.list=res.data.data.list
+					}else{
+						this.list=this.list.concat(res.data.data.list);
+					}
 					 this.currPage=res.data.data.current_page;
 					 this.totalPage=res.data.data.total_page;
-		  		}
-		         
-		      }
+		  		}else{
+					uni.showToast({
+					    title:res.data.msg ,
+						mask:true,
+						icon:'none',
+					    duration: 2000
+					});
+				}
+		      },
+			  complete() {
+			  	uni.stopPullDownRefresh();
+			  }
 		  });
 	  },
 	  rollmoneystatusFn:function(id){
 		  this.$Router.push({name:'rolloutmoneystatus',params: { id: id }})
 	  }
+	},
+	onPullDownRefresh(){
+		this.currPage=1;
+		this.getrollmoneyList();
+	},
+	onReachBottom(){
+		if(this.currPage<this.totalPage){
+			this.currPage++;
+			this.getrollmoneyList();
+		}else{
+			uni.showToast({
+			    title: '没有更多数据了',
+				mask:true,
+				icon:'none',
+			    duration: 2000
+			});
+		}
 	},
 	filters:{
 		cardFilter:function (val){

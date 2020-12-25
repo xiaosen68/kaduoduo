@@ -4,8 +4,8 @@
 			<view class="consume-money">
 				<view class="">
 					<image src="../../static/img/yinlian.png" mode="" class="consume-yinlain"></image>
-					<text class="cm-gm">价格:￥{{allGoodscj}}</text>
-					<text class="cm-gp">团购:￥{{allGoodsjs}}</text>
+					<text class="cm-gm">团购:￥{{allGoodscj}}</text>
+					<text class="cm-gp">价格:￥{{allGoodsjs}}</text>
 				</view>
 				<view class="cm-feilv">
 					<text class="fl">佣金比率:{{passageWay.myRate}}</text>
@@ -75,7 +75,7 @@
 		},
 		onLoad: function (option) {
 			this.buyList=JSON.parse(this.$Route.query.buyList)
-			console.log(this.buyList)
+			// console.log(this.buyList)
 			this.allGoodsjs=this.$Route.query.allGoodsjs
 			this.allGoodscj=this.$Route.query.allGoodscj;
 			
@@ -101,7 +101,7 @@
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res)
+						// console.log(res)
 						if(res.data.code==0){
 							this.creditCardList=res.data.data.userCreditCardlist;
 							this.credit=this.creditCardList[0];

@@ -13,8 +13,7 @@
 				</view>
 				<input type="text" value="" maxlength="18" v-model="idNumber" 
 				class="shiming-input" placeholder="请输入身份证号码"/>
-				<uni-icons type="camera" class="card-icons" size="20" @click="getcardFn"></uni-icons>
-				
+					
 			</view>
 		</view>
 		<view class="shiming-two">
@@ -49,7 +48,7 @@
 				必须上传身份证正反面照片
 			</view>
 			<view class="">
-				手持证件照片需拍到持有人五官，请勿佩戴眼镜、帽子等遮罩物
+				手持证件照片需拍清：证件照片、持有人五官，请勿佩戴眼镜、帽子等遮罩物
 			</view>
 			<view class="">
 				未达到示例标准、照片不清晰、经过编辑处理等非正常拍摄都不予通过
@@ -86,55 +85,6 @@ export default {
 		// console.log(this.$store.state.baseUrl)
 	},
 	methods:{
-		//获取银行卡图片，
-		getcardFn:function(){
-			let _this = this
-			uni.chooseImage({
-			    count: 1, //默认9
-			    success: function (res) {
-					let str = res.tempFilePaths[0];
-					console.log(res)
-					var reader = new FileReader()
-						reader.onloadend = function() {
-							_this.cardPic= reader.result;
-							_this.getCardBase();
-						}
-						if (res.tempFiles[0]) {
-						 reader.readAsDataURL(res.tempFiles[0])
-					   }
-			    },
-				fail: function() {
-					
-				}
-			});
-		},
-		// 上传图片，获取卡号；
-		getCardBase:function(){
-			
-			console.log(this.cardPic);
-			uni.request({
-				method:'POST',
-			    url: 'http://idcardocrc.shumaidata.com/getidcardocrc', 
-				data:{
-					image:this.cardPic
-				},
-			    header: {
-					'Content-Type':'application/x-www-form-urlencoded',
-					'Authorization': 'APPCODE fa541816acdc4234b18dff3ae5f98a26'	
-			    },
-			    success: (res) => {
-					if(res.statusCode==200){
-						console.log(res.data)
-						this.idNumber=res.data.data.info.number;
-						this.name=res.data.data.info.name;
-						// this.cardNo=res.data.data.card_number;
-						// console.log(this.cardNo)
-						// console.log(this.accountBalance)
-					}else{
-					}
-			    }
-			});	
-		},
 		// 加载图片，获取图片信息
 		uploadPic: function(n){
 			let _this = this
@@ -198,28 +148,51 @@ export default {
 		},
 		// 上传个人实名信息，即图片名称
 		uploading:function(){
-			console.log(this.picuploadName)
 			if(this.name==''){
 				this.popupMessage='请填写姓名';
-				this.opens()
+				uni.showToast({
+				    title: this.popupMessage,
+					mask:true,
+					icon:'none',
+				    duration: 2000
+				});
 				return false
 			}else if(!this.namefn(this.name)){
-				this.popupMessage='请填写中文姓名';
-				this.opens()
+				uni.showToast({
+				    title: this.popupMessage,
+					mask:true,
+					icon:'none',
+				    duration: 2000
+				});
 				return false
 			}
 			if(this.idNumber==''){
-				this.popupMessage='请填写身份证号码';
-				this.opens()
+				this.popupMessage='请填写身份证号';
+				uni.showToast({
+				    title: this.popupMessage,
+					mask:true,
+					icon:'none',
+				    duration: 2000
+				});
 				return false
 			}else if(!this.shenfenzhengFn(this.idNumber)){
-				this.popupMessage='身份证号码错误请重新填写';
-				this.opens()
+				this.popupMessage='身份证号错误';
+				uni.showToast({
+				    title: this.popupMessage,
+					mask:true,
+					icon:'none',
+				    duration: 2000
+				});
 				return false
 			}
 			if(this.picuploadName.length<3){
 				this.popupMessage='请上传身份证正、反面及手持身份证照片';
-				this.opens()
+				uni.showToast({
+				    title: this.popupMessage,
+					mask:true,
+					icon:'none',
+				    duration: 2000
+				});
 				return false
 			}else {
 				// console.log(this.picuploadName[2])
@@ -243,16 +216,31 @@ export default {
 						console.log(res)
 						if(res.data.code===0){
 							this.popupMessage=res.data.msg;
-							this.$refs.popup.open();
+							uni.showToast({
+							    title: this.popupMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 								this.$Router.pushTab('/pages/main/mycenter')
 							
 						}else if(res.data.code===-1){
 							this.popupMessage=res.data.msg;
+							uni.showToast({
+							    title: this.popupMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 							console.log(res.data.msg)
-							this.$refs.popup.open();
 						}else{
 							this.popupMessage=res.data.msg;
-							this.$refs.popup.open();
+							uni.showToast({
+							    title: this.popupMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 						}
 				       
 				    }

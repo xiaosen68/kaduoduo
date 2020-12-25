@@ -121,7 +121,8 @@
 			// 查询是否可交易
 			getTradable:function(){
 				uni.showLoading({
-					title:'加载中'
+					title:'加载中',
+					mask:true,
 				})
 				uni.request({
 					method:'POST',
@@ -329,11 +330,16 @@
 								if(res.data.code==0){
 									this.isClick=true;
 									this.popupMessage=res.data.data;
+									this.moneyNum='';
 									uni.showToast({
 									    title:this.popupMessage,
 										mask:true,
 										icon:'none',
-									    duration: 2000
+									    duration: 2000,
+										success:(res)=>{
+											this.$Router.back(1)
+											// this.$Router.pushTab({path:'pages/main/homepage'})
+										}
 									});
 										
 									}else if(res.data.code==-1){

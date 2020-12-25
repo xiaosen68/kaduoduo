@@ -89,7 +89,7 @@ export default {
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
+					// console.log(res)
 					if(res.data.code==0){
 							if(res.data.data.is_default==1){
 								this.selectDefault=true;
@@ -102,7 +102,7 @@ export default {
 						this.phone=res.data.data.customer_phone;
 						this.addressStatus=res.data.data.address_details;
 					}else{
-						console.log(res)
+						// console.log(res)
 					}
 			       
 			    }
@@ -150,7 +150,7 @@ export default {
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res)
+						// console.log(res)
 						if(res.data.code==0){
 						this.popupMessage=res.data.data;
 						uni.showToast({
@@ -161,7 +161,7 @@ export default {
 						});
 						this.$Router.push({name:'selectlocation'})
 						}else{
-							console.log(res)
+							// console.log(res)
 						}
 				       
 				    }
@@ -183,7 +183,7 @@ export default {
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res)
+						// console.log(res)
 						if(res.data.code==0){
 						this.popupMessage=res.data.data;
 						uni.showToast({
@@ -195,7 +195,7 @@ export default {
 						
 						this.$Router.push({name:'selectlocation'})
 						}else{
-							console.log(res)
+							// console.log(res)
 						}
 				       
 				    }

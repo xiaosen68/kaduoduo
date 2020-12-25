@@ -75,7 +75,6 @@
 	},
 	onShow() {
 		this.cardholder=uni.getStorageSync('userName');
-		this.reservePhone=uni.getStorageSync('phone')
 	},
 	methods:{
 		//获取银行卡图片，
@@ -121,8 +120,12 @@
 						this.cardNo=res.data.data.card_number;
 						this.bank=res.data.data.bank_name;
 					}else{
-						this.popupMessage="识别失败";
-						this.$refs.popup.open();
+						uni.showToast({
+							title:"识别失败",
+							mask:true,
+							icon:'none',
+							duration: 2000
+						});
 					}
 					uni.hideLoading()
 			    },
@@ -185,12 +188,21 @@
 		    success: (res) => {
 				if(res.data.code==0){
 					this.popupMessage=res.data.data;
-					this.$refs.popup.open();
+					uni.showToast({
+						title:this.popupMessage,
+						mask:true,
+						icon:'none',
+						duration: 2000
+					});
 					this.$Router.back(1)
 				}else if(res.data.code==-1){
 					this.popupMessage=res.data.msg;
-					this.$refs.popup.open();
-				}else{
+					uni.showToast({
+						title:this.popupMessage,
+						mask:true,
+						icon:'none',
+						duration: 2000
+					});
 				}
 		       
 		    },
@@ -283,9 +295,11 @@
 		padding-top: 20upx;
 	}
 	.input-box{
+		position: relative;
 		width: 650upx;
-		padding: 0 50upx;
-		line-height: 100upx;
+		padding: 30upx 50upx;
+		font-size: 30upx;
+		/* line-height: 100upx; */
 		/* margin-top: 10upx; */
 		border-bottom:solid 2upx #dfd9d9;
 	}
@@ -296,7 +310,7 @@
 		width: 470upx;
 		padding-left: 20upx;
 		font-size: 36upx;
-		vertical-align: text-bottom;
+		vertical-align: middle;
 		}
 		.next-btn{
 				height: 80upx;
@@ -328,6 +342,7 @@
 	.card-icons{
 		position: absolute;
 		right: 40upx;
+		top:10upx;
 		font-size: 24upx;
 	}
 </style>

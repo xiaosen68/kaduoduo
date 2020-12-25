@@ -4,8 +4,8 @@
 			<view class="consume-money">
 				<view class="">
 					<image src="../../static/img/yinlian.png" mode="" class="consume-yinlain"></image>
-					<text class="cm-gm">价格:￥{{allGoodscj}}</text>
-					<text class="cm-gp">团购:￥{{allGoodsjs}}</text>
+					<text class="cm-gm">团购:￥{{allGoodscj}}</text>
+					<text class="cm-gp">价格:￥{{allGoodsjs}}</text>
 				</view>
 
 				<view class="kq-select">
@@ -431,7 +431,7 @@
 						// 快捷收卡
 						this.orderTypeCode='EXPRESS_PAYMENT'
 					}
-					console.log(this.tradable)
+					// console.log(this.tradable)
 				// 判断是否可以消费
 				if(!this.tradable){
 					this.getTradable();
@@ -454,7 +454,7 @@
 							'Content-Type':'application/json' //自定义请求头信息
 					    },
 					    success: (res) => {
-							console.log(res)
+							// console.log(res)
 							if(res.data.code==0){
 								this.popupMessage=res.data.data;
 								this.$refs.popup.open();

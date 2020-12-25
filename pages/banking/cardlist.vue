@@ -9,15 +9,7 @@
 						</view>
 		</view>
 		<view class="card-list">
-			<load-refresh
-			  ref="loadRefresh"
-			  :heightReduce="10"
-			  :backgroundCover="'#F3F5F5'"
-			  :pageNo="currPage"
-			  :totalPageNo="totalPage" 
-			 
-			  @refresh="refresh" class="">
-			  <view slot="content-list">
+			
 			    <!-- 数据列表 -->
 				<view class="card-item" v-for="item in cardList">
 					<view class="card-item-box1">
@@ -41,8 +33,6 @@
 						</view>
 					</view>
 				</view>
-			  </view>
-			</load-refresh>
 		</view>
 		<router-link class="add-card-box" to="{name:'addcredit'}" v-if="addcredit">
 			<uni-icons type="plus" color="#a3a3a3" size="24"></uni-icons>
@@ -59,17 +49,11 @@
 </template>
 
 <script>	
-import loadRefresh from '@/components/load-refresh/load-refresh.vue'
 export default {
-  components: {
-    loadRefresh
-  },
 	data (){
 		return{
 			cardtype:true, 
 			addcredit:true,
-			currPage:1,
-			totalPage:1,
 			// cardlist: [], // 数据集
 			creditlist:[],//信用卡
 			depositlist:[],//储蓄卡
@@ -78,7 +62,7 @@ export default {
 	},
 	onLoad() {
 		// 刷新
-		this.refresh()
+		 uni.startPullDownRefresh();
 	},
 	computed:{
 		cardList:function(){
@@ -127,11 +111,18 @@ export default {
 					if(res.data.code==0){
 						this.creditlist=res.data.data
 					}else if(res.data.code==-1){
-						this.popupMessage=res.data.msg;
-						// this.$refs.popup.open();
+						uni.showToast({
+						    title:res.data.msg,
+							mask:true,
+							icon:'none',
+						    duration: 2000
+						});
 					}
 			       
-			    }
+			    },
+				complete() {
+					uni.stopPullDownRefresh();
+				}
 			});	
 		},
 		// 获取储蓄卡
@@ -150,11 +141,18 @@ export default {
 						// 默认卡排序
 						this.depositlist=res.data.data.sort(function(a,b){return b.defaultCard-a.defaultCard})
 					}else if(res.data.code==-1){
-						this.popupMessage=res.data.msg;
-						// this.$refs.popup.open();
+						uni.showToast({
+						    title:res.data.msg,
+							mask:true,
+							icon:'none',
+						    duration: 2000
+						});
 					}
 			       
-			    }
+			    },
+				complete() {
+					uni.stopPullDownRefresh();
+				}
 			});	
 		},
 		// 设置默认储蓄卡
@@ -174,12 +172,21 @@ export default {
 				    },
 				    success: (res) => {
 						if(res.data.code==0){
-							this.popupMessage=res.data.data;
-							this.$refs.popup.open();
-							this.refresh()
+							this.getdeposit();
+							uni.showToast({
+							    title:res.data.data,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
+							
 						}else if(res.data.code==-1){
-							this.popupMessage=res.data.msg;
-							this.$refs.popup.open();
+							uni.showToast({
+							    title:res.data.msg,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 						}
 				       
 				    }
@@ -198,23 +205,16 @@ export default {
 			if(n===1){
 				this.cardtype=true;
 				this.addcredit=true;
-				// this.cardlist=this.creditlist;
-				// this.refresh();
+				
 			}else if(n===2){
 				this.cardtype=false;
 				this.addcredit=false;
-				// this.cardlist=this.depositlist;
 			}
-			this.refresh();
-		},
-		loadMore() {
-        // 请求新数据完成后调用 组件内loadOver()方法
-        // 注意更新当前页码 currPage
-        this.$refs.loadRefresh.loadOver()
-      },
-      // 下拉刷新数据列表
-      refresh() {
-        console.log('refresh')
+			 uni.startPullDownRefresh();
+		}, 
+	},
+	 // 下拉刷新数据列表
+	onPullDownRefresh(){
 		if(this.cardtype){
 			// 刷新信用卡
 			this.getcredit();
@@ -222,7 +222,6 @@ export default {
 			// 刷新储蓄卡
 			this.getdeposit();
 		}
-      }
 	},
 	filters:{
 		nameFilters(name){

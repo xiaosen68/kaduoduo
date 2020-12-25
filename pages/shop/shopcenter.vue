@@ -27,14 +27,14 @@
 				消费订单
 				<router-link class="shop-deal-title-btn" to="{name:'shoporderlist'}">
 					全部
-					<uni-icons type="forward" color="#a3a3a3" style="vertical-align: bottom;"></uni-icons>
+					<uni-icons type="forward" color="#a3a3a3" style="vertical-align: middle;"></uni-icons>
 				</router-link>
 			</view>
 			<view class="shop-deal-title" v-if="yishouif">
 				已售订单
 				<router-link class="shop-deal-title-btn" to="{name:'yishoulist'}">
 					全部
-					<uni-icons type="forward" color="#a3a3a3" style="vertical-align: bottom;"></uni-icons>
+					<uni-icons type="forward" color="#a3a3a3" style="vertical-align: middle;"></uni-icons>
 				</router-link>
 			</view>
 			<!-- <view class="shop-deal-class-box">
@@ -67,12 +67,12 @@
 		</view>
 		<router-link class="shop-area-box" to="{name:'selectlocation'}" >
 			我的收货地址
-			<uni-icons type="forward" color="#a3a3a3" style="vertical-align: bottom; float: right;"></uni-icons>
+			<uni-icons type="forward" color="#a3a3a3" style="vertical-align: middle; float: right;"></uni-icons>
 		</router-link>
 		<uni-popup ref="popupcenter" type="center">
 			<view class="popupCenter-box">
 				<view class="popup-info-item">
-					1、平台没消费100元积一分；
+					1、平台每消费100元积一分，不足100元不积分；
 				</view>
 				<view class="popup-info-item">
 					2、积分可用于平台商品兑换(仅限积分商品)；
@@ -210,7 +210,7 @@ export default {
 		line-height: 100upx;
 		background-color: #FFFFFF;
 		margin: 20upx auto;
-		font-size: 20upx;
+		font-size: 24upx;
 		padding: 0 40upx;
 		border-radius: 10upx;
 	}

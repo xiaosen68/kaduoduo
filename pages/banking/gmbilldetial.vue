@@ -8,7 +8,7 @@
 						{{item.productName}}
 					</view>
 					<view class="">
-						成交价:{{item.transactionPrice*item.discount}}
+						价格:{{item.transactionPrice*item.discount}}
 					</view>
 				</view>
 				<view class="goods-num">

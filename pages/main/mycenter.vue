@@ -15,7 +15,7 @@
 				<router-link to="{name:'fenrun'}" class="my-fr-box">
 					<image class="my-info2-item-pic" src="../../static/img/bank/fenrun.png" mode=""></image>
 					<view class="">
-					佣金
+						收益
 					</view>
 				</router-link>
 				<router-link to="{name:'yue'}" class="my-ye-box">
@@ -48,7 +48,7 @@
 					<view class="">
 						所有收益
 					</view>
-					<text>{{infodata.totalRevenue}}</text>
+					<text>{{infodata.sumRevenue}}</text>
 				</view>
 				<view class="jifen">
 					<view class="">
@@ -222,7 +222,7 @@
 			},
 			// 在线客服
 			select:function(item,index){
-				console.log(item)
+				// console.log(item)
 				if(item.item.name==="ph"){
 					uni.makePhoneCall({
 					    phoneNumber: '037187092689' ,//仅为示例,

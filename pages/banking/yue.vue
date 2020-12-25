@@ -61,16 +61,16 @@ export default {
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
+					// console.log(res)
 					if(res.data.code==0){
 						this.accountBalance=res.data.data;
 						this.withdrawableAmount=res.data.data.withdrawableAmount;
-						console.log(this.accountBalance)
+						// console.log(this.accountBalance)
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
 						// this.$refs.popup.open();
 					}else{
-						console.log(res)
+						// console.log(res)
 					}
 			       
 			    }
@@ -86,20 +86,20 @@ export default {
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
+					// console.log(res)
 					if(res.data.code==0){
 						this.revenueAmount=res.data.data.revenueAmount;
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
 						// this.$refs.popup.open();
 					}else{
-						console.log(res)
+						// console.log(res)
 					}
 			       
 			    }
 			});	
 			
-			console.log(uni.getStorageSync('role'))
+			// console.log(uni.getStorageSync('role'))
 			if(uni.getStorageSync('role')=='BUSINESS'){
 			this.ifyue=true	
 			}else{

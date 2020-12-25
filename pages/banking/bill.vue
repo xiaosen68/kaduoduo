@@ -9,73 +9,55 @@
 			</view>
 		</view>
 		<view class="bill-box-list">
-			<load-refresh
-				  ref="loadRefresh"
-				  :heightReduce="10"
-				  :backgroundCover="'#F3F5F5'"
-				  :pageNo="currPage"
-				  :totalPageNo="totalPage" 
-				  @loadMore="loadMore" 
-				  @refresh="refresh" class="">
-				  <view slot="content-list">
-					<!-- 数据列表 -->
-					<view @click="gobillStatus(item)" class="bill-detil" v-for="(item,index) in showList">
-						<view class="bill-date">
-							<view class="bill-type">
-								{{item.passageWayName}}
-							</view>
-							<text class="bill-date-box">{{item.orderTime}}</text>
-						</view>
-						<view class="bill-status">
-							<view class="bill-money">
-								{{item.totalTransactionPrice}}
-							</view>
-							<text>{{item.stateMsg}}</text>
-						</view>
+			<!-- 数据列表 -->
+			<view @click="gobillStatus(item)" class="bill-detil" v-for="(item,index) in showList">
+				<view class="bill-date">
+					<view class="bill-type">
+						{{item.displayName}}
 					</view>
-				 </view>
-				</load-refresh>
+					<text class="bill-date-box">{{item.orderTime}}</text>
+				</view>
+				<view class="bill-status">
+					<view class="bill-money">
+						{{item.totalTransactionPrice}}
+					</view>
+					<text>{{item.stateMsg}}</text>
+				</view>
+			</view>
 		</view>	
 </view>
 </template>
 
 <script>
-import loadRefresh from '@/components/load-refresh/load-refresh.vue'
 export default {
-  components: {
-    loadRefresh
-  },
 	data (){
 		return{
 			list: [], // 数据集
 			currPage: 1, // 当前页码
-			totalPage: 1 ,// 总页数
-			size:20,
+			totalPage:0 ,// 总页数
+			size:10,
 			cardtype:true, 
 			url:'gmbilldetial',
 			showList:'',
+			typeNmuber:1
 		}
 	},
 	onLoad(){
-		this.getxiaofei();
+		// this.getxiaofei();
+		 uni.startPullDownRefresh();
 	},
 	methods:{
-		loadMore() {
-        // 请求新数据完成后调用 组件内loadOver()方法
-        // 注意更新当前页码 currPage
-        this.$refs.loadRefresh.loadOver()
-      },
-      // 下拉刷新数据列表
-      refresh() {
-      },
 	  typeclick(n){
+		  this.currPage=1;
 	  	if(n===1){
+			this.typeNmuber=n;
 	  		this.cardtype=true;
 	  		this.addcredit=true;
-			this.url='gmbilldetial'
+			this.url='gmbilldetial';
 			this.getxiaofei()
 	  		
 	  	}else if(n===2){
+			this.typeNmuber=n;
 	  		this.cardtype=false;
 	  		this.addcredit=false;
 			this.url='jsbilldetial';
@@ -103,23 +85,32 @@ export default {
 		      },
 		      success: (res) => {
 		  		if(res.data.code==0){
-					this.showList=res.data.data.list;
-					this.totalPage=res.data.total_page;
+					if(res.data.data.current_page==1){
+						this.showList=res.data.data.list;
+					}else{
+						this.showList=this.showList.concat(res.data.data.list);
+					}	
+					// console.log(this.showList)
+					this.currPage=res.data.data.current_page;
+					this.totalPage=res.data.data.total_page;
 		  		}else if(res.data.code==-1){
 		  			this.popupMessage=res.data.msg;
-		  		}else{
 		  		}
 		         
-		      }
+		      },
+			  complete() {
+			  	uni.stopPullDownRefresh();
+			  }
 		  });	
 	  },
 	  getjishou:function(){
+		  // console.log(2)
 		  uni.request({
 		  	method:'POST',
 		      url: this.$baseUrl+'/api/v1/pri/shop/mailingOrderByUserId', 
 		      data: {
-		  				  size:this.size,
-		  				  page:this.currPage
+					  size:this.size,
+					  page:this.currPage
 		      },
 		      header: {
 		  		'token':uni.getStorageSync('token'),
@@ -127,16 +118,65 @@ export default {
 		      },
 		      success: (res) => {
 		  		if(res.data.code==0){
-		  					this.showList=res.data.data.list;
-		  					this.totalPage=res.data.total_page;
+					if(res.data.data.current_page==1){
+						this.showList=res.data.data.list;
+					}else{
+						this.showList=this.showList.concat(res.data.data.list);
+					}
+		  					
+							this.currPage=res.data.data.current_page;
+		  					this.totalPage=res.data.data.total_page;
 		  		}else if(res.data.code==-1){
 		  			this.popupMessage=res.data.msg;
-		  		}else{
 		  		}
 		         
-		      }
+		      },
+			  complete() {
+			  	uni.stopPullDownRefresh();
+			  }
 		  });	
 	  }
+	},
+	onPullDownRefresh(){
+		this.currPage=1;
+		if(this.typeNmuber===1){
+			this.cardtype=true;
+			this.addcredit=true;
+			this.url='gmbilldetial'
+			this.getxiaofei()
+			
+		}else if(this.typeNmuber===2){
+			this.cardtype=false;
+			this.addcredit=false;
+			this.url='jsbilldetial';
+			this.getjishou();
+		}
+	},
+	// 上滑加载更多
+	onReachBottom(){
+		if(this.currPage<this.totalPage){
+			this.currPage++;
+			if(this.typeNmuber===1){
+				this.cardtype=true;
+				this.addcredit=true;
+				this.url='gmbilldetial'
+				this.getxiaofei()
+				
+			}else if(this.typeNmuber===2){
+				this.cardtype=false;
+				this.addcredit=false;
+				this.url='jsbilldetial';
+				this.getjishou();
+			}
+		}else{
+			uni.showToast({
+			    title: '没有更多数据了',
+				mask:true,
+				icon:'none',
+			    duration: 2000
+			});
+		}
+		
 	}
 }
 </script>

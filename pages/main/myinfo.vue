@@ -51,7 +51,7 @@ export default {
 				'Content-Type':'application/json' //自定义请求头信息
 		    },
 		    success: (res) => {
-				console.log(res)
+				// console.log(res)
 				if(res.data.code==0){
 					this.infoData=res.data.data;
 				}else{
@@ -65,7 +65,7 @@ export default {
 		       
 		    },
 			complete: (data) => {
-				console.log(data)
+				// console.log(data)
 			}
 		});
 	

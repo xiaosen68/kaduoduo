@@ -132,8 +132,8 @@
 						this.bank=res.data.data.bank;
 						// console.log(this.accountBalance)
 					}else{
-						// this.popupMessage='错误码：'+res.code+'信息：'+res.msg;
-						// this.$refs.popup.open();
+						this.popupMessage='错误码：'+res.code+'信息：'+res.msg;
+						this.$refs.popup.open();
 					}
 			       
 			    }

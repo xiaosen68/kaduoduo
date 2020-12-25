@@ -8,10 +8,10 @@
 						{{item.productName}}
 					</view>
 					<view class="">
-						成交价:{{item.transactionPrice}}
+						团购:{{item.transactionPrice}}
 					</view>
 					<view class="">
-						挂牌价:{{item.mailingPrice}}
+						价格:{{item.mailingPrice}}
 					</view>
 				</view>
 				<view class="goods-num">
@@ -22,13 +22,13 @@
 		<view class="goods-price">
 			<view class="goods-price-item">
 				<view class="goods-ft">
-					商品总价
+					团购总价
 				</view>
 				<text class="goos-ft-num">{{datas.totalTransactionPrice}}</text>
 			</view>
 			<view class="goods-price-item">
 				<view class="goods-ft">
-					寄售总价
+					商品总价
 				</view>
 				<text class="goos-ft-num">{{datas.totalMailingPrice}}</text>
 			</view>

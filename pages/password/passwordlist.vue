@@ -7,13 +7,13 @@
 				<uni-icons type="arrowright" class="my-app-item-arrow"></uni-icons>
 			</view>
 		</view>
-		<view class="password-item">
+		<!-- <view class="password-item">
 			<view @click="gopwd2">
 				<image src="../../static/img/bank/zhanghusafe.png" class="my-app-item-pic" mode=""></image>
 				<text>重置交易密码</text>
 				<uni-icons type="arrowright" class="my-app-item-arrow"></uni-icons>
 			</view>
-		</view>
+		</view> -->
 		
 	</view>
 </template>

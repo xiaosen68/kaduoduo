@@ -17,7 +17,7 @@
 			</view>
 			<view class="store-box" >
 				<view class="shop-list">
-					<router-link :to="{name:'goodsstatus',params: {id: item.id}}" class="store-item" v-for="(item,index) in goodsList"  v-if="!iflast(index)">
+					<router-link :to="{name:'goodsstatus',params: {id: item.id}}" class="store-item" v-for="(item,index) in goodsList"  >
 						<image class="good-pic" :src="item.productUrl" mode="aspectFit"></image>
 						<view class="goods-name">
 							{{item.productName}}
@@ -34,7 +34,7 @@
 						</view>
 					</router-link>
 				</view>
-				<view class="shop-list2" >
+				<!-- <view class="shop-list2" >
 					<router-link :to="{name:'goodsstatus',params: {id: item.id}}" class="store-item" v-for="(item,index) in goodsList"  v-if="iflast(index)">
 						<image class="good-pic" :src="item.productUrl" mode="aspectFit"></image>
 						<view class="goods-name">
@@ -51,14 +51,20 @@
 							</view>
 						</view>
 					</router-link>
+				</view> -->
+				<view class="get-more" @click="getmoreFn">
+					{{getMoretext}}
 				</view>
 			</view>
+			
 		</view>
+		
 		<uni-popup ref="popup" type="center">
 			<view class="popupCenter-box">
 				{{popupCenterMessage}}
 			</view>
 		</uni-popup>
+		
 	</view>
 </template>
 
@@ -85,7 +91,7 @@ export default {
 			current: 0,
 			currentPage:1,
 			totalSize:0,
-			size:20,
+			size:10,
 			totalPage:0,
 			mode: 'default',
 			popupCenterMessage:'',
@@ -98,6 +104,7 @@ export default {
 					goodsNum:0,
 				}
 			],
+			getMoretext:'点击加载更多'
 		}
 	},
 	onLoad() {
@@ -108,8 +115,9 @@ export default {
 		            this.current = e.detail.current;
 		        },
 		trigger:function(e){
-			console.log(e)
+			// console.log(e)
 		},
+		// 获取产品列表
 		getPruductList:function(){
 			uni.request({
 				method:'POST',
@@ -124,32 +132,41 @@ export default {
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					console.log(res)
 					if(res.data.code==0){
-						this.goodsList=res.data.data.list;
+						if(res.data.data.current_page==1){
+							this.goodsList=res.data.data.list;
+						}else{
+							this.goodsList=this.goodsList.concat(res.data.data.list);
+						}
 						this.totalSize=res.data.data.total_size;
 						this.currentPage=res.data.data.current_page;
 						this.totalPage=res.data.data.total_page;
+						if(this.currentPage<this.totalPage){
+							this.getMoretext="点击加载更多"
+						}else{
+							this.getMoretext="没有更多数据了"
+						}
 					}
 			       
 			    }
 			});
 		},
-		// 判断商品个数，设置列表布局
-		iflast:function(n){
-			if(n%2>0){
-					return true 
+		// 获取更多产品
+		getmoreFn:function(){
+			if(this.totalPage>this.currentPage){
+				this.currentPage++;
+				this.getPruductList();
 			}else{
-				return false
+				this.getMoretext="没有更多数据了"
 			}
+			
 		},
 	},
+	onPullDownRefresh(){
+		console.log('刷新')
+	},
 	onReachBottom:function(){
-		if(this.totalPage>this.currentPage){
-			this.currentPage++;
-			this.getPruductList();
-			this.this.goodsList.push(res.data.data.list)
-		}
+		
 	},
 	filters:{
 		numberFilters:function(val){
@@ -177,8 +194,12 @@ export default {
 		line-height: 2em;
 	}
 	.shop-list{
-		display: inline-block;
-		width: 330upx;
+		display: flex;
+		flex-wrap:wrap;
+		/* justify-content: flex-start; */
+		justify-content: space-around;
+		/* display: inline-block; */
+		width: 700upx;
 		
 	}
 	.shop-list2{
@@ -243,6 +264,8 @@ export default {
 		margin-bottom: 200upx;
 	}
 	.store-item{
+		width: 300upx;
+		display: inline-block;
 		border: solid 10upx #f4f8fb;
 		/* text-align: left; */
 	}
@@ -445,5 +468,11 @@ export default {
 		/* width: 160upx; */
 		text-align: left;
 		padding-left: 20upx;
+	}
+	.get-more{
+		text-align: center;
+		line-height: 40upx;
+		margin-top: 40upx;
+		color: #D41C26;
 	}
 </style>

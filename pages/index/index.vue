@@ -4,7 +4,7 @@
 			<image class="image" src="../../static/img/tou1.jpg" mode=""></image>
 		</view>
 		<view>
-			<text class="company-name">牛贝商城</text>
+			<text class="company-name">有粒糖商城</text>
 		</view>
 		<view class="login-input">
 			<input type="number" v-model="phone" maxlength="11" placeholder="请输入手机号" class="input-num uniinput" value="" />
@@ -61,11 +61,21 @@
 
 				// this.$Router.pushTab('/pages/main/homepage')
 				if (!this.isPoneAvailable(this.phone)) {
-					this.$refs.popup.open()
+					uni.showToast({
+					    title: this.popupMessage,
+						mask:true,
+						icon:'none',
+					    duration: 2000
+					});
 					return false
 				} else if (this.password == '') {
 					this.popupMessage = "请输入密码"
-					this.$refs.popup.open()
+					uni.showToast({
+					    title: this.popupMessage,
+						mask:true,
+						icon:'none',
+					    duration: 2000
+					});
 					return false
 				};
 				// 记住账号
@@ -85,8 +95,6 @@
 						'Content-Type': 'application/json' //自定义请求头信息
 					},
 					success: (res) => {
-						console.log('res')
-						console.log(res)
 						if (res.data.code == 0) {
 
 							// 储存token
@@ -98,13 +106,23 @@
 						
 						} else if (res.data.code == -1) {
 							this.popupMessage = res.data.msg;
-							this.$refs.popup.open();
+							uni.showToast({
+							    title: this.popupMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 						}
 
 					},
 					fail :()=> {
 						this.popupMessage = '请稍后重试';
-						this.$refs.popup.open();
+						uni.showToast({
+						    title: this.popupMessage,
+							mask:true,
+							icon:'none',
+						    duration: 2000
+						});
 					}
 				});
 			}

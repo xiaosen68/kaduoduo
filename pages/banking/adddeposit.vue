@@ -7,13 +7,13 @@
 			</view>
 			<view class="input-box">
 				<text>银行卡号:</text>
-				<input type="number" class="input-num" v-model="cardNo" @blur="getcard" 
-				maxlength="19" placeholder="请输入储蓄卡卡号" />
+				<input type="number" class="input-num" v-model="cardNo" 
+				maxlength="19" placeholder="请输入储蓄卡卡号" @blur="getcard" />
 				<uni-icons type="camera" class="card-icons" size="20" @click="getcardFn"></uni-icons>
 			</view>
 			<view class="input-box">
 				<text>发卡行:</text>
-				<input type="text" class="input-num" v-model="bank" @blur="getcard" maxlength="19" placeholder="请输入发卡行" />
+				<input type="text" class="input-num" v-model="bank" @click="getcard"  maxlength="19" placeholder="请输入发卡行如'中国建设银行'" />
 			</view>
 			<view class="input-box">
 				<text>预留手机:</text>
@@ -55,7 +55,7 @@ export default {
 	},
 	onShow() {
 		this.cardholder=uni.getStorageSync('userName');
-		this.reservePhone=uni.getStorageSync('phone')
+		
 	},
 	methods:{
 		//获取银行卡图片，
@@ -107,10 +107,10 @@ export default {
 			});	
 		},
 		getcard(){
-			if(this.cardNo==''){
+			if(this.cardNo==''||this.bank!==''){
 				return false
 			}
-			console.log(this.cardNo)
+			// console.log(this.cardNo)
 				uni.request({
 					method:'GET',
 				    url: 'https://bankaddress.shumaidata.com/bankaddress', 
@@ -124,8 +124,7 @@ export default {
 				    success: (res) => {
 						
 						if(res.statusCode==200){
-							// 
-							this.accountOpeningProvince=res.data.data.province+res.data.data.city
+							// this.accountOpeningProvince=res.data.data.province+res.data.data.city
 							this.bank=res.data.data.bank;
 						}
 				       
