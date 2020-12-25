@@ -88,7 +88,8 @@
 	{
 		"path": "pages/shop/yishoulist",
 		"style": {
-			"navigationBarTitleText": "销售订单"
+			"navigationBarTitleText": "销售订单",
+			"enablePullDownRefresh":true
 		}
 	},
 	{
@@ -118,7 +119,8 @@
 	{
 		"path": "pages/shop/integraldetail",
 		"style": {
-			"navigationBarTitleText": "积分明细"
+			"navigationBarTitleText": "积分明细",
+			"enablePullDownRefresh":true
 		}
 	},
 	{
@@ -130,7 +132,8 @@
 	{
 		"path": "pages/shop/shoporderlist",
 		"style": {
-			"navigationBarTitleText": "订单列表"
+			"navigationBarTitleText": "订单列表",
+			"enablePullDownRefresh":true
 		}
 	},
 	{
@@ -160,7 +163,7 @@
 	{
 		"path": "pages/password/forgetpassword",
 		"style": {
-			"navigationBarTitleText": "查找密码"
+			"navigationBarTitleText": "重置密码"
 		}
 	},
 	{
@@ -184,7 +187,8 @@
 	{
 		"path": "pages/banking/cardlist",
 		"style": {
-			"navigationBarTitleText": "卡片管理"
+			"navigationBarTitleText": "卡片管理",
+				"enablePullDownRefresh":true
 		}
 	},
 	{
@@ -243,7 +247,8 @@
 	},{
 		"path": "pages/banking/fenrunlist",
 		"style": {
-			"navigationBarTitleText": "佣金明细"
+			"navigationBarTitleText": "佣金明细",
+			"enablePullDownRefresh":true
 		}
 	},{
 		"path": "pages/banking/shoukuan",
@@ -266,7 +271,8 @@
 	{
 		"path": "pages/main/myteamstatus",
 		"style": {
-			"navigationBarTitleText": "团队列表"
+			"navigationBarTitleText": "团队列表",
+			"enablePullDownRefresh":true
 		}
 	},	
 	{
@@ -305,7 +311,8 @@
 	},{
 		"path": "pages/banking/bill",
 		"style": {
-			"navigationBarTitleText": "订单"
+			"navigationBarTitleText": "订单",
+			"enablePullDownRefresh":true
 		}
 	},{
 		"path": "pages/banking/gmbilldetial",
@@ -322,7 +329,8 @@
 	{
 		"path": "pages/banking/rolloutmoneylist",
 		"style": {
-			"navigationBarTitleText": "提现列表"
+			"navigationBarTitleText": "提现列表",
+			"enablePullDownRefresh":true
 		}
 	},
 	{
@@ -382,9 +390,10 @@
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
-		"navigationBarTitleText": "uni-app",
+		"navigationBarTitleText": "有粒糖",
 		"navigationBarBackgroundColor": "#d41c26",
 		"backgroundColor": "#FFFFFF"
+		// "titleImage":"static/logo.png"
 	},
 	"tabBar": {
 	    "color": "#7A7E83",
@@ -402,6 +411,7 @@
 	        "iconPath": "static/img/tags2.png",
 	        "selectedIconPath": "static/img/tag2.png",
 	        "text": "商城"
+			
 	    }, {
 	        "pagePath": "pages/main/share",
 	        "iconPath": "static/img/tags3.png",
