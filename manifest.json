@@ -2,7 +2,11 @@
     "name" : "有粒糖",
     "appid" : "__UNI__A97D0AF",
     "description" : "",
+<<<<<<< HEAD
     "versionName" : "1.1.2",
+=======
+    "versionName" : "1.1.0",
+>>>>>>> parent of 4d2d474... Update manifest.json
     "versionCode" : "100",
     "transformPx" : false,
     "app-plus" : {

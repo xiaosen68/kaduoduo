@@ -27,12 +27,20 @@
 						</view>
 						<view class="goods-prices">
 							<view class="goods-cj-pri">
+<<<<<<< HEAD
 								价格：{{item.transactionPrice|numberFilters}} 
+=======
+								市场价：{{item.transactionPrice}} 
+>>>>>>> parent of 4d2d474... Update manifest.json
 							</view>
 						</view>
 						<view class="goods-prices">
 							<view class="goods-cj-pri">
+<<<<<<< HEAD
 								团购：{{ Math.floor(item.transactionPrice*item.discount) |numberFilters}} 
+=======
+								折扣价：{{item.transactionPrice*item.discount |numberFilters}} 
+>>>>>>> parent of 4d2d474... Update manifest.json
 							</view>
 						</view>
 					</router-link>
