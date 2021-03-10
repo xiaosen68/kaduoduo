@@ -139,6 +139,21 @@
 								icon:'none',
 								success() {
 									//成功后处理
+									let _this=this;
+									//#ifndef H5
+									// 获取垃圾缓存
+									plus.cache.calculate(function(n){
+										if(n<1024){
+											 _this.huancun=n+'B'; 
+										 }  
+										 else if(n/1024>=1 && n/1024/1024<1){
+											  _this.huancun= Math.floor(n/1024*100)/100+'KB';
+										 }
+										else if(n/1024/1024>=1){
+										     _this.huancun=Math.floor(n/1024/1024*100)/100+'M';
+										}
+									})
+									//#endif	
 								}
 							})
 						});	

@@ -15,19 +15,35 @@
 			</view>
 		</view>
 		<view class="rollout-num-box">
-			<text>提现金额</text>
-			<view class="rollout-ipt">
-				￥{{zcmoney}}元
-			</view>
-			<view class="roll-all-box">
-				可提现金额<text>{{zcmoney}}</text>元 
-				<!-- <text class="roll-all" @click="rolloutMoney">全部提现</text> -->
-			</view>
+			 <view class="rollout-box-item">
+			 	<view class="rollout-label">可提现金额</view>
+			 	<view class="rollout-ipt">
+			 		￥{{zcmoney}}元
+			 	</view>
+			 </view>
+			 <view class="rollout-box-item">
+			 	<view class="rollout-label">提现手续费</view>
+			 	<view class="rollout-ipt">
+			 		￥3.0元/笔
+			 	</view>
+			 </view>
+		</view>
+		<view class="rollout-num-box" v-if="zcmoney>=100">
+			 <view class="rollout-box-item">
+			 	<view class="rollout-label">税费</view>
+			 	<view class="rollout-ipt">
+			 		￥{{sjmoney}}元
+			 	</view>
+			 </view>
+			 <view class="rollout-box-item">
+			 	<view class="rollout-label">到账金额</view>
+			 	<view class="rollout-ipt">
+			 		￥{{dzmoney}}元
+			 	</view>
+			 </view>
 		</view>
 		<button type="" class="roll-btn" @click="rolloutFn">确认提现</button>
-		<view class="remindyou">
-			注：提现手续费3.0元/笔
-		</view>
+		
 		<uni-popup ref="popupcenter" type="center">
 			<view class="popupCenter-box">
 				{{popupCenterMessage}}
@@ -66,6 +82,8 @@ export default {
 	data (){
 		return{
 			zcmoney:'',//转出金额
+			dzmoney:'',//到账金额
+			sjmoney:'',//税金
 			popupCenterMessage:'',//弹框信息
 			defaultCard:'',
 			cardList:[],
@@ -75,6 +93,9 @@ export default {
 	},
 	onLoad() {
 		this.zcmoney=this.$Route.query.amount;
+		// this.zcmoney=201.22
+		this.sjmoney=Math.ceil(this.zcmoney*7)/100;
+		this.dzmoney=this.zcmoney-this.sjmoney-3;
 		uni.request({
 			method:'GET',
 		    url: this.$baseUrl+'/api/v1/pri/my/getUserSavingsCard', 
@@ -85,7 +106,6 @@ export default {
 				'Content-Type':'application/json' //自定义请求头信息
 		    },
 		    success: (res) => {
-				// console.log(res)
 				if(res.data.code==0){
 					this.cardList=res.data.data;
 					this.defaultCard=res.data.data.filter((item)=>{
@@ -96,12 +116,7 @@ export default {
 					if(!this.defaultCard){
 						this.defaultCard=this.cardList[0];
 					}
-					// console.log(this.defaultCard)
 				}else if(res.data.code==-1){
-					// this.popupMessage=res.data.msg;
-					// this.$refs.popup.open();
-				}else{
-					// console.log(res)
 				}
 		       
 		    }
@@ -118,16 +133,29 @@ export default {
 	},
 		rolloutFn:function(){
 			if(this.zcmoney==''){
-				this.popupCenterMessage='请正确填写金额'
-					this.$refs.popupcenter.open();
-					
+				this.popupCenterMessage='请正确填写金额';
+				uni.showToast({
+				    title:this.popupCenterMessage,
+					mask:true,
+					icon:'none',
+				    duration: 2000
+				});
+				return false;
 					// 大于20元
-			}else if(this.zcmoney<0){
-				this.popupCenterMessage='提现金额需不少于20元'
-					this.$refs.popupcenter.open();
+			}else if(this.zcmoney<100){
+				this.popupCenterMessage='金额需不少于100元';
+				uni.showToast({
+				    title:this.popupCenterMessage,
+					mask:true,
+					icon:'none',
+				    duration: 2000
+				});
+				return false;
 			}else{
-				// console.log(this.zcmoney)
-				// console.log(this.defaultCard.id)
+				uni.showLoading({
+					title:'申请中',
+						mask:true
+				})
 				uni.request({
 					method:'POST',
 				    url: this.$baseUrl+'/api/v1/pri/my/withdrawalAmount', 
@@ -140,17 +168,29 @@ export default {
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						// console.log(res)
 						if(res.data.code==0){
-							this.revenueAmount=res.data.data;
-							// console.log(this.revenueAmount)
+							this.popupCenterMessage=res.data.data;
+							uni.showToast({
+							    title:this.popupCenterMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 						}else if(res.data.code==-1){
-							this.popupMessage=res.data.msg;
-							this.$refs.popupcenter.open();
+							this.popupCenterMessage=res.data.msg;
+							uni.showToast({
+							    title:this.popupCenterMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 						}else{
 						}
 				       
-				    }
+				    },
+					complete: () => {
+						uni.hideLoading()
+					}
 				});	
 				
 			}
@@ -234,18 +274,27 @@ export default {
 		background-color: #f7f7f7;
 	}
 .rollout-num-box{
-	width: 100%;
-	/* height: 200upx; */
 	background-color: #FFFFFF;
 	border-top: solid 20upx #f7f7f7;
-	padding-left: 40upx;
-	font-size: 28upx;
-	padding-top: 40upx;
+	padding: 40upx;
+}
+.rollout-box-item{
+	display: flex;
+	justify-content: space-between;
+	padding-bottom:20upx ;
+	padding-top: 20upx;
+	border-bottom: solid 2upx #f7f7f7;
 }
 .rollout-ipt{
-	padding-top: 20upx;
-	font-size: 60upx;
-	border-bottom: solid 2upx #f7f7f7;
+	/* padding-top: 20upx; */
+	/* font-size: 60upx; */
+	/* border-bottom: solid 2upx #f7f7f7; */
+}
+.rollout-dao{
+	display: inline-block;
+	width: 400upx;
+	text-align: right;
+	font-size: 40upx;
 }
 .rollout-int{
 	display: inline-block;
@@ -256,6 +305,9 @@ export default {
 	color: #A3A3A3;
 	line-height: 60upx;
 	height: 60upx;
+}
+.rollout-label{
+	color:#595a57;
 }
 .roll-all{
 	color: #d5af24;

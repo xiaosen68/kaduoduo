@@ -3,7 +3,7 @@
 		
 		<router-link class="shop-center" to="{name:'shopcenter'}">个人中心</router-link>
 		<uni-swiper-dot :info="info" :current="current" field="content" :mode="mode">
-		    <swiper class="swiper-box" @change="change">
+		    <swiper class="swiper-box" @change="change" autoplay="true">
 		        <swiper-item v-for="(item ,index) in info" :key="index">
 		            <view class="swiper-item">
 		                <image :src="item.url" mode="widthFix" class="banner-img"></image>
@@ -12,8 +12,11 @@
 		    </swiper>
 		</uni-swiper-dot>
 		<view class="card-shop-box">
-			<view class="shop-title">
-				<text>消费专区</text>
+			<view class="shop-class-box">
+				<view class="shop-class-item" v-for="(item,index) in shopClass" @click="sleceShopClass(item.label)">
+					<image class="shop-class-icon" :src="'../../static/img/shop/'+item.icon" mode="" ></image>
+					<view >{{item.label}}</view>
+				</view>
 			</view>
 			<view class="store-box" >
 				<view class="shop-list">
@@ -24,34 +27,17 @@
 						</view>
 						<view class="goods-prices">
 							<view class="goods-cj-pri">
-								价格：{{item.transactionPrice}} 
+								价格：{{item.transactionPrice|numberFilters}} 
 							</view>
 						</view>
 						<view class="goods-prices">
 							<view class="goods-cj-pri">
-								团购：{{item.transactionPrice*item.discount |numberFilters}} 
+								团购：{{ Math.floor(item.transactionPrice*item.discount) |numberFilters}} 
 							</view>
 						</view>
 					</router-link>
 				</view>
-				<!-- <view class="shop-list2" >
-					<router-link :to="{name:'goodsstatus',params: {id: item.id}}" class="store-item" v-for="(item,index) in goodsList"  v-if="iflast(index)">
-						<image class="good-pic" :src="item.productUrl" mode="aspectFit"></image>
-						<view class="goods-name">
-							{{item.productName}}
-						</view>
-						<view class="goods-prices">
-							<view class="goods-cj-pri">
-								市场价：{{item.transactionPrice}} 
-							</view>
-						</view>
-						<view class="goods-prices">
-							<view class="goods-cj-pri">
-								折扣价：{{item.transactionPrice*item.discount |numberFilters}} 
-							</view>
-						</view>
-					</router-link>
-				</view> -->
+	
 				<view class="get-more" @click="getmoreFn">
 					{{getMoretext}}
 				</view>
@@ -91,20 +77,46 @@ export default {
 			current: 0,
 			currentPage:1,
 			totalSize:0,
-			size:10,
+			size:20,
+			label:'',
 			totalPage:0,
 			mode: 'default',
 			popupCenterMessage:'',
-			goodsList:[
+			goodsList:[],
+			getMoretext:'点击加载更多',
+			shopClass:[
 				{
-					goodsName:'网易一卡通1',
-					goodsId:'',
-					goodsPic:'',
-					goodscj:'80',
-					goodsNum:0,
-				}
-			],
-			getMoretext:'点击加载更多'
+					label:'海淘优品',
+					icon:'haitao.png',
+				},{
+					label:'营养保健',
+					icon:'baojian.png'
+				},{
+					label:'美妆护理',
+					icon:'meizhuang.png',
+				},{
+					label:'茶品天下',
+					icon:'chapin.png',
+				},{
+					label:'工艺珠宝',
+					icon:'zhubao.png',
+				},{
+					label:'服饰箱包',
+					icon:'fushi.png',
+				},{
+					label:'百货超市',
+					icon:'baihuo.png',
+				},{
+					label:'数码家电',
+					icon:'shuma.png',
+				},{
+					label:'母婴儿童',
+					icon:'muying.png',
+				},{
+					label:'更多分类',
+					icon:'shopmore.png',
+				},
+			]
 		}
 	},
 	onLoad() {
@@ -117,12 +129,28 @@ export default {
 		trigger:function(e){
 			// console.log(e)
 		},
+		sleceShopClass:function(label){
+			if(label=='更多分类'){
+				this.label='';
+			}else{
+				this.label=label;
+			}
+			this.currentPage=1;
+			this.getPruductList();
+		},
 		// 获取产品列表
 		getPruductList:function(){
+			uni.showLoading({
+				title:'加载中',
+					mask:true
+			})
 			uni.request({
 				method:'POST',
-			    url: this.$baseUrl+'/api/v1/pri/shop/generalProduct', 
+			    // url: this.$baseUrl+'/api/v1/pri/shop/generalProduct',
+				 url: this.$baseUrl+'/api/v1/pri/shop/getProductList',
 			    data: {
+					"productType":'GENERAL',//MAILING、GENERAL
+					"lable":this.label,
 					"page":this.currentPage,
 					"size":this.size
 			
@@ -148,7 +176,10 @@ export default {
 						}
 					}
 			       
-			    }
+			    },
+				complete: () => {
+					uni.hideLoading()
+				}
 			});
 		},
 		// 获取更多产品
@@ -177,6 +208,22 @@ export default {
 </script>
 
 <style>
+	.shop-class-box{
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-around;
+	}
+	.shop-class-item{
+		width: 120upx;
+		font-size: 14upx;
+		margin: 0 10upx;
+		text-align: center;
+	}
+	.shop-class-icon{
+		border-radius: 10upx;
+		width: 100upx;
+		height: 100upx;
+	}
 	.swiper-item{
 		text-align: center;
 	}

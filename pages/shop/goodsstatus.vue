@@ -10,8 +10,8 @@
 				<text class="goods-num">数量：{{goodsStatus.amount}}</text>
 			</view>
 			<view class="goods-price">
-				<text class="goods-price-zk">{{goodsStatus.transactionPrice*goodsStatus.discount | price}} 元</text>
-				<text class="goods-price-cj">价格：{{goodsStatus.transactionPrice}}元</text>
+				<text class="goods-price-zk">{{Math.floor( goodsStatus.transactionPrice*goodsStatus.discount)| price}} 元</text>
+				<text class="goods-price-cj">价格：{{goodsStatus.transactionPrice| price}}元</text>
 			</view>
 			<view class="goods-picture-box">
 				<image :src="goodsStatus.productDetailsUrl" mode="widthFix"></image>

@@ -116,7 +116,7 @@
 				},
 				getListWidth:function(){
 					this.backgroundimage='url('+this.imgList[0]+')'
-					this.bjListWidth=this.imgList*220+'upx';
+					this.bjListWidth=this.imgList.length*220+'upx';
 					
 					
 				},

@@ -83,7 +83,7 @@ export default {
 		  });
 	  },
 	  rollmoneystatusFn:function(id){
-		  this.$Router.push({name:'rolloutmoneystatus',params: { id: id }})
+		  // this.$Router.push({name:'rolloutmoneystatus',params: { id: id }})
 	  }
 	},
 	onPullDownRefresh(){
