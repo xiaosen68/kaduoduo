@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 		<view>
-			<image class="image" src="../../static/img/tou1.jpg" mode=""></image>
+			<image class="image" src="../../static/img/niubei.jpg" mode=""></image>
 		</view>
 		<view>
 			<text class="company-name">有粒糖商城</text>

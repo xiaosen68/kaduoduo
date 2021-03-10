@@ -11,19 +11,18 @@
 				maxlength="19" placeholder="请输入储蓄卡卡号" @blur="getcard" />
 				<uni-icons type="camera" class="card-icons" size="20" @click="getcardFn"></uni-icons>
 			</view>
-		
+			<view class="input-box">
+				<text>发卡行:</text>
+				<input type="text" class="input-num" v-model="bank" @click="getcard"  maxlength="19" placeholder="请输入发卡行如'中国建设银行'" />
+			</view>
 			<view class="input-box">
 				<text>预留手机:</text>
 				<!-- <text class="card-text">{{reservePhone}}</text> -->
 				<input type="number" class="input-num" v-model="reservePhone" maxlength="11" value=""placeholder="请输入预留手机号" />
 			</view>
 			<view class="input-box">
-				<text>发卡行:</text>
-				<input type="text" class="input-num" v-model="bank" @click="getcard"  maxlength="19" placeholder="请输入发卡行如'建设银行'" />
-			</view>
-			<view class="input-box">
 				<text>开户行省市:</text>
-				<input type="text" v-model="accountOpeningProvince" @click="btnClick" class="input-num city-input" value=""placeholder="选择开户行省市" />
+				<input type="text" v-model="accountOpeningProvince" @click="btnClick" class="input-num city-input" value=""placeholder="选择省市" />
 			</view>
 		</view>
 		<view class="btn-box">

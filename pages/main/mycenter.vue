@@ -63,8 +63,8 @@
 				<view  @click="shimingFn">
 					<image src="../../static/img/bank/shiming.png" class="my-app-item-pic" mode=""></image>
 					<text>实名认证</text>
-					<text v-if="shimingIf" class="my-app-item-arrow gruy">已实名</text>
-					<uni-icons v-else type="arrowright" class="my-app-item-arrow"></uni-icons>
+					<text class="my-app-item-arrow gruy">{{shimingtype}}</text>
+					<!-- <uni-icons v-else type="arrowright" class="my-app-item-arrow"></uni-icons> -->
 				</view>
 			</view>
 			<view class="my-app-item" @click="clickCardList">
@@ -143,8 +143,8 @@
 			return {
 				popupCenterMessage:'',
 				popuppic:'',
-				shimingIf:false,
 				shimingtype:'',
+				shimingState:'',
 				infodata:{},
 				revenueAmount:{},
 				ifyue:false
@@ -201,12 +201,9 @@
 			    },
 			    success: (res) => {
 					if(res.data.code==0){
+						this.shimingState=res.data.data.state;
+						console.log(res.data.data)
 						this.shimingtype=res.data.data.isRealName;
-						if(this.shimingtype=='已实名'){
-							this.shimingIf=true;
-						}else{
-							this.shimingIf=false;
-						}
 					}
 			       
 			    },
@@ -228,40 +225,32 @@
 					    phoneNumber: '037187092689' ,//仅为示例,
 					});
 				}else if(item.item.name==="wx"){
-					if(process.env.NODE_ENV===!'development'){
-						 uni.saveFile({
-									  tempFilePath: '../../static/img/weixin.jpg',
-									  success: function (res) {
-										var savedFilePath = res.savedFilePath;
-									  }
-									});
-						}
+					
+					//#ifndef H5
+						uni.saveFile({
+						  tempFilePath: '../../static/img/weixin.jpg',
+						  success: function (res) {
+							var savedFilePath = res.savedFilePath;
+						  }
+						});
+					//#endif
 					this.popupCenterMessage="请保存图片，添加好友";
 					this.popuppic="../../static/img/weixin.jpg"
-					uni.showToast({
-					    title:this.popupCenterMessage,
-						mask:true,
-						icon:'none',
-					    duration: 2000
-					});
-				}else if(item.item.name==="qq"){
-					if(process.env.NODE_ENV===!'development'){
+					this.$refs.popupcenter.open();
+				}else if(item.item.name==="qq"){	
+					//#ifndef H5
 						uni.saveFile({
-						     tempFilePath: '../../static/img/qq.jpg',
-						     success: function (res) {
-						       var savedFilePath = res.savedFilePath;
+							 tempFilePath: '../../static/img/qq.jpg',
+							 success: function (res) {
+							   var savedFilePath = res.savedFilePath;
 							   console.log(savedFilePath)
-						     }
+							 }
 						   });
-					}
+					//#endif
+					
 					this.popupCenterMessage="请保存图片，添加好友";
 					this.popuppic="../../static/img/qq.jpg"
-					uni.showToast({
-					    title:this.popupCenterMessage,
-						mask:true,
-						icon:'none',
-					    duration: 2000
-					});
+					this.$refs.popupcenter.open();
 				}
 			},
 			closePopCen:function(){
@@ -273,7 +262,8 @@
 			},
 			// 点击银行卡列表，查看是否实名
 			clickCardList:function(){
-				if(this.shimingtype=="已实名"){
+				console.log(this.shimingState)
+				if(this.shimingState=="PASS"){
 					this.$Router.push({name:'cardlist'})
 				}else{
 					this.popupCenterMessage="请先进行实名认证"
@@ -286,20 +276,57 @@
 				}
 			},
 			shimingFn:function(){
-				if(this.shimingtype=="已实名"){
-					this.shimingIf=true;
-				}
-				
-				if(!this.shimingIf){
-					this.$Router.push({name:'shimingone'})
-				}else {
-					this.popupCenterMessage="已实名"
+				// TO_BE_REVIEWED("TO_BE_REVIEWED","审核中"),PASS("PASS","已实名"),FAIL("FAIL","审核失败"),NOT_COMMITTED("NOT_COMMITTED","未提交");
+				if(this.shimingState=="PASS"){
 					uni.showToast({
-					    title:this.popupCenterMessage,
+					    title:this.shimingtype,
 						mask:true,
 						icon:'none',
 					    duration: 2000
 					});
+				}else if(this.shimingState=="TO_BE_REVIEWED"){
+						uni.showModal({
+						    title: '提示',
+						    content: '是否进行人工加急审核',
+						    success: function (res) {
+						        if (res.confirm) {
+									uni.request({
+										method:'GET',
+									    url: this.$baseUrl+'/api/v1/pri/my/getTongZhi', 
+									    data: {
+									    },
+									    header: {
+											'token': uni.getStorageSync('token'),
+											'Content-Type':'application/json' //自定义请求头信息
+									    },
+									    success: (res) => {
+											if(res.data.code==0){
+												uni.showToast({
+													    title:res.data.msg,
+														mask:true,
+														icon:'none',
+													    duration: 2000
+													});
+											}else if(res.data.code==-1){
+												uni.showToast({
+													    title:res.data.msg,
+														mask:true,
+														icon:'none',
+													    duration: 2000
+													});
+											}
+									       
+									    }
+									});	
+						            // console.log('用户点击确定');
+						        } else if (res.cancel) {
+						            // console.log('用户点击取消');
+						        }
+						    }
+						});
+					
+				}else{
+					this.$Router.push({name:'shimingone'})
 				}
 			}
 		}

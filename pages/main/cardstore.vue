@@ -104,8 +104,11 @@
 			getgoodsList:function(){
 				uni.request({
 					method:'POST',
-				    url: this.$baseUrl+'/api/v1/pri/shop/mailingProduct', 
-				    data: {
+				    // url: this.$baseUrl+'/api/v1/pri/shop/mailingProduct', 
+				  url: this.$baseUrl+'/api/v1/pri/shop/getProductList',
+					data: {
+						"productType":'MAILING',//MAILING、GENERAL
+						"lable":'',
 						page:this.currentPage,
 						size:this.size
 				    },

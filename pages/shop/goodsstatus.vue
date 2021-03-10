@@ -10,8 +10,13 @@
 				<text class="goods-num">数量：{{goodsStatus.amount}}</text>
 			</view>
 			<view class="goods-price">
+<<<<<<< HEAD
+				<text class="goods-price-zk">{{Math.floor( goodsStatus.transactionPrice*goodsStatus.discount)| price}} 元</text>
+				<text class="goods-price-cj">价格：{{goodsStatus.transactionPrice| price}}元</text>
+=======
 				<text class="goods-price-zk">{{goodsStatus.transactionPrice*goodsStatus.discount | price}} 元</text>
-				<text class="goods-price-cj">价格：{{goodsStatus.transactionPrice}}元</text>
+				<text class="goods-price-cj">市场价：{{goodsStatus.transactionPrice}}元</text>
+>>>>>>> parent of 4d2d474... Update manifest.json
 			</view>
 			<view class="goods-picture-box">
 				<image :src="goodsStatus.productDetailsUrl" mode="widthFix"></image>

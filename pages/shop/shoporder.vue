@@ -14,8 +14,8 @@
 						{{product.productName}}
 					</view>
 					<view class="shop-money">
-						<text> {{product.transactionPrice*product.discount | price}}元</text>
-						<text class="shop-yuan-money"> {{product.transactionPrice}}元</text>
+						<text> {{Math.floor( product.transactionPrice*product.discount) | price}}元</text>
+						<text class="shop-yuan-money"> {{product.transactionPrice| price}}元</text>
 					</view>
 					<view class="input-box-wrap">
 						<view class="input-btn">
@@ -131,7 +131,7 @@
 	methods:{
 		// 总价格
 		getallMoney:function(){
-			this.allMoney=((this.product.transactionPrice*this.product.discount).toFixed(2)*this.goodNum).toFixed(2)
+			this.allMoney=(Math.floor(this.product.transactionPrice*this.product.discount)*this.goodNum).toFixed(2)
 			console.log(this.allMoney)
 		},
 		// 减少
