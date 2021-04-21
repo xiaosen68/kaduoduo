@@ -61,7 +61,7 @@ export default {
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					// console.log(res)
+					console.log(res)
 					if(res.data.code==0){
 						this.accountBalance=res.data.data;
 						this.withdrawableAmount=res.data.data.withdrawableAmount;
@@ -92,8 +92,6 @@ export default {
 					}else if(res.data.code==-1){
 						this.popupMessage=res.data.msg;
 						// this.$refs.popup.open();
-					}else{
-						// console.log(res)
 					}
 			       
 			    }

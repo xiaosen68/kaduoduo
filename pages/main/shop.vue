@@ -13,7 +13,7 @@
 		</uni-swiper-dot>
 		<view class="card-shop-box">
 			<view class="shop-class-box">
-				<view class="shop-class-item" v-for="(item,index) in shopClass" @click="sleceShopClass(item.label)">
+				<view class="shop-class-item" v-for="(item,index) in shopClass" @click="sleceShopClass(item.name)">
 					<image class="shop-class-icon" :src="'../../static/img/shop/'+item.icon" mode="" ></image>
 					<view >{{item.label}}</view>
 				</view>
@@ -78,7 +78,7 @@ export default {
 			currentPage:1,
 			totalSize:0,
 			size:20,
-			label:'',
+			labelName:'',
 			totalPage:0,
 			mode: 'default',
 			popupCenterMessage:'',
@@ -87,33 +87,43 @@ export default {
 			shopClass:[
 				{
 					label:'海淘优品',
+					name:'海淘优品',
 					icon:'haitao.png',
 				},{
 					label:'营养保健',
+					name:'保健品',
 					icon:'baojian.png'
 				},{
 					label:'美妆护理',
+					name:'美妆护理',
 					icon:'meizhuang.png',
 				},{
 					label:'茶品天下',
+					name:'茶品天下',
 					icon:'chapin.png',
 				},{
 					label:'工艺珠宝',
+					name:'工艺珠宝',
 					icon:'zhubao.png',
 				},{
 					label:'服饰箱包',
+					name:'服饰箱包',
 					icon:'fushi.png',
 				},{
 					label:'百货超市',
+					name:'百货超市',
 					icon:'baihuo.png',
 				},{
 					label:'数码家电',
+					name:'数码家电',
 					icon:'shuma.png',
 				},{
-					label:'母婴儿童',
+					label:'母婴呵护',
+					name:'母婴呵护',
 					icon:'muying.png',
 				},{
 					label:'更多分类',
+					name:'',
 					icon:'shopmore.png',
 				},
 			]
@@ -129,12 +139,13 @@ export default {
 		trigger:function(e){
 			// console.log(e)
 		},
-		sleceShopClass:function(label){
-			if(label=='更多分类'){
-				this.label='';
-			}else{
-				this.label=label;
-			}
+		sleceShopClass:function(labelName){
+			// if(label=='更多分类'){
+			// 	this.labelName='';
+			// }else{
+			// 	this.labelName=labelName;
+			// }
+			this.labelName=labelName;
 			this.currentPage=1;
 			this.getPruductList();
 		},
@@ -147,10 +158,12 @@ export default {
 			uni.request({
 				method:'POST',
 			    // url: this.$baseUrl+'/api/v1/pri/shop/generalProduct',
-				 url: this.$baseUrl+'/api/v1/pri/shop/getProductList',
+				// http://47.96.91.58:8088/huqing/ucandy/mall/product
+				url:this.$baseUrl+'/ucandy/mall/product',
+				 // url: this.$baseUrl+'/api/v1/pri/shop/getProductList',
 			    data: {
 					"productType":'GENERAL',//MAILING、GENERAL
-					"lable":this.label,
+					"lable":this.labelName,
 					"page":this.currentPage,
 					"size":this.size
 			
@@ -160,22 +173,22 @@ export default {
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					if(res.data.code==0){
-						if(res.data.data.current_page==1){
-							this.goodsList=res.data.data.list;
+					if(res.statusCode==200){
+						
+						if(res.data.current_page==1){
+							this.goodsList=res.data.list;
 						}else{
-							this.goodsList=this.goodsList.concat(res.data.data.list);
+							this.goodsList=this.goodsList.concat(res.data.list);
 						}
-						this.totalSize=res.data.data.total_size;
-						this.currentPage=res.data.data.current_page;
-						this.totalPage=res.data.data.total_page;
+						this.totalSize=res.data.total_size;
+						this.currentPage=res.data.current_page;
+						this.totalPage=res.data.total_page;
 						if(this.currentPage<this.totalPage){
 							this.getMoretext="点击加载更多"
 						}else{
 							this.getMoretext="没有更多数据了"
 						}
 					}
-			       
 			    },
 				complete: () => {
 					uni.hideLoading()
@@ -201,7 +214,11 @@ export default {
 	},
 	filters:{
 		numberFilters:function(val){
-			return val.toFixed(2)
+			if(val){
+				return val.toFixed(2)
+			}else{
+				return val
+			}
 		}
 	}
 }

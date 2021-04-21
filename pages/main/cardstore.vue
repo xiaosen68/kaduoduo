@@ -105,7 +105,8 @@
 				uni.request({
 					method:'POST',
 				    // url: this.$baseUrl+'/api/v1/pri/shop/mailingProduct', 
-				  url: this.$baseUrl+'/api/v1/pri/shop/getProductList',
+				  // url: this.$baseUrl+'/api/v1/pri/shop/getProductList',
+				  url:this.$baseUrl+'/ucandy/mall/product',
 					data: {
 						"productType":'MAILING',//MAILING、GENERAL
 						"lable":'',
@@ -117,14 +118,15 @@
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						if(res.data.code==0){
-							if(res.data.data.current_page==1){
-								this.goodsList=res.data.data.list;
+						// console.log(res)
+						if(res.statusCode==200){
+							if(res.data.current_page==1){
+								this.goodsList=res.data.list;
 							}else{
-								this.goodsList=this.goodsList.concat(res.data.data.list);
+								this.goodsList=this.goodsList.concat(res.data.list);
 							}
-							this.currentPage=res.data.data.current_page;
-							this.totalPage=res.data.data.total_page;
+							this.currentPage=res.data.current_page;
+							this.totalPage=res.data.total_page;
 							this.goodsList.map((item)=>{
 								item.amount=0
 								return item

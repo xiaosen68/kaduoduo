@@ -312,6 +312,7 @@
 					if(!this.tradable){
 						this.getTradable();
 					}else{
+						let _this=this;
 						// 进行支付
 						uni.request({
 							method:'POST',
@@ -337,7 +338,9 @@
 										icon:'none',
 									    duration: 2000,
 										success:(res)=>{
-											this.$Router.back(1)
+											setTimeout(function(){
+												_this.$Router.back(1)
+											},1000)
 											// this.$Router.pushTab({path:'pages/main/homepage'})
 										}
 									});

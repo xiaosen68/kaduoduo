@@ -10,7 +10,7 @@
 					</view>
 					<view class="fen-state">
 						<text class="fen1">+{{item.revenueAmount}}</text>
-						<view>来自尾号<text>{{item.phone|cardFilters}}</text>的收益</view>
+						<view>来自尾号<text>{{item.orderUserPhone|cardFilters}}</text>的收益</view>
 					</view>
 				</view>
 		</view>
@@ -45,14 +45,14 @@ export default {
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
-					// console.log(res)
+					console.log(res)
+					
 					if(res.data.code==0){
 						if(res.data.data.current_page==1){
 							this.list=res.data.data.list;
 						}else{
 							this.list=this.list.concat( res.data.data.list);
 						}
-						
 						this.currPage=res.data.data.current_page;
 						this.totalPage=res.data.data.total_page;
 					}else if(res.data.code==-1){
@@ -76,7 +76,7 @@ export default {
 	onPullDownRefresh(){
 		 this.currPage=1;
 		 this.getfenrunFn();
-		  
+		  console.log(this.list)
 	},
 	// 上拉加载更多
 	onReachBottom(){

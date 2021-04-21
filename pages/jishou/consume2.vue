@@ -216,8 +216,14 @@
 								})
 							},3000)
 						}else if(res.data.code==-1){
-							this.popupMessage=res.data.msg;
-							this.$refs.popup.open();
+							// this.popupMessage=res.data.msg;
+							// this.$refs.popup.open();
+							uni.showToast({
+								title:"网络异常，稍后请查询订单",
+								mask:true,
+								icon:'none',
+								duration: 2000
+							});
 						}
 				       
 				    },

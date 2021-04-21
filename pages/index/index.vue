@@ -96,8 +96,7 @@
 					},
 					success: (res) => {
 						if (res.data.code == 0) {
-
-							// 储存token
+						// 储存token
 							uni.setStorageSync('token', res.data.data.token);
 							uni.setStorageSync('userId', res.data.data.userId);
 							// this.$store.commit("setToken",res.data.data);

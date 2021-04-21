@@ -81,7 +81,7 @@ export default {
   },
 	data (){
 		return{
-			zcmoney:'',//转出金额
+			zcmoney:0,//转出金额
 			dzmoney:'',//到账金额
 			sjmoney:'',//税金
 			popupCenterMessage:'',//弹框信息
@@ -92,7 +92,28 @@ export default {
 		}
 	},
 	onLoad() {
-		this.zcmoney=this.$Route.query.amount;
+		if(this.$Route.query.amount){
+			this.zcmoney=this.$Route.query.amount;
+		}else {
+			// 获取可提现分润金额
+			uni.request({
+				method:'GET',
+			    url: this.$baseUrl+'/api/v1/pri/my/getWithdrawableAmountByBeforeThisMonth', 
+			    data: {
+			    },
+			    header: {
+					'token': uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					if(res.data.code==0){
+						this.zcmoney=res.data.data.revenueAmount;
+					}
+			    }
+			});	
+		}
+		
+		
 		// this.zcmoney=201.22
 		this.sjmoney=Math.ceil(this.zcmoney*7)/100;
 		this.dzmoney=this.zcmoney-this.sjmoney-3;
@@ -206,10 +227,18 @@ export default {
 	},
 	filters:{
 		bankCardFilter:function(str){
-			return str.slice(-4)
+			if(str){
+				return str.slice(-4)
+			}else{
+				return str
+			}
 		},
 		cardFilter:function(str){
-			return str.slice(0,4)+'******'+str.slice(-4)
+			if(str){
+				return str.slice(0,4)+'******'+str.slice(-4)
+			}else{
+				return str
+			}
 		}
 	}
 }

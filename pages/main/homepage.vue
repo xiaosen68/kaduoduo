@@ -257,6 +257,7 @@
 				    },
 				    success: (res) => {
 						if(res.data.code==0){
+							console.log(res.data)
 							uni.setStorageSync('role',res.data.data.role);
 							uni.setStorageSync('roleName',res.data.roleName);
 							// 判断是否为商家

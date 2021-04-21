@@ -11,11 +11,7 @@
 				Iphone下载
 			</view> -->
 		</view>
-		<uni-popup ref="popup" type="center">
-			<view class="popupCenter-box">
-				{{popupMessage}}
-			</view>
-		</uni-popup>
+		
 	</view>
 </template>
 
@@ -23,8 +19,23 @@
 	export default{
 		data() {
 			return {
-				popupMessage:'',
 				apkPath:'',
+				showYindao:false,
+			}
+		},
+		onLoad (){
+			let ua = navigator.userAgent.toLowerCase();
+			if (ua.match(/MicroMessenger/i) == "micromessenger"){
+				this.showYindao=true;
+				// uni.showToast({
+				// 	title:'微信浏览器'
+				// })
+				
+			}else{
+				this.showYindao=false;
+				// uni.showToast({
+				// 	title:'普通浏览器'
+				// })
 			}
 		},
 		methods: {
