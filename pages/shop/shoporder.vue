@@ -165,7 +165,7 @@
 				e.detail.value=0
 			}
 			this.getallMoney();
-			console.log(this.goodNum)
+			// console.log(this.goodNum)
 			// this.addbuyCar();
 		},
 		selectPay:function(){
