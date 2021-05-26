@@ -101,7 +101,7 @@
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						console.log(res)
+						// console.log(res)
 						if(res.data.code==0){
 							this.creditCardList=res.data.data.userCreditCardlist;
 							this.credit=this.creditCardList[0];
