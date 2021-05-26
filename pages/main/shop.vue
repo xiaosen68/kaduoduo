@@ -207,7 +207,7 @@ export default {
 		},
 	},
 	onPullDownRefresh(){
-		console.log('刷新')
+		// console.log('刷新')
 	},
 	onReachBottom:function(){
 		
