@@ -379,11 +379,15 @@
 			showCard(val){
 				if(val){
 					return val.slice(0,4)+'**********'+val.slice(-4)
+				}else{
+					return val
 				}
 			},
 			showbankCard(val){
 				if(val){
 					return val.slice(-4)
+				}else{
+					return val
 				}
 			}
 		},

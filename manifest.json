@@ -2,13 +2,15 @@
     "name" : "有粒糖",
     "appid" : "__UNI__A97D0AF",
     "description" : "",
-    "versionName" : "1.1.0",
-	"versionCode" : "100",
+    "versionName" : "1.1.6",
+    "versionCode" : "100",
     "transformPx" : false,
     "app-plus" : {
         "nvueCompiler" : "uni-app",
         "compilerVersion" : 3,
-        "modules" : {},
+        "modules" : {
+            "Share" : {}
+        },
         "distribute" : {
             "android" : {
                 "permissions" : [

@@ -7,11 +7,32 @@
 			<view class="upload-btn" @click="copyFn">
 				Android下载链接复制
 			</view>
-		<!-- 	<view class="upload-btn" @click="uploadIos()">
+			<view class="upload-btn" @click="uploadIos()">
 				Iphone下载
+			</view>
+			<view class="upload-btn" @click="copyIosFn()">
+				Iphone下载链接复制
+			</view>
+		<!-- 	<view class="upload-box-small">
+				<text class="upload-btn-small">Android下载</text>
+				<text class="upload-btn-small">Iphone下载</text>
+			</view>
+			<view class="upload-href-box">
+				<view class="upload-href-title">
+					长按复制Android链接
+				</view>
+				<text class="upload-href" selectable="true">http://47.96.91.58:8088/huqing/apkUrl/youlitang.apk</text>
+			</view>
+			<view class="upload-href-box">
+				<view class="upload-href-title">
+					长按复制Iphone链接
+				</view>
+				<text class="upload-href" selectable="true">{{iosPath}}</text>
 			</view> -->
 		</view>
-		
+	<!-- 	<view class="image_yindao" v-if="showYindao" @click="clickyindao()">
+			<image class="yindao_image" src="../../static/img/yindao.png" mode=""></image>
+		</view> -->
 	</view>
 </template>
 
@@ -21,6 +42,7 @@
 			return {
 				apkPath:'',
 				showYindao:false,
+				iosPath:'',
 			}
 		},
 		onLoad (){
@@ -38,14 +60,46 @@
 				// })
 			}
 		},
+		onShow() {
+			this.getIosFn();
+		},
 		methods: {
+			clickyindao:function(){
+					this.showYindao=false
+			},
+			getIosFn:function(){
+				uni.request({
+					method:'GET',
+				    url: this.$baseUrl+'/ucandy/mall/m/app/ios/link', 
+				    header: {
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						if(res.statusCode==200){
+							this.iosPath=res.data.url;
+						}else {
+							uni.showToast({
+							    title: 'ios安装包链接获取失败',
+								duration: 2000  
+							})
+						}
+				       
+				    },
+					fail:()=>{
+					}
+				});
+			},
 			copyFn:function(dd){
 				//#ifndef H5
 					uni.setClipboardData({
 					    data: 'http://47.96.91.58:8088/huqing/apkUrl/youlitang.apk',
 					    success: function () {
-							this.popupCenterMessage='复制成功,前去浏览器下载安装包'
-								this.$refs.popup.open()
+							// this.popupCenterMessage='复制成功,前去浏览器下载安装包'
+							// 	this.$refs.popup.open()
+								uni.showToast({
+								    title: '复制成功,去浏览器下载',
+									duration: 3000  
+								})
 					    }
 					});
 					//#endif
@@ -53,7 +107,8 @@
 						 this.$copyText('http://47.96.91.58:8088/huqing/apkUrl/youlitang.apk').then(
 						                    res => {
 						                        uni.showToast({
-						                            title: '复制成功,去浏览器下载'
+						                            title: '复制成功,去浏览器下载',
+													duration: 3000  
 						                        })
 						                    }
 						                )
@@ -64,7 +119,8 @@
 						 this.$copyText('http://47.96.91.58:8088/huqing/apkUrl/youlitang.apk').then(
 						                    res => {
 						                        uni.showToast({
-						                            title: '复制成功,去浏览器下载'
+						                            title: '复制成功,去浏览器下载',
+													duration: 3000  
 						                        })
 						                    }
 						                )
@@ -210,13 +266,85 @@
 						});
 					}
 			},
-			
+			copyIosFn:function(){
+				uni.request({
+					method:'GET',
+				    url: this.$baseUrl+'/ucandy/mall/m/app/ios/link', 
+				    header: {
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						if(res.statusCode==200){
+							this.iosPath=res.data.url;
+							//#ifndef H5
+								uni.setClipboardData({
+								    data: res.data.url,
+								    success: function () {
+										// this.popupCenterMessage='复制成功,前去浏览器下载安装包'
+										// 	this.$refs.popup.open()
+											uni.showToast({
+											    title: '复制成功,去浏览器下载',
+												duration: 3000  
+											})
+								    }
+								});
+								//#endif
+								//#ifdef H5
+									 this.$copyText(res.data.url).then(
+									                    res => {
+									                        uni.showToast({
+									                            title: '复制成功,去浏览器下载',
+																duration: 3000  
+									                        })
+									                    }
+									                )
+								//#endif
+						}else {
+							uni.showToast({
+							    title: 'ios安装包链接获取失败',
+								duration: 2000  
+							})
+						}
+				       
+				    },
+					fail:()=>{
+					}
+				});
+				
+			},
 			uploadIos:function(){
+				uni.request({
+					method:'GET',
+				    url: this.$baseUrl+'/ucandy/mall/m/app/ios/link', 
+				    header: {
+						'Content-Type':'application/json' //自定义请求头信息
+				    },
+				    success: (res) => {
+						if(res.statusCode==200){
+							this.iosPath=res.data.url;
+							//#ifndef H5
+							void plus.runtime.openWeb(res.data.url)
+							//#endif	
+							
+							//#ifdef H5
+								window.location.href=res.data.url;
+							//#endif
+						}else {
+							uni.showToast({
+							    title: 'ios安装包链接获取失败',
+								duration: 2000  
+							})
+						}
+				       
+				    },
+					fail:()=>{
+					}
+				});
+				
 				
 			}
 		}
 	}
-	
 </script>
 
 <style>
@@ -244,11 +372,44 @@
 		text-align: center;
 		color: #FFFFFF;
 	}
+	.upload-box-small{
+		display: flex;
+		justify-content: space-around;
+	}
+	.upload-btn-small{
+		width: 200upx;
+		margin: 40upx auto;
+		padding: 10upx 10upx;
+		border-radius: 8upx;
+		border: #FFFFFF 2upx solid;
+		text-align: center;
+		color: #FFFFFF;
+	}
+	.upload-href-title{
+		font-size: 20upx;
+		color: white;
+	}
+	.upload-href{
+		border: 2upx solid white;
+		padding: 6upx;
+		font-size: 20upx;
+		color: white;
+	}
 	.popupCenter-box{
 		width: 600upx;
 		/* height: 200upx; */
 		background-color: #FFFFFF;
 		border-radius: 10upx;
 		padding: 20upx;
+	}
+	.image_yindao{
+		position: fixed;
+		top: 0upx;
+		width: 100vw;
+		height: 100vh;
+	}
+	.yindao_image{
+		width: 100%;
+		height: 100%;
 	}
 </style>

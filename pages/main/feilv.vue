@@ -148,7 +148,11 @@ export default {
 	},
 	filters:{
 		rate:function(rate){
-			return Math.floor(rate*10000)/100+'%'
+			if(rate){
+				return Math.floor(rate*10000)/100+'%'
+			}else{
+				return rate
+			}
 		}
 	}
 }

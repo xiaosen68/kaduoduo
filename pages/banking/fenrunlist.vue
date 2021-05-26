@@ -94,7 +94,11 @@ export default {
 	},
 	filters:{
 		cardFilters:function(card){
-			return card.substring(7)
+			if(card){
+				return card.substring(7)
+			}else{
+			return	card
+			}
 		},
 	}
 }

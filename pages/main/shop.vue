@@ -32,7 +32,7 @@
 						</view>
 						<view class="goods-prices">
 							<view class="goods-cj-pri">
-								团购：{{ Math.floor(item.transactionPrice*item.discount) |numberFilters}} 
+								团购：{{ item.transactionPrice*item.discount |numberFilters}} 
 							</view>
 						</view>
 					</router-link>

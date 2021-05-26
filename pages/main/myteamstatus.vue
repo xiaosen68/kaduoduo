@@ -299,7 +299,11 @@ export default {
 			return b[0]
 		},
 		telfilter:function(val){
-			return val.substring(0,3)+'***'+val.substring(7)
+			if(val){
+				return val.substring(0,3)+'***'+val.substring(7)
+			}else{
+				return val
+			}
 		},
 		namefilter:function(val){
 			if(val=='NOT_COMMITTED'){

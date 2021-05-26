@@ -225,10 +225,17 @@ export default {
 	},
 	filters:{
 		nameFilters(name){
-			return '*'+name.substring(1)
+			if(name){
+				return '*'+name.substring(1)
+			}
+			
 		},
 		cardFilters(card){
-			return card.substring(0,4)+'****'+card.substring(12)
+			if(card){
+				return card.substring(0,4)+'****'+card.substring(12)
+			}else{
+				return card
+			}
 		},
 		cardTypeFilters(cardType){
 			if(cardType=='SAVINGS_CARD'){

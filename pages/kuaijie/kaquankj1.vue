@@ -487,16 +487,33 @@
 		},
 		filters:{
 			showCard(val){
-				return val.substring(0,4)+'****'+val.substring(val.length-4)
+				if(val){
+					return val.substring(0,4)+'****'+val.substring(val.length-4)
+				}else{
+					return val
+				}
 			},
 			showbankCard(val){
-				return val.substring(val.length-4)
+				if(val){
+					return val.substring(val.length-4)
+				}else{
+					return val
+				}
+				
 			},
 			ceilfilters(n){
-				return Math.ceil(n*100)/100
+				if(n){
+					return Math.ceil(n*100)/100
+				}else{
+					return n
+				}
 			},
 			floorfilters(n){
-				return Math.floor(n*100)/100
+				if(n){
+					return Math.floor(n*100)/100
+				}else{
+					return n
+				}
 			}
 		}
 	};

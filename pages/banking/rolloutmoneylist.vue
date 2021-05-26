@@ -105,7 +105,11 @@ export default {
 	},
 	filters:{
 		cardFilter:function (val){
-			return val.slice(-4)
+			if(val){
+				return val.slice(-4)
+			}else{
+				return val
+			}
 		},
 		stateFilter:function(val){
 			if(val==='REFUSE'){

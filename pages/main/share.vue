@@ -220,10 +220,9 @@
 			open:function (){
 				// 打开分享页面
 				// this.$refs.popup.open()
-				
 				//#ifndef H5
 					 plus.share.sendWithSystem({
-						 type:'image',
+						 type:'image/*',
 						 content:'我在使用有粒糖，您也来注册吧',
 						 href:this.codeVal,
 						 pictures:this.sharePic,

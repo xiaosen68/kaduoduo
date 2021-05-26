@@ -125,7 +125,11 @@ export default {
 	},
 	filters:{
 		cardFilters:function(val){
-			return val.slice(0,4)+'*********'+val.slice(-4);
+			if(val){
+				return val.slice(0,4)+'*********'+val.slice(-4);
+			}else{
+				return val
+			}
 		},
 		stateFilter:function(val){
 		if(val==='NO_WITHDRAWAL'){

@@ -27,7 +27,7 @@
 		</view>
 		<view class="kzfenrun-box">
 			<text>未提现佣金(元)</text>
-			<view class="kzfr-num">{{revenueAmount.revenue}}</view>
+			<view class="kzfr-num">{{ketixian}}</view>
 			<!-- <router-link to="{name:'rolloutmoney'}" class="roll-out-btn">提现</router-link> -->
 			<!-- 	<navigator url="./rollout"  class="roll-out-btn">
 				转出	
@@ -53,33 +53,12 @@ export default {
 		return{
 			cardtype:true,
 			 revenueAmount:{},
+			 ketixian:0,
 		}
 	},
 	onLoad() {
-	// 用户分润初始化
-	uni.request({
-		method:'GET',
-	    url: this.$baseUrl+'/api/v1/pri/my/myRevenueAmount', 
-	    data: {
-	    },
-	    header: {
-			'token': uni.getStorageSync('token'),
-			'Content-Type':'application/json' //自定义请求头信息
-	    },
-	    success: (res) => {
-			// console.log(res)
-			if(res.data.code==0){
-				this.revenueAmount=res.data.data;
-				// console.log(this.revenueAmount)
-			}else if(res.data.code==-1){
-				this.popupMessage=res.data.msg;
-				// this.$refs.popup.open();
-			}else{
-				// console.log(res)
-			}
-	       
-	    }
-	});	
+		this.getKetixianFn();
+		this.getInitFn();
 	},
 	methods:{
 		backFn(){
@@ -93,6 +72,58 @@ export default {
 			// 	url:"./fenrunlist"
 			// })
 			this.$Router.push({name:'fenrunlist'})
+		},
+		getInitFn(){
+			// 用户分润初始化
+			uni.request({
+				method:'GET',
+			    url: this.$baseUrl+'/api/v1/pri/my/myRevenueAmount', 
+			    data: {
+			    },
+			    header: {
+					'token': uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					if(res.data.code==0){
+						this.revenueAmount=res.data.data;
+						// console.log(this.revenueAmount)
+					}else if(res.data.code==-1){
+						this.popupMessage=res.data.msg;
+						// this.$refs.popup.open();
+					}else{
+						// console.log(res)
+					}
+			       
+			    }
+			});	
+		},
+		getKetixianFn(){
+			// 获取可提现分润金额
+			uni.request({
+				method:'GET',
+			    url: this.$baseUrl+'/ucandy/mall/a/user/profits/balance', 
+			    data: {
+			    },
+			    header: {
+					'token': uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					if(res.statusCode==200){
+						this.ketixian=res.data.cashable;
+						
+					}else{
+						uni.showToast({
+						    title:'获取可提现金额失败',
+							mask:true,
+							icon:'none',
+						    duration: 2000
+						});
+					}
+			    }
+			});	
 		}
 
 	}

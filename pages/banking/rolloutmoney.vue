@@ -24,11 +24,11 @@
 			 <view class="rollout-box-item">
 			 	<view class="rollout-label">提现手续费</view>
 			 	<view class="rollout-ipt">
-			 		￥3.0元/笔
+			 		￥1.0元/笔
 			 	</view>
 			 </view>
 		</view>
-		<view class="rollout-num-box" v-if="zcmoney>=100">
+		<view class="rollout-num-box" v-if="zcmoney>=0">
 			 <view class="rollout-box-item">
 			 	<view class="rollout-label">税费</view>
 			 	<view class="rollout-ipt">
@@ -41,6 +41,9 @@
 			 		￥{{dzmoney}}元
 			 	</view>
 			 </view>
+			 <text id="tishi">
+			 	当日17:00前提现,17:30结算；17:00后提现于次日17:30结算
+			 </text>
 		</view>
 		<button type="" class="roll-btn" @click="rolloutFn">确认提现</button>
 		
@@ -92,31 +95,15 @@ export default {
 		}
 	},
 	onLoad() {
-		if(this.$Route.query.amount){
-			this.zcmoney=this.$Route.query.amount;
-		}else {
-			// 获取可提现分润金额
-			uni.request({
-				method:'GET',
-			    url: this.$baseUrl+'/api/v1/pri/my/getWithdrawableAmountByBeforeThisMonth', 
-			    data: {
-			    },
-			    header: {
-					'token': uni.getStorageSync('token'),
-					'Content-Type':'application/json' //自定义请求头信息
-			    },
-			    success: (res) => {
-					if(res.data.code==0){
-						this.zcmoney=res.data.data.revenueAmount;
-					}
-			    }
-			});	
-		}
-		
+		// if(this.$Route.query.amount){
+		// 	this.zcmoney=this.$Route.query.amount;
+		// }else {
+			
+		// }
+		this.getTixian()//获取可提现金额
 		
 		// this.zcmoney=201.22
-		this.sjmoney=Math.ceil(this.zcmoney*7)/100;
-		this.dzmoney=this.zcmoney-this.sjmoney-3;
+		
 		uni.request({
 			method:'GET',
 		    url: this.$baseUrl+'/api/v1/pri/my/getUserSavingsCard', 
@@ -137,7 +124,6 @@ export default {
 					if(!this.defaultCard){
 						this.defaultCard=this.cardList[0];
 					}
-				}else if(res.data.code==-1){
 				}
 		       
 		    }
@@ -148,22 +134,42 @@ export default {
 		this.coverShow=false;
 		this.cuxvkaListShow=false;
 	},
+	getTixian:function(){
+		// 获取可提现分润金额
+		uni.request({
+			method:'GET',
+		    url: this.$baseUrl+'/ucandy/mall/a/user/profits/balance', 
+		    data: {
+		    },
+		    header: {
+				'token': uni.getStorageSync('token'),
+				'Content-Type':'application/json' //自定义请求头信息
+		    },
+		    success: (res) => {
+				if(res.statusCode==200){
+					this.zcmoney=res.data.cashable;
+					this.sjmoney=(Math.ceil(this.zcmoney/1.07*7)/100).toFixed(2);
+					this.dzmoney=(this.zcmoney-this.sjmoney-1).toFixed(2);
+				}else{
+					uni.showToast({
+					    title:'获取可提现金额失败',
+						mask:true,
+						icon:'none',
+					    duration: 2000
+					});
+				}
+		    }
+		});	
+		
+	},
 	opencuxv:function(){
 		this.cuxvkaListShow=true;
 		this.coverShow=true;
 	},
+	// 分润提现
 		rolloutFn:function(){
-			if(this.zcmoney==''){
-				this.popupCenterMessage='请正确填写金额';
-				uni.showToast({
-				    title:this.popupCenterMessage,
-					mask:true,
-					icon:'none',
-				    duration: 2000
-				});
-				return false;
-					// 大于20元
-			}else if(this.zcmoney<100){
+			let _this=this;
+			if(this.zcmoney<100){
 				this.popupCenterMessage='金额需不少于100元';
 				uni.showToast({
 				    title:this.popupCenterMessage,
@@ -179,7 +185,8 @@ export default {
 				})
 				uni.request({
 					method:'POST',
-				    url: this.$baseUrl+'/api/v1/pri/my/withdrawalAmount', 
+					url: this.$baseUrl+'/ucandy/mall/a/user/profits/withdraw/application',
+				    // url: this.$baseUrl+'/api/v1/pri/my/withdrawalAmount', 
 				    data: {
 						amount:this.zcmoney,
 						cashOutBankId:this.defaultCard.id,
@@ -189,28 +196,50 @@ export default {
 						'Content-Type':'application/json' //自定义请求头信息
 				    },
 				    success: (res) => {
-						if(res.data.code==0){
-							this.popupCenterMessage=res.data.data;
-							uni.showToast({
-							    title:this.popupCenterMessage,
-								mask:true,
-								icon:'none',
-							    duration: 2000
-							});
-						}else if(res.data.code==-1){
-							this.popupCenterMessage=res.data.msg;
-							uni.showToast({
-							    title:this.popupCenterMessage,
-								mask:true,
-								icon:'none',
-							    duration: 2000
-							});
+						// console.log(res)
+						if(res.statusCode==200){
+							if(res.data.withdraw_id){
+								uni.showToast({
+								    title:"申请成功",
+									mask:true,
+									icon:'none',
+								    duration: 2000
+								});
+							}else{
+								uni.showToast({
+								    title:res.data.error_msg,
+									mask:true,
+									icon:'none',
+								    duration: 2000
+								});
+							}
+						
+							
 						}else{
+							this.popupCenterMessage=res.data;
+							uni.showToast({
+							    title:this.popupCenterMessage,
+								mask:true,
+								icon:'none',
+							    duration: 2000
+							});
 						}
-				       
+						uni.hideLoading()
+						setTimeout(function(){
+							// _this.getTixian()
+							uni.navigateBack({
+							    delta: 1
+							});
+						},1000)
 				    },
 					complete: () => {
-						uni.hideLoading()
+						uni.hideLoading();
+						setTimeout(function(){
+							// _this.getTixian()
+							uni.navigateBack({
+							    delta: 1
+							});
+						},1000)
 					}
 				});	
 				
@@ -400,5 +429,9 @@ export default {
 		vertical-align: middle;
 		right: 0;
 		line-height: 100upx;
+	}
+	#tishi{
+		font-size: 16upx;
+		color: #d71518;
 	}
 </style>

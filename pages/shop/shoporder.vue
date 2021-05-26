@@ -14,14 +14,15 @@
 						{{product.productName}}
 					</view>
 					<view class="shop-money">
-						<text> {{Math.floor( product.transactionPrice*product.discount) | price}}元</text>
+						<text> {{product.transactionPrice*product.discount | price}}元</text>
 						<text class="shop-yuan-money"> {{product.transactionPrice| price}}元</text>
 					</view>
 					<view class="input-box-wrap">
 						<view class="input-btn">
-							<uni-icons class="in-btn" size="24" type="minus" color="#8a8a8a" @click="minus()"></uni-icons>
+							<uni-icons class="in-btn" size="24" type="minus" color="#8a8a8a" @click="minus"></uni-icons>
 							<input class="input-btn-box" type="number"  v-model="goodNum" maxlength="2" @input="outinput" />
-							<uni-icons class="in-btn" size="24" type="plus" color="#fb2e03" @click="plus()"></uni-icons>
+							<uni-icons class="in-btn" size="24" type="plus" color="#fb2e03" @click="plus"></uni-icons>
+							<!-- <uni-icons class="in-btn" size="24"  type="plus" color="#fb2e03" @click="plus(index)"></uni-icons> -->
 						</view>
 					</view>
 				</view>
@@ -131,7 +132,7 @@
 	methods:{
 		// 总价格
 		getallMoney:function(){
-			this.allMoney=(Math.floor(this.product.transactionPrice*this.product.discount)*this.goodNum).toFixed(2)
+			this.allMoney=(this.product.transactionPrice*this.product.discount*this.goodNum).toFixed(2)
 			console.log(this.allMoney)
 		},
 		// 减少
@@ -204,7 +205,11 @@
 	
 	filters:{
 		price:function(value){
-			return value.toFixed(2)
+			if(value){
+				return value.toFixed(2)
+			}else{
+				return value
+			}
 		}
 	}
 }

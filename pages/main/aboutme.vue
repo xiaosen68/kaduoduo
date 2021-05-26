@@ -4,7 +4,7 @@
 			<image class="niubei-icon" src="../../static/img/niubei.jpg" mode=""></image>
 			<view class="niubei">有粒糖</view>
 			<view class="niubei-banben">
-				2.0.1
+				2.1.1
 			</view>
 		</view>
 		<view class="about-wrap">

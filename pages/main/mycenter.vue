@@ -144,7 +144,7 @@
 				popupCenterMessage:'',
 				popuppic:'',
 				shimingtype:'',
-				shimingState:'',
+				// shimingState:'',
 				infodata:{},
 				revenueAmount:{},
 				ifyue:false
@@ -163,6 +163,7 @@
 					'Content-Type':'application/json' //自定义请求头信息
 			    },
 			    success: (res) => {
+					console.log(res)
 					if(res.data.code==0){
 						this.infodata=res.data.data;
 						this.infodata.score=Math.floor(this.infodata.score)
@@ -201,7 +202,7 @@
 			    },
 			    success: (res) => {
 					if(res.data.code==0){
-						this.shimingState=res.data.data.state;
+						// this.shimingState=res.data.data.state;
 						console.log(res.data.data)
 						this.shimingtype=res.data.data.isRealName;
 					}
@@ -262,8 +263,8 @@
 			},
 			// 点击银行卡列表，查看是否实名
 			clickCardList:function(){
-				console.log(this.shimingState)
-				if(this.shimingState=="PASS"){
+				// console.log(this.shimingState)
+				if(this.shimingtype=="已实名"){
 					this.$Router.push({name:'cardlist'})
 				}else{
 					this.popupCenterMessage="请先进行实名认证"
@@ -277,55 +278,57 @@
 			},
 			shimingFn:function(){
 				// TO_BE_REVIEWED("TO_BE_REVIEWED","审核中"),PASS("PASS","已实名"),FAIL("FAIL","审核失败"),NOT_COMMITTED("NOT_COMMITTED","未提交");
-				if(this.shimingState=="PASS"){
+				if(this.shimingtype=="已实名"){
 					uni.showToast({
 					    title:this.shimingtype,
 						mask:true,
 						icon:'none',
 					    duration: 2000
 					});
-				}else if(this.shimingState=="TO_BE_REVIEWED"){
-						uni.showModal({
-						    title: '提示',
-						    content: '是否进行人工加急审核',
-						    success: function (res) {
-						        if (res.confirm) {
-									uni.request({
-										method:'GET',
-									    url: this.$baseUrl+'/api/v1/pri/my/getTongZhi', 
-									    data: {
-									    },
-									    header: {
-											'token': uni.getStorageSync('token'),
-											'Content-Type':'application/json' //自定义请求头信息
-									    },
-									    success: (res) => {
-											if(res.data.code==0){
-												uni.showToast({
-													    title:res.data.msg,
-														mask:true,
-														icon:'none',
-													    duration: 2000
-													});
-											}else if(res.data.code==-1){
-												uni.showToast({
-													    title:res.data.msg,
-														mask:true,
-														icon:'none',
-													    duration: 2000
-													});
-											}
+				 }
+				// else if(this.shimingState=="TO_BE_REVIEWED"){
+				// 		uni.showModal({
+				// 		    title: '提示',
+				// 		    content: '是否进行人工加急审核',
+				// 		    success: function (res) {
+				// 		        if (res.confirm) {
+				// 					uni.request({
+				// 						method:'GET',
+				// 					    url: this.$baseUrl+'/api/v1/pri/my/getTongZhi', 
+				// 					    data: {
+				// 					    },
+				// 					    header: {
+				// 							'token': uni.getStorageSync('token'),
+				// 							'Content-Type':'application/json' //自定义请求头信息
+				// 					    },
+				// 					    success: (res) => {
+				// 							if(res.data.code==0){
+				// 								uni.showToast({
+				// 									    title:res.data.msg,
+				// 										mask:true,
+				// 										icon:'none',
+				// 									    duration: 2000
+				// 									});
+				// 							}else if(res.data.code==-1){
+				// 								uni.showToast({
+				// 									    title:res.data.msg,
+				// 										mask:true,
+				// 										icon:'none',
+				// 									    duration: 2000
+				// 									});
+				// 							}
 									       
-									    }
-									});	
-						            // console.log('用户点击确定');
-						        } else if (res.cancel) {
-						            // console.log('用户点击取消');
-						        }
-						    }
-						});
+				// 					    }
+				// 					});	
+				// 		            // console.log('用户点击确定');
+				// 		        } else if (res.cancel) {
+				// 		            // console.log('用户点击取消');
+				// 		        }
+				// 		    }
+				// 		});
 					
-				}else{
+				// }
+				else{
 					this.$Router.push({name:'shimingone'})
 				}
 			}

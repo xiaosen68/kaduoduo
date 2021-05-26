@@ -76,26 +76,8 @@ export default {
 			    }
 			});	
 			// 获取可提现分润金额
-			uni.request({
-				method:'GET',
-			    url: this.$baseUrl+'/api/v1/pri/my/getWithdrawableAmountByBeforeThisMonth', 
-			    data: {
-			    },
-			    header: {
-					'token': uni.getStorageSync('token'),
-					'Content-Type':'application/json' //自定义请求头信息
-			    },
-			    success: (res) => {
-					// console.log(res)
-					if(res.data.code==0){
-						this.revenueAmount=res.data.data.revenueAmount;
-					}else if(res.data.code==-1){
-						this.popupMessage=res.data.msg;
-						// this.$refs.popup.open();
-					}
-			       
-			    }
-			});	
+			this.getfenrun();
+			
 			
 			// console.log(uni.getStorageSync('role'))
 			if(uni.getStorageSync('role')=='BUSINESS'){
@@ -105,16 +87,57 @@ export default {
 			}
 	},
 	methods:{
+		getfenrun(){
+			uni.request({
+				method:'GET',
+			    // url: this.$baseUrl+'/api/v1/pri/my/getWithdrawableAmountByBeforeThisMonth', 
+				url: this.$baseUrl+'/ucandy/mall/a/user/profits/balance',
+			    data: {
+			    },
+			    header: {
+					'token': uni.getStorageSync('token'),
+					'Content-Type':'application/json' //自定义请求头信息
+			    },
+			    success: (res) => {
+					console.log(res)
+					if(res.statusCode==200){
+						this.revenueAmount=res.data.cashable;//可提现金额
+						// cashable 为可提现金额， uncashable 为不可提现金额，processing 为处理中的金额
+					}else{
+						
+					}
+					
+					
+					// if(res.data.code==0){
+					// 	this.revenueAmount=res.data.data.revenueAmount;
+					// }else if(res.data.code==-1){
+					// 	this.popupMessage=res.data.msg;
+					// 	// this.$refs.popup.open();
+					// }
+			       
+			    }
+			});	
+		},
 		backFn(){
 			this.$Router.back(1)
 		},
 		gorollout(){
-			this.$Router.push({name:'rolloutmoney',params: { amount:this.revenueAmount }})
+			if(this.revenueAmount<=0){
+				uni.showToast({
+					icon:'none',
+					title:'暂无可提现金额'
+				})
+			}else{
+				this.$Router.push({name:'rolloutmoney'})
+			}
 		},
 		looktixianList(){
 			this.$Router.push({name:'rolloutmoneylist'})
 		}	
 
+	},
+	onShow() {
+		this.getfenrun();
 	}
 }
 </script>

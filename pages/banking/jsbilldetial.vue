@@ -138,7 +138,11 @@ export default {
 	},
 	filters:{
 		datafilter:function(val){
-			return val.slice(0,4)+'-'+val.slice(4,6)+'-'+val.slice(6,8)
+			if(val){
+				return val.slice(0,4)+'-'+val.slice(4,6)+'-'+val.slice(6,8)
+			}else{
+				return val
+			}
 		},
 		typefilter:function(val){
 			if(val=='MEMBER_PLUS'){
